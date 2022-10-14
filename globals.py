@@ -7,7 +7,6 @@ from .presets import skeleton as skel
 
 
 
-
 if True:
     collada = {}
     collada['URI'] ='http://www.collada.org/2005/11/COLLADASchema'

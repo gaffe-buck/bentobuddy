@@ -1,7 +1,7 @@
 
 # Bento Buddy
 #
-# Copyright (C) 2012 - 2022 - Critters
+# Copyright (C) 2012 - 2022 - Critters LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,6 +33,9 @@ from .presets import volumes
 from .presets import skeleton as skel
 from .presets import avastar_to_sl
 from .presets import avastar_normalized
+
+
+path_bones = []
 
 U16MAX = 65535
 LL_MAX_PELVIS_OFFSET = 5.0
@@ -168,6 +171,15 @@ def export_sl_anim(armature=None, path=None):
     anim_use_target_keys_rotation = anim.anim_use_target_keys_rotation
     anim_use_target_keys_location = anim.anim_use_target_keys_location
     anim_use_keys_smooth = anim.anim_use_keys_smooth
+    
+    
+    
+    
+    
+    
+    anim_path_to_pelvis = anim.anim_path_to_pelvis
+    
+
     export_avastar_disabled = bb.export_avastar_disabled
     export_avastar_deform_bones = bb.export_avastar_deform_bones
 
@@ -242,6 +254,7 @@ def export_sl_anim(armature=None, path=None):
         print("anim_deviation_detection:", anim_deviation_detection)
         print("anim_deviation_rotation:", anim_deviation_rotation)
         print("anim_deviation_location:", anim_deviation_location)
+        print("anim_path_to_pelvis:", anim_path_to_pelvis)
         print("has_action:", has_action)
         print("split_enabled:", split_enabled)
         print("export_avastar_disabled:", export_avastar_disabled)
@@ -412,6 +425,14 @@ def export_sl_anim(armature=None, path=None):
     
 
     
+    
+    
+    
+    
+    
+    
+    
+
     
     
     
@@ -702,6 +723,60 @@ def export_sl_anim(armature=None, path=None):
                 print("Return from baking resulted in False")
                 popup("No detected animation, bake failed", "Error", "ERROR")
                 return False
+        
+        
+        
+        
+        if bb_anim.anim_path_to_pelvis == True:
+            print("anim_path_to_pelvis is True, lerp_data will be altered")
+            
+            
+            animated_bones = [bone for bone in lerp_data]
+            path_bones = get_bones_to_pelvis(bones=animated_bones)
+            if len(path_bones) == 0:
+                print("No path bones to process, this is odd")
+            else:
+                for bone in path_bones:
+                    if bone not in lerp_data:
+                        print("adding bone  : [", bone, "]", sep="")
+                        lerp_data[bone] = {'rots': [frame_start, frame_end], 'locs': [frame_start, frame_end]}
+                    else:
+                        print("skipping bone: [", bone, "]", sep="")
+        
+        
+        
+        
+        
+        
+        
+        if bb_anim.anim_match_transforms == True:
+            print("anim_match_transforms is True, will adjust lerp_data to match")
+            for bone in lerp_data:
+                if len(lerp_data[bone]['rots']) == 0 and len(lerp_data[bone]['locs']) != 0:
+                    print("=======================================")
+                    print("adding rots to", bone)
+                    print(bone, lerp_data[bone])
+                    print("=======================================")
+                    first_frame = lerp_data[bone]['locs'][0]
+                    last_frame = lerp_data[bone]['locs'][-1]
+                    lerp_data[bone]['rots'] = [first_frame, last_frame]
+                elif len(lerp_data[bone]['locs']) == 0 and len(lerp_data[bone]['rots']) != 0:
+                    print("=======================================")
+                    print("adding locs to", bone)
+                    print(bone, lerp_data[bone])
+                    print("=======================================")
+                    first_frame = lerp_data[bone]['rots'][0]
+                    last_frame = lerp_data[bone]['rots'][-1]
+                    lerp_data[bone]['locs'] = [first_frame, last_frame]
+
+        if 1 == 1:
+            print("")
+            print("=====================================================")
+            print("if has_keys == False:")
+            print("lerp_data:")
+            print(lerp_data)
+            print("=====================================================")
+            print("")
 
         
 
@@ -881,10 +956,31 @@ def export_sl_anim(armature=None, path=None):
         popup("Choose an export option, (Deviation, High Fidelity, Linear)", "No Option Set", "INFO")
         return False
 
+
+
+
+
+    if 1 == 0:
+        lerp_data["mPelvis"] = {
+            'rots': [1, 120],
+        }
+
+        print("")
+        print("======================================")
+        print("Data gathered:")
+        print("lerp_data:", lerp_data)
+        
+        print("======================================")
+        print("")
+
+
+
+
     
     
     
     
+
 
 
     
@@ -1009,12 +1105,30 @@ def export_sl_anim(armature=None, path=None):
                     
                     
                     
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+
+                    
+                    
+                    
                     if bone in pelvis_bones:
                         print("Found pelvis option:", bone)
-                        bone_data_temp[real_bone] = bone_data[real_bone]
+                        if real_bone in bone_data:
+                            bone_data_temp[real_bone] = bone_data[real_bone]
+                        else:
+                            print("Skipping pelvis option, non existent: ", real_bone, ", applying bone directly to bone_data", sep="")
+                            bone_data_temp[real_bone] = bone_data[bone]
                     else:
                         bone_data_temp[real_bone] = bone_data[bone]
 
+ 
                 bone_data = bone_data_temp
 
             else:
@@ -1840,6 +1954,26 @@ def get_baked_animation(
                 if rot_mark == True or loc_mark == True:
                     break
         print("Bones that exceeded motion tolerance:", animated)
+
+        
+        
+        
+        
+        
+        if 1 == 0:
+            if bb_anim.anim_path_to_pelvis == True:
+                print("anim_path_to_pelvis is enabled, traversing path to add these bones to the (animated) set...")
+                path_bones = get_bones_to_pelvis(bones=animated)
+                if len(path_bones) == 0:
+                    print("No bones returned")
+                else:
+                    print("Got additional bones to add:", path_bones)
+                    for bone in path_bones:
+                        if bone not in animated:
+                            print(" * adding   [", bone, "]", sep="")
+                            animated.add(bone)
+                        else:
+                            print(" * skipping [", bone,  "]", sep="") 
     else:
         print("  no tolerance marking, adding all bones as animated")
         for bone in motion:
@@ -1857,11 +1991,21 @@ def get_baked_animation(
     
     
     
-
     key_stops = get_key_stops(
         motion=motion, bones=animated,
         frame_start=frame_start, frame_end=frame_end,
         mark_tol_rot=mrot, mark_tol_loc=mloc)
+
+
+    
+    
+    
+    
+    if 1 == 0:
+        for bone in path_bones:
+            if bone not in key_stops:
+                key_stops[bone] = {'rots': [frame_start, frame_end]}
+                key_stops[bone] = {'locs': [frame_start, frame_end]}
 
 
     if 1 == 0:
@@ -1912,6 +2056,7 @@ def get_baked_animation(
                     if 'locs' not in stage_one[bone]:
                         stage_one[bone]['locs'] = []
                     stage_one[bone]['locs'].append(frame)
+
     
     if bb.export_volume_motion == False:
         bones_del = []
@@ -2200,7 +2345,8 @@ def get_animated_keys(
     armature=None,
     frame_start=0,
     frame_end=0
-    ):
+    ): 
+
     bb = bpy.context.scene.bentobuddy
     bba = bpy.context.scene.bb_anim_props
     bb_anim = bpy.context.scene.bb_anim
@@ -3321,6 +3467,31 @@ def get_motion(armature=None, frame_start=0, frame_end=0, frames=[], bones=[]):
         print("animutils::get_motion : reports - no bones delivered, using armature instead:", armObj.name)
         for boneObj in armObj.data.bones:
             bones.append(boneObj.name)
+
+    
+    
+    
+    
+    
+    else:
+        
+        
+        
+        
+        if bb_anim.anim_path_to_pelvis == True:
+            print("anim_path_to_pelvis is True, generating a path...")
+            
+            path_bones = get_bones_to_pelvis(bones=bones)
+            print("Done!")
+            if len(path_bones) == 0:
+                print("There were no bone paths to acquire")
+            else:
+                print("The following bones will be appended to the bones list for processing..")
+                print(path_bones)
+                for bone in path_bones:
+                    bones.append(bone)
+
+    print("Traversing frames/bones...")
     for frame in frames:
         bpy.context.scene.frame_set(frame)
         for bone in bones:
@@ -3336,7 +3507,30 @@ def get_motion(armature=None, frame_start=0, frame_end=0, frames=[], bones=[]):
             motion[bone][frame]['rot'] = to_deg(rmat)
             motion[bone][frame]['loc'] = rmat.to_translation()
 
+    print("Capture complete, returning (motion)...")
+
     return motion
+
+
+
+def get_bones_to_pelvis(bones=[]):
+    if len(bones) == 0:
+        print("get_bones_to_pelvis reports no bones delivered")
+        return []
+    
+    
+    bone_set = set()
+    for bone in bones:
+        if bone not in skel.avatar_skeleton:
+            print("get_bones_to_pelvis: skipping unknown bone [", bone, "]", sep="")
+            continue
+        if bone in bone_set:
+            continue
+        while skel.avatar_skeleton[bone]['parent'] != "":
+            pbone = skel.avatar_skeleton[bone]['parent']
+            bone_set.add(pbone)
+            bone = pbone
+    return bone_set
 
 
 
@@ -5870,23 +6064,6 @@ def write_lsl(source=None, target=None, actions=None, prefix="Anim", fps=24):
     print("Saved to:", target)
 
     return True
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

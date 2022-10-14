@@ -1,5 +1,8 @@
 If you unzipped this file yourself these instructions are for you.  If Bento Buddy is already installed into Blender and functioning just ignore this notice.
 
+If you're on a Mac then the web browser you used, in order to download Bento Buddy, may have unzipped the file, which cannot install in this state.  A quick fix is to find that folder and zip it back up, using that as the installation medium.
+
+
 - Installation -
 Here is a video showing how to install your addon into Blender.
 https://youtu.be/BdYouLPaxGA
@@ -7,7 +10,7 @@ https://youtu.be/BdYouLPaxGA
 - join the Discord Server -
 This is the best option for support but we do keep our eyes open in-world when we can.
 We're most likely much quicker to respond on Discord.
-http://onelifeform.com/discord
+http://critters.xyz/discord
 
 - Join the group -
 You may want to join the support group "Bento Buddy".  For ease of access I've included an object that will give you a link to the group.
@@ -15,7 +18,7 @@ Rez or wear the object "Bento Buddy - group Join (touch / rez)".
 
 - TEXT INSTRUCTIONS -
 
-Go to the website indicated https://www.onelifeform.com/bentobuddy
+Go to the website indicated https://critters.xyz/bentobuddy
 
 Login to the website.  Your full Second Life name is your user name to login with.  It was shown to you when you registered in-world.  If you don't have a legacy user name then your last name is "Resident", which doesn't normally show up for you in SL.  After you login you'll get a download screen where you can download your product.
 
@@ -25,8 +28,8 @@ To change your password rez or wear the item "Bento Buddy - password change and 
 
 Don't use the word "password_here", make your own password.
 
-To extend your download privileges you can purchase an update, which will allow you to keep your tool up to date.
-https://marketplace.secondlife.com/p/Bento-Buddy-Update/18276030
+To extend your download privileges you can purchase Bento Buddy again, which will allow you to keep your tool up to date, adding an additional year of support per purchase.
+https://critters.xyz/mp
 
 Have fun \o
 

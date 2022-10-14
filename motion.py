@@ -1,7 +1,7 @@
 
 # Bento Buddy
 #
-# Copyright (C) 2012 - 2022 - Critters
+# Copyright (C) 2012 - 2022 - Critters LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -252,6 +252,138 @@ def add_constraints(
     bpy.ops.object.mode_set(mode='OBJECT')
 
     
+
+    return True
+
+
+
+
+
+
+
+def retarget_snap(inRig):
+    
+    state = utils.get_state()
+    bb_snap_rig = bpy.context.window_manager.bb_snap_rig
+
+    outRig = rigutils.build_rig(rig_class="pos", rotate=True)
+    outRig.select_set(False)
+
+    
+    rename_map = inRig['bb_onemap_rename']
+
+    
+    good_bones_out = []
+    for sbone in rename_map.keys():
+        tbone = rename_map[sbone]
+        if tbone in outRig.data.bones:
+            good_bones_out.append(sbone)
+
+    inRig.show_in_front = False
+    outRig.show_in_front = True
+    outRig.data.display_type = 'STICK'
+
+    
+    
+    inRig.select_set(True)
+    utils.activate(inRig)
+    bpy.ops.object.duplicate()
+    proxyRig = bpy.context.object
+    proxyRig.name = "RETARGET_PROXY"
+
+    
+    
+    frame_start = 1
+    if proxyRig.animation_data:
+        if proxyRig.animation_data.action:
+            frame_start = proxyRig.animation_data.action.frame_range[0]
+
+    
+    frame_start = int(frame_start)
+
+    bpy.context.scene.frame_set(frame_start)
+    
+    proxyRig.animation_data_clear()
+    bpy.ops.object.mode_set(mode='POSE')
+    bpy.ops.pose.armature_apply()
+    bpy.ops.object.mode_set(mode='OBJECT')
+    utils.make_single(proxyRig)
+    bpy.ops.object.transform_apply(scale=True, rotation=True, location=False)
+    
+    joint_data = {}
+    bpy.ops.object.mode_set(mode='EDIT')
+    for boneObj in proxyRig.data.edit_bones:
+        bone = boneObj.name
+        joint_data[bone] = {}
+        joint_data[bone]['head'] = boneObj.head.copy()
+        joint_data[bone]['tail'] = boneObj.tail.copy()
+        joint_data[bone]['roll'] = boneObj.roll
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+    
+    outRig.location = proxyRig.location
+    offset = proxyRig.location.y + bb_snap_rig.snap_distance
+    outRig.location.y = offset
+
+    
+    bpy.ops.object.delete()
+
+    
+    
+    
+    outRig.select_set(True)
+    utils.activate(outRig)
+    outRig.animation_data_clear()
+
+    bpy.ops.object.mode_set(mode='POSE')
+    bpy.ops.pose.armature_apply()
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.transform_apply(scale=True, rotation=True, location=False)
+
+    
+    
+
+    
+    
+    rename_rev = {}
+    for sbone in rename_map.keys():
+        tbone = rename_map[sbone]
+        rename_rev[tbone] = sbone
+
+    bpy.ops.object.mode_set(mode='EDIT')
+    
+    for boneObj in outRig.data.edit_bones:
+        boneObj.use_connect = False
+
+    for tbone in rename_rev:
+        if tbone not in outRig.data.bones:
+            print("Skipping outRig bone:", tbone)
+            continue
+        sbone = rename_rev[tbone]
+        if sbone not in inRig.data.bones:
+            print("skipping inRig bone:", sbone)
+            continue
+        boneObj = outRig.data.edit_bones[tbone]
+        boneObj.head = joint_data[sbone]['head']
+        boneObj.tail = joint_data[sbone]['tail']
+        boneObj.roll = joint_data[sbone]['roll']
+
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+    outRig.select_set(False)
+
+    
+    
+    
+    
+    add_constraints(
+        source=outRig.name, target=inRig.name,
+        bone_map=rename_map, constraint='COPY_ROTATION', space='WORLD',
+        influence=1, location=True, rotation=True, scale=True)
+    add_constraints(
+        source=outRig.name, target=inRig.name,
+        bone_map=rename_map, constraint='COPY_LOCATION', space='WORLD',
+        influence=1, location=True, rotation=True, scale=True)
 
     return True
 

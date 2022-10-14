@@ -1,7 +1,7 @@
 
 # Bento Buddy
 #
-# Copyright (C) 2012 - 2022 - Critters
+# Copyright (C) 2012 - 2022 - Critters LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -373,6 +373,7 @@ def update_map(input=None, output=None, rename=None, reskin=None, controllers=Tr
 
 
 
+    
     
     for rename_in_bone in rename:
         if rename_in_bone not in inRig.pose.bones:
@@ -757,7 +758,15 @@ def attach_proxy(inRig=None, outRig=None):
     
     
     rigutils.remove_pose_groups(proxyRig)
+
+    
+    
+    
+    
+    rig_keys = []
     for k in proxyRig.keys():
+        rig_keys.append(k)
+    for k in rig_keys:
         del proxyRig[k]
 
     

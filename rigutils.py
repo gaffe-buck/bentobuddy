@@ -1,7 +1,7 @@
 
 # Bento Buddy
 #
-# Copyright (C) 2012 - 2022 - Critters
+# Copyright (C) 2012 - 2022 - Critters LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -4472,7 +4472,12 @@ def get_associated_mesh(arm, report=False):
             if report == True:
                 print("rigutils::get_associated_mesh reports : child object is not a mesh", cObj.name)
             continue
-        mesh.append(cObj)
+        
+        if utils.is_valid(cObj):
+            mesh.append(cObj)
+        else:
+            print("rigutils::get_associated_mesh reports : child object is no longer available -->", cObj.name)
+
     
     if len(mesh) == 0:
         if report == True:
@@ -4566,7 +4571,7 @@ def check_maps(armature=None, rename=None, reskin=None, pose=None, report=False)
             bones = reskin_map[anchor]
             
             
-            for rbone in bones.keys():
+            for rbone in bones:
                 if rbone in armObj.data.bones:
                     if anchor not in reskin:
                         reskin[anchor] = {}

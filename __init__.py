@@ -1,7 +1,7 @@
 
 # Bento Buddy
 #
-# Copyright (C) 2012 - 2022 - Critters
+# Copyright (C) 2012 - 2022 - Critters LLC
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 bl_info = {
        "name": "Bento Buddy",
        "author": "BinBash Resident (Second Life)",
-       "version": (3, 0, 7, 4),
+       "version": (3, 0, 8, 4),
        "blender": (2, 80, 0),
        "description": "Quick Bento / Animesh prototype tool, includes an advanced Character Converter and animation system",
        "warning": "",
@@ -2089,8 +2089,6 @@ class BentoBuddySlidersAddSelected(bpy.types.Operator):
         armObj = bpy.context.selected_objects[0]
 
         pose_bones = bpy.context.selected_pose_bones
-
-
 
         for boneObj in pose_bones:
             print("adding props to bone:", boneObj.name)
@@ -4672,6 +4670,7 @@ class BentoBuddyOneMapAction(bpy.types.Operator):
                 arms += 1
             if arms != 1:
                 return False
+
         
         
         
@@ -4680,6 +4679,14 @@ class BentoBuddyOneMapAction(bpy.types.Operator):
         
         
             
+
+
+        
+        
+        
+        bb_onemap_state = onemap.props['bb_onemap_state']
+        if bb_onemap_state == "started":
+            return False
         return True
 
     def execute(self, context):
@@ -5849,8 +5856,6 @@ class BentoBuddySnapProperties(bpy.types.PropertyGroup):
         default = False
         )
 
-
-
     snap_fill_reverse : bpy.props.BoolProperty(
         name = "",
         description =            "When enabled the (Fill) will deposit the target bones in the reverse order",
@@ -6778,8 +6783,6 @@ mapped bones if you want"""
             director_bones_list.append(cBone.name)
             cBone = cBone.parent
 
-
-
         
         director_bones = {}
         if bb_snap.snap_fill_reverse == False:
@@ -7146,6 +7149,10 @@ class BentoBuddySnapSelectDirectorBone(bpy.types.Operator):
 
         inRig.data.bones[self.bone].select = True
 
+        
+        
+        inRig.data.bones.active = inRig.data.bones[self.bone]
+
         print("selected", self.bone)
 
         return {'FINISHED'}
@@ -7184,7 +7191,12 @@ class BentoBuddySnapSelectActorBone(bpy.types.Operator):
 
         for boneObj in outRig.data.bones:
             boneObj.select = False
+
         outRig.data.bones[self.bone].select = True
+
+        
+        
+        outRig.data.bones.active = outRig.data.bones[self.bone]
 
         print("selected", self.bone)
 
@@ -7606,11 +7618,21 @@ the Director since it is in control of the Actor rig"""
         inRig.select_set(True)
         outRig.select_set(True)
 
+
+
+
+        
+        
+        
         
         for g in inRig.pose.bone_groups:
             inRig.pose.bone_groups.remove(g)
         for g in outRig.pose.bone_groups:
             outRig.pose.bone_groups.remove(g)
+        
+
+
+
 
         bpy.ops.object.mode_set(mode='POSE')
 
@@ -8568,7 +8590,13 @@ keep your product as is with the ability to continue working on it"""
         for o in delete:
             if o.get('bb_sim_type') == "dynamic":
                 print(" sim type is dynaimc, calling sim.export_fix() for", o.name)
-                sim.export_fix(o)
+
+                
+                
+                
+                
+                
+                sim.export_fix([o])
 
 
         
@@ -11576,6 +11604,7 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                 text = "Save Map",
                 icon_value = ico.custom_icons["save"].icon_id
                 )
+
             
             
             row = col.row(align=True)
@@ -11601,7 +11630,13 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                 "bentobuddy.onemap_store_pose",
                 text = "Store Pose",
                 )
-
+            col = box.column(align = True)
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.onemap_remove_map",
+                text = "Remove Map",
+                icon_value = ico.custom_icons["x_red"].icon_id
+                )
             row = col.row(align=True)
             row.prop(
                 bb_onemap,
@@ -11622,7 +11657,7 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                         anchors.append(bone)
                     has_prefix = os.path.commonprefix(anchors)
                     if has_prefix != "":
-                        has_prefix_text = "This map contains a prefix"
+                        has_prefix_text = "Map contains a prefix"
                         has_prefix_icon = "bone_red"
 
             row.operator(
@@ -11641,8 +11676,8 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
             
             bb_onemap_state = onemap.props['bb_onemap_state']
             row = col.row(align=True)
+
             if bb_onemap_state == "started":
-                row.enabled = False
                 row.operator(
                     "bentobuddy.onemap_action",
                     text = "Ready",
@@ -11662,6 +11697,13 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                     text = "Action!",
                     icon_value = ico.custom_icons["action"].icon_id
                     )
+
+            row.operator(
+                "bentobuddy.onemap_reset",
+                text = "Reset Stage",
+                icon_value = ico.custom_icons["reset"].icon_id
+                )
+            row = col.row(align=True)
             row.prop(
                 bb_onemap,
                 "onemap_offset",
@@ -11730,19 +11772,6 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                 ).action = "clear"
 
 
-
-            col = box.column(align = True)
-            row = col.row(align=True)
-            row.operator(
-                "bentobuddy.onemap_remove_map",
-                text = "Remove Map",
-                icon_value = ico.custom_icons["x_red"].icon_id
-                )
-            row.operator(
-                "bentobuddy.onemap_reset",
-                text = "Reset Stage",
-                icon_value = ico.custom_icons["reset"].icon_id
-                )
             row = col.row(align=True)
 
             
@@ -12182,11 +12211,6 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                 text = "Clear maps",
                 icon_value = ico.custom_icons["clean"].icon_id
                 )
-            row.operator(
-                "bentobuddy.snap_reset",
-                text = "Reset stage",
-                icon_value = ico.custom_icons["reset"].icon_id
-                )
             row = col.row(align=True)
 
             
@@ -12282,17 +12306,26 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
 
             col = box.column(align = True)
             row = col.row(align=True)
-            row.operator(
-                "bentobuddy.snap_action",
-                text = "Action!",
-                icon_value = ico.custom_icons["action"].icon_id
-                )
             row.prop(
                 bb_snap,
                 "snap_target",
                 toggle = True,
                 text = "Custom Target",
                 icon_value = ico.custom_icons["target"].icon_id
+                )
+
+            row = col.row(align=True)
+
+            row.operator(
+                "bentobuddy.snap_action",
+                text = "Action!",
+                icon_value = ico.custom_icons["action"].icon_id
+                )
+
+            row.operator(
+                "bentobuddy.snap_reset",
+                text = "Reset stage",
+                icon_value = ico.custom_icons["reset"].icon_id
                 )
 
             row = col.row(align=True)
@@ -12668,8 +12701,6 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
                 text = "Fill",
                 icon_value = ico.custom_icons["link"].icon_id
                 )
-
-
             row.prop(
                 bb_snap,
                 "snap_fill_reverse",
@@ -19406,7 +19437,7 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         )
 
     use_rig_data : bpy.props.BoolProperty(
-        description = ""            "Use Rig Data (Bento Buddy / Avastar) "            "\n"            "Use with Converted Characters, Animesh and normal DAE.  This is your (go to) export option."            "\n"            "If you have an altered bind pose with an Avastar rig then try the Avatar Pose.",
+        description = ""            "Use Rig Data (Bento Buddy / Avastar) "            "\n"            "Use with Converted Characters, Animesh and normal DAE.  This is your (go to) export option.",
         default = True,
         update = update_pose_data_rig
         )
@@ -20771,8 +20802,8 @@ character.  You must have a selection to use this"""
 
 class BentoBuddyDevKitPresetSaveDefaults(bpy.types.Operator, ExportHelper):
     """This saves the UI elements, allowing you to save a base set of presets for
-the configuring your devkits and dea exports.  This data is automatically
-loaded when needed so make sure it's what you want"""
+configuring your devkits and dea exports.  This data is automatically loaded
+ when needed so make sure it's what you want"""
 
     bl_idname = "bentobuddy.devkit_preset_save_defaults"
     bl_label = "Save Defaults"
@@ -21111,7 +21142,6 @@ information (the stuff that\'s usually missing from Blender)"""
             temp_state = utils.get_state()
             armObj.select_set(True)
             utils.activate(armObj)
-
 
             bpy.ops.object.mode_set(mode='OBJECT')
 
@@ -22441,10 +22471,6 @@ it actually works in SL, use this tool for a perfect match"""
         
         armObj['bb_collada_matrices'] = matrices
 
-
-
-
-
         
         
         
@@ -23446,8 +23472,6 @@ description"""
         result = devkit.reshape(armObj, matrices=matrices, rotate=True, copy=True, delete=False, report=True)
         if result == False:
             popup("Devkit repair failed")
-
-
 
         return {'FINISHED'}
 
@@ -24722,6 +24746,10 @@ another reference pose using this method"""
 
         
         start_frame, stop_frame = armObj.animation_data.action.frame_range
+        
+        start_frame = int(start_frame)
+        stop_frame = int(stop_frame)
+
         
         
         if start_frame == None:
@@ -26392,6 +26420,12 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
         default = False,
         update = update_blank
         )
+    mesh_show_selected_menu_enabled : bpy.props.BoolProperty(
+        name = "",
+        description =            "Show the properties of the selected mesh(s)",
+        default = False
+        )
+
     devkit_run_code : bpy.props.BoolProperty(
         name = "",
         description = ""            "Some unique processes may be required when loading a devkit preset and code may have been added for that "            "specific kit.  If that's the case then this feature will run that required code, if enabled.  The feature "            "is allowed to be turned on and off because devkit creators may update their kit in the future making this "            "option, for that particular kit, obsolete, or damaging",
@@ -31494,7 +31528,6 @@ that this feature implicitly defines (Export Path To Pelvis)"""
             
             dBone['bb_joint_export'] = True
 
-
         return {'FINISHED'}
 
 
@@ -32827,8 +32860,6 @@ sets the current pose as rest pose just like in the menu area"""
 
 class BentoBuddySnapRigProperties(bpy.types.PropertyGroup):
 
-
-
     
     def blank(self, context):
         self["blank"] = False
@@ -32849,7 +32880,7 @@ class BentoBuddySnapRigProperties(bpy.types.PropertyGroup):
     snap_distance : bpy.props.FloatProperty(
         name = "",
         description = ""            "This is a visual for convenience but can also effect the in-world result, often to advantage.  "            "This is the distance between actor and director, basically how far back should the SL rig be?",
-        default = 0.6
+        default = 0.0
         )
 
 
@@ -32909,84 +32940,28 @@ then generate one first using one of the mappers, the Snap Mapper is fun"""
             return {'FINISHED'}
 
         
-        
-        
-        bpy.ops.object.mode_set(mode='EDIT')
-        tmap = {}
-        for boneObj in tarmObj.data.edit_bones:
-            bone = boneObj.name
-            tmap[bone] = {}
-            tmap[bone]['head'] = boneObj.head.copy()
-            tmap[bone]['tail'] = boneObj.tail.copy()
-            tmap[bone]['roll'] = boneObj.roll
-            tmap[bone]['matrix'] = boneObj.matrix.copy()
-        bpy.ops.object.mode_set(mode='OBJECT')
-
-        
-        sarmObj = rigutils.build_rig(rig_class="pos", rotate=True)
-
-        
-
-        
-        loc = tarmObj.location.y
-        loc += bb_snap_rig.snap_distance
-        sarmObj.location.y = loc
-        
-        
-        
-        utils.apply_transforms(object=sarmObj, location=True, rotation=False, scale=False)
-
-        
-        for boneObj in sarmObj.data.bones:
-            boneObj.hide = False
-
-        
-        bpy.ops.object.mode_set(mode='EDIT')
-        for sBone in sarmObj.data.edit_bones:
-            sBone.use_connect = False
-
-
-
+        bpy.ops.bentobuddy.acquire_animation_details()
 
         
         
-        MW = tarmObj.matrix_world.copy()
+        
+        
+        
+        
+        
 
-        bpy.ops.object.mode_set(mode='EDIT')
-        for tbone in rename_map:
-            sbone = rename_map[tbone]
-            
-            if tbone not in tarmObj.data.bones:
-                print("Skipping nonexistent bone [", tbone, "] in map", sep="")
-                continue
-            sarmObj.data.edit_bones[sbone].head = MW @ tmap[tbone]['head']
-            sarmObj.data.edit_bones[sbone].tail = MW @ tmap[tbone]['tail']
-            sarmObj.data.edit_bones[sbone].roll = tmap[tbone]['roll']
+        result = motion.retarget_snap(tarmObj)
 
-
-
-
-        bpy.ops.object.mode_set(mode='OBJECT')
-
-
-        if 1 == 1:
-            motion.add_constraints(
-                source=sarmObj.name, target=tarmObj.name,
-                bone_map=rename_map, constraint='COPY_ROTATION', space='WORLD',
-                influence=1, location=True, rotation=True, scale=True)
-            motion.add_constraints(
-                source=sarmObj.name, target=tarmObj.name,
-                bone_map=rename_map, constraint='COPY_LOCATION', space='WORLD',
-                influence=1, location=True, rotation=True, scale=True)
-
+        if result == False:
+            print("An error occurred when attempting to engage the retargeter")
+            popup("There was an error, see console", "Error", "ERROR")
+            return {'FINISHED'}
 
         
-        utils.set_state(state)
+        tarmObj.show_in_front = False
+        tarmObj.data.display_type = 'OCTAHEDRAL'
 
         return {'FINISHED'}
-
-
-
 
 
 
@@ -36870,6 +36845,20 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
 
 
+
+    anim_match_transforms : bpy.props.BoolProperty(
+        name = "",
+        description =            "- Match rot/loc to other -"
+            "\n\n"            "This is a test tool.  It's probably not useful for most rigs.  It will tell the Bento Buddy animation exporter "            "to match a location transform to a rotation transform and vise versa",
+            default = False,
+            )
+    anim_path_to_pelvis : bpy.props.BoolProperty(
+        name = "",
+        description =            "- Enable Path To Pelvis -"
+            "\n\n"            "The default settings for the the animation exporter keeps your file size down by detecting bones that "            "have been transformed and, as a result, has determined that they have been animated and aught to be "            "included in the animation file.  However, sometimes this is not enough and all of the bones from the "            "(detected) one to the pelvis (mPelvis) must be acknowledged as having been animated as well, even though "            "they may not have been transformed (moved).  This switch tells the exporter to generate fake keys for "            "bones from the detected one down to the pelvis (mPelvis) for better control of your custom rigs",
+            default = False,
+            )
+
     anim_misc_menu_enabled : bpy.props.BoolProperty(
         name = "",
         description =            "Enable some misc options"            "\n\n"            "Interpolation / Remove animation",
@@ -39815,6 +39804,11 @@ to give you a frozen/static pose, except for some goofy bones"""
         anim.anim_loop_advanced = False
         anim.anim_loop_in_frame = frame_current - 1
         anim.anim_loop_out_frame = frame_current
+
+        
+        frame_start = int(frame_start)
+        frame_end = int(frame_end)
+
         bb.animation_start_frame = frame_start
         bb.animation_end_frame = frame_end
         bb.animation_fps = 5
@@ -46531,7 +46525,6 @@ options here to eneable/disable and the ranges are in a lower menu"""
         anim_resample_rate_rotation = anim.anim_resample_rate_rotation
         anim_resample_rate_location = anim.anim_resample_rate_location
         anim_base_priority = bb_anim.anim_base_priority
-
 
         
         
@@ -58585,72 +58578,88 @@ class BentoBuddyPanelMeshTools(bpy.types.Panel):
         box = layout.box()
         col = box.column(align = True)
 
+        mesh_show_selected_menu_enabled_icon = "menu_closed"
+        if bb.mesh_show_selected_menu_enabled == True:
+            mesh_show_selected_menu_enabled_icon = "menu_opened"
         row = col.row(align=True)
-        all_selected = bpy.context.selected_objects
-        mesh_selected = []
-        for o in all_selected:
-            if o.type == 'MESH':
-                mesh_selected.append(o)
-        if len(mesh_selected) == 0:
-            row.label(
-                text = "- No mesh selected -",
-                icon_value = ico.custom_icons["dot_red"].icon_id
-                )
-        else:
-            
-            row.prop(
-                bb,
-                "blank",
-                text = "Total Mesh Selected: " + str(len(mesh_selected)),
-                toggle = True,
-                icon_value = ico.custom_icons["dot_green"].icon_id
-                )
-            for o in mesh_selected:
+        row.prop(
+            bb,
+            "mesh_show_selected_menu_enabled",
+            text = "Show Mesh Properties",
+            toggle = True,
+            icon_value = ico.custom_icons[mesh_show_selected_menu_enabled_icon].icon_id
+            )
+        if bb.mesh_show_selected_menu_enabled == True:
 
-                row = col.row(align=True)
 
-                ms_name = o.name
-                ms_verts = str(len(o.data.vertices))
-                ms_tris = str(sum([(len(p.vertices) - 2) for p in o.data.polygons]))
-                ms_faces = str(len(o.material_slots))
-                ms_polys = str(len(o.data.polygons))
-                row.prop(
-                    bb,
-                    "blank",
-                    text = "- " + ms_name + " -",
-                    toggle = True,
+            row = col.row(align=True)
+            all_selected = bpy.context.selected_objects
+            mesh_selected = []
+            for o in all_selected:
+                if o.type == 'MESH':
+                    mesh_selected.append(o)
+            if len(mesh_selected) == 0:
+                row.label(
+                    text = "- No mesh selected -",
                     icon_value = ico.custom_icons["dot_red"].icon_id
                     )
-                row = col.row(align=True)
+            else:
+                
                 row.prop(
                     bb,
                     "blank",
-                    text = "Vertices: " + ms_verts,
+                    text = "Total Mesh Selected: " + str(len(mesh_selected)),
                     toggle = True,
-                    icon_value = ico.custom_icons["dot_white"].icon_id
+                    icon_value = ico.custom_icons["dot_green"].icon_id
                     )
-                row.prop(
-                    bb,
-                    "blank",
-                    text = "Trianges: " + ms_tris,
-                    toggle = True,
-                    icon_value = ico.custom_icons["dot_white"].icon_id
-                    )
-                row = col.row(align=True)
-                row.prop(
-                    bb,
-                    "blank",
-                    text = "Faces / Mats: " + ms_faces,
-                    toggle = True,
-                    icon_value = ico.custom_icons["dot_white"].icon_id
-                    )
-                row.prop(
-                    bb,
-                    "blank",
-                    text = "Polygons: " + ms_polys,
-                    toggle = True,
-                    icon_value = ico.custom_icons["dot_white"].icon_id
-                    )
+                col = box.column(align = True)
+
+                for o in mesh_selected:
+    
+                    row = col.row(align=True)
+
+                    ms_name = o.name
+                    ms_verts = str(len(o.data.vertices))
+                    ms_tris = str(sum([(len(p.vertices) - 2) for p in o.data.polygons]))
+                    ms_faces = str(len(o.material_slots))
+                    ms_polys = str(len(o.data.polygons))
+                    row.prop(
+                        bb,
+                        "blank",
+                        text = "- " + ms_name + " -",
+                        toggle = True,
+                        icon_value = ico.custom_icons["dot_red"].icon_id
+                        )
+                    row = col.row(align=True)
+                    row.prop(
+                        bb,
+                        "blank",
+                        text = "Vertices: " + ms_verts,
+                        toggle = True,
+                        icon_value = ico.custom_icons["dot_white"].icon_id
+                        )
+                    row.prop(
+                        bb,
+                        "blank",
+                        text = "Trianges: " + ms_tris,
+                        toggle = True,
+                        icon_value = ico.custom_icons["dot_white"].icon_id
+                        )
+                    row = col.row(align=True)
+                    row.prop(
+                        bb,
+                        "blank",
+                        text = "Faces / Mats: " + ms_faces,
+                        toggle = True,
+                        icon_value = ico.custom_icons["dot_white"].icon_id
+                        )
+                    row.prop(
+                        bb,
+                        "blank",
+                        text = "Polygons: " + ms_polys,
+                        toggle = True,
+                        icon_value = ico.custom_icons["dot_white"].icon_id
+                        )
 
 
         
@@ -61632,7 +61641,7 @@ build custom characters, animations and Animesh quickly"""
                 bb_align_bones,
                 "align_bones_info",
                 toggle = True,
-                text = "Straighten Bone Segment",
+                text = "Align Bones",
 
                 )
             row = col.row(align=True)
@@ -61708,7 +61717,7 @@ build custom characters, animations and Animesh quickly"""
             row = col.row(align=True)
             row.operator(
                 "bentobuddy.align_bones",
-                text="Align Bones",
+                text="Apply!",
                 icon_value = ico.custom_icons["align_bones"].icon_id
                 )
             
@@ -61740,7 +61749,7 @@ build custom characters, animations and Animesh quickly"""
                 bb_snap_rig,
                 "snap_info",
                 toggle = True,
-                text = "Snap SL Bones",
+                text = "Snap To Map",
 
                 )
 
@@ -61752,11 +61761,10 @@ build custom characters, animations and Animesh quickly"""
                 icon_value = ico.custom_icons["bones"].icon_id
                 )
 
-            row.prop(
-                bb_snap_rig,
-                "snap_distance",
-                toggle = True,
-                text = "",
+            row.operator(
+                "bentobuddy.motion_match_map",
+                text="Match Map",
+                icon_value = ico.custom_icons["match"].icon_id
                 )
 
             
@@ -61773,7 +61781,6 @@ build custom characters, animations and Animesh quickly"""
                 ).action = "show"
             
 
-
             if 1 == 0:
                 row.operator(
                     "bentobuddy.bb_snap_constraints",
@@ -61781,7 +61788,21 @@ build custom characters, animations and Animesh quickly"""
                     icon_value = ico.custom_icons["ik"].icon_id
                     )
 
+            row = col.row(align=True)
 
+            row.prop(
+                bb_snap_rig,
+                "blank",
+                toggle = True,
+                text="Distance:",
+                icon_value = ico.custom_icons["blank"].icon_id
+                )
+            row.prop(
+                bb_snap_rig,
+                "snap_distance",
+                toggle = True,
+                text = "",
+                )
 
             row = col.row(align=True)
 
@@ -63029,6 +63050,10 @@ class BentoBuddyMotionRemoveTransforms(bpy.types.Operator):
             trs = "rotation_quaternion"
         elif self.action == "trans":
             trs = "location"
+
+        if bpy.context.selected_pose_bones == None:
+            utils.popup("Select some pose bones first", "No bones selected!", "INFO")
+            return {'FINISHED'}
 
         
         fcurve_paths = {}
@@ -64644,7 +64669,6 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                 toggle=True,
                 icon_value = ico.custom_icons["split"].icon_id
                 )
-
             if bb_split.split_enabled == True:
                 row = col.row(align=True)
                 row.prop(
@@ -64812,6 +64836,32 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                 text=export_sl_anim_label,
                 icon_value = ico.custom_icons["walking_green"].icon_id
                 )
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            row.prop(
+                anim,
+                "anim_path_to_pelvis",
+                toggle = True,
+                text="",
+                icon_value = ico.custom_icons["anchor"].icon_id
+                )
+            row.prop(
+                anim,
+                "anim_match_transforms",
+                toggle = True,
+                text="",
+                icon_value = ico.custom_icons["location"].icon_id
+                )
+
+            row = col.row(align=True)
+
             row.scale_y = 1.4
             row.alert = False
             row.operator(
@@ -66231,7 +66281,6 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                 text = "Remove Pose",
                 ).action = "del"
 
-
             pose_rename_map_text = " "
             pose_rename_map_icon = "dot_black"
             pose_pose_map_text = " "
@@ -66794,7 +66843,6 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                     text = "",
                     
                     )
-
 
                 
                 row = col.row(align = True)
@@ -68214,7 +68262,6 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
             
             
             
-
 
 
 
@@ -70744,7 +70791,6 @@ class BentoBuddyShapeShifterPanel(bpy.types.Panel):
                     )
 
                 
-
                 box = layout.box()
                 col = box.column(align = True)
                 row = col.row(align=True)
@@ -72019,7 +72065,6 @@ This is similar to the Simulator but for a more refined purpose"""
         layout = self.layout
         row = self.layout.row(align=True)
 
-
         
         if 1 == 0:
             reactor_menu_enabled_icon = "menu_closed"
@@ -72202,9 +72247,6 @@ This is similar to the Simulator but for a more refined purpose"""
                 text="Copy Rigid",
                 icon_value = ico.custom_icons["freeze"].icon_id
                 )
-
-
-
 
 
 
@@ -72515,8 +72557,6 @@ class BentoBuddyRagdollProperties(bpy.types.PropertyGroup):
         default = False,
         update = update_ragdoll_show_constraints
         )
-
-
 
 
 
@@ -73057,8 +73097,6 @@ class BentoBuddyRagdollBake(bpy.types.Operator):
 
 
 
-
-
 class BentoBuddyRagdollJoin(bpy.types.Operator):
     """
 This will remove the rigid dynamics from the objects (Directors) join them.  It's suggested that
@@ -73345,7 +73383,7 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
     sim_inverse_motion_info : bpy.props.BoolProperty(
         name = "",
         description =            "WARNING"            "\n\n"            "Transforms on your mesh will ruin your day.  Examine these before using this tool!"            "\n\n"            "Inverse Motion allows you to animate a rig using mesh instead of a rig animating, or deforming, mesh.  This is a "            "preparatory measure that is then reverted to do the expected, the animation then deforms the mesh.  In this way we "            "can translate a mesh simulation into an armature animation which can then be transfered into a system that does not "            "support this type of simulation, such as Second Life."
-            "\n\n"            "There are two types of automatic simulation to make quick work of rigid and cloth type simulations, which are "            "Dynamic for cloth and Object for multiple simulated rigid body objects.  Dynamic can also work with a soft body."            "\n\n"            "There are two tool sets which can be used together but are designed to be used independently, the Automatic and the "            "Manual tool-sets.  The Automatic tool-set allows you build a rig along a path of a set of vertices and the Manual "            "section expects that you already have a rig.",
+            "\n\n"            "There are two types of automatic simulation to make quick work of rigid and cloth type simulations, which are "            "Dynamic for cloth and Object for multiple simulated rigid body objects.  Dynamic can also work with a soft body."            "\n\n"            "There are two tool sets which can be used together but are designed to be used independently, the Automatic and the "            "Manual tool-sets.  The Automatic tool-set allows you to build a rig along a path of a set of vertices and the Manual "            "section expects that you already have a rig.",
         update = update_sim_blank
         )
 
@@ -73368,7 +73406,7 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
         )
     sim_motion_object : bpy.props.BoolProperty(
         name = "",
-        description =            "Per Object Motion"            "\n\n"            "This type of inverse motion capture is for whole objects.  You can select multiple objects for use with motion "            "inheritance and they will drive a rig that this tool creates for you.  One bone per object will be assigned and "            "that bone will capture the location and rotation of the associated object.  Because of the single shot, multiple "            "object, complexity of this particular type of sim attachment, there is no reset.  You just chose your objects again "            "and use (Action) again, any stale data will be removed before attaching.  The Director contains a list of active "            "simulation objects and will attempt to clean those, each object contains a Director reference so one can find the other.",
+        description =            "Per Object Motion"            "\n\n"            "This type of inverse motion capture is for whole objects.  You can select multiple objects for use with motion "            "inheritance and they will drive a rig that this tool creates for you.  One bone per object will be assigned and "            "that bone will capture the location and rotation of the associated object.  Because of the single shot, multiple "            "object, complexity of this particular type of sim attachment, choosing your objects again, and hitting this button, "            "any stale data will be removed before attaching.  The Director contains a list of active simulation objects and "            "will attempt to clean those, each object contains a Director reference so one can find the other.",
         default = False,
         update = update_sim_motion_object
         )
@@ -73986,8 +74024,6 @@ bones to vertices closest to the actor bone.  This cannot be reversed"""
         influence = bb_sim.sim_custom_influence
         preserve = bb_sim.sim_custom_preserve
         disable_armatures = bb_sim.sim_custom_disable_armatures
-
-
 
         
         
@@ -75495,9 +75531,9 @@ Baking preserves your animation and allows you to examine and adjust it before e
 
 
 class BentoBuddySimParent(bpy.types.Operator):
-    """The (Join) operator will parent the resulting object to the armature but you can do that
-here, in order to keep them separated.  This can be useful, and is the expected state that a mesh
-is in when associated with a rig, but not always necessary"""
+    """Join Objects will parent the resulting object to the rig but you can do that here, in order
+to keep them separated.  This can be useful, and is the expected state that a mesh is in
+when associated with a rig, but not always necessary"""
 
     bl_idname = "bentobuddy.sim_parent"
     bl_label = "Parent the objects"
@@ -76322,7 +76358,6 @@ all sim influences that Bento Buddy knows about"""
         utils.set_state(state)
 
         return {'FINISHED'}
-
 
 
 
@@ -78147,7 +78182,6 @@ classes = (
     
     
     
-
     BentoBuddySlidersProperties,
     BentoBuddySlidersApply,
     BentoBuddySlidersResetAll,
@@ -78332,7 +78366,6 @@ classes = (
 
 
     BentoBuddyAnimationPanel,
-
 
 
 
@@ -78639,9 +78672,7 @@ classes = (
     
     views.BentoBuddyViewProperties,
     views.BentoBuddyViewOperator,
-
     views.BentoBuddyPanelView,
-
     
     
     
@@ -78686,7 +78717,6 @@ classes = (
     
     
     
-
 
     BentoBuddySnapRigProperties,
     BentoBuddySnapRig,
@@ -79094,8 +79124,6 @@ def register():
     
     
     bpy.types.Scene.bb_sliders = bpy.props.PointerProperty(type=BentoBuddySlidersProperties)
-
-
 
     
     
