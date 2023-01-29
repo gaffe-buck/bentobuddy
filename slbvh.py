@@ -1,20 +1,3 @@
-
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
 import bpy
 import os
 import uuid
@@ -107,13 +90,16 @@ def sl_bvh_export(
             if b.name not in skel.avatar_skeleton:
                 bad_bones.append(b.name)
     if len(bad_bones) > 0:
-        print("There are", str(len(bad_bones)), "joints that cannot be exported to SL.  This function cannot continue.")
+        print("There are", str(len(bad_bones)), "joints that cannot be exported to SL.")
         print(bad_bones)
-        popup("Incompatible joints found, see console for details.", "Error", "ERROR")
+        
+        
+        
+        
         
         
         bad_bones.clear()
-        return False
+        
 
     print("Exporting animation for", armature)
     animation_scale = 39.3701

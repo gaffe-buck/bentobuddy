@@ -1,21 +1,4 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
-
 import os
 import bpy
 import sys
@@ -321,6 +304,12 @@ def retarget_snap(inRig):
     bpy.ops.object.mode_set(mode='OBJECT')
 
     
+    
+    
+    for boneObj in proxyRig.data.bones:
+        boneObj.use_deform = True
+
+    
     outRig.location = proxyRig.location
     offset = proxyRig.location.y + bb_snap_rig.snap_distance
     outRig.location.y = offset
@@ -369,6 +358,10 @@ def retarget_snap(inRig):
         boneObj.roll = joint_data[sbone]['roll']
 
     bpy.ops.object.mode_set(mode='OBJECT')
+
+    
+    for boneObj in outRig.data.bones:
+        boneObj.hide = False
 
     outRig.select_set(False)
 
@@ -460,6 +453,13 @@ def retarget_hard(inRig):
         joint_data[bone]['tail'] = boneObj.tail.copy()
         joint_data[bone]['roll'] = boneObj.roll
     bpy.ops.object.mode_set(mode='OBJECT')
+
+    
+    
+    
+    for boneObj in proxyRig.data.bones:
+        boneObj.use_deform = True
+
 
     
     outRig.location = proxyRig.location
@@ -662,6 +662,12 @@ def retarget_soft(inRig, report=False):
 
             if debug == False:
                 boneObj.hide = True
+
+    
+    
+    
+    for boneObj in proxyRig.data.bones:
+        boneObj.use_deform = True
 
     
     

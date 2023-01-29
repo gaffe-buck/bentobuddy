@@ -35,6 +35,15 @@ if True:
 
 
 
+    BASE_PRIORITY_MAX = 6
+    BASE_PRIORITY_MIN = -1
+    BASE_PRIORITY_DEFAULT = 2
+    JOINT_PRIORITY_MAX = 6
+    JOINT_PRIORITY_MIN = -1
+    JOINT_PRIORITY_DEFAULT = 2
+
+
+
 
 
 
@@ -73,6 +82,16 @@ if True:
         "mTorso" : "mSpine1",
         "mChest" : "mSpine3",
         }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    bone_exceptions = {'Spine', 'Chest', 'Skull'}
 
 
 
@@ -162,6 +181,19 @@ if True:
     bb_alib['count'] = 0
 
 
+
+
+end_bones = {
+    'mbones': {
+        'mFaceJawShaper', 'mFaceLipUpperLeft', 'mFaceLipUpperRight', 'mHandPinky3Left', 'mFaceChin', 'mFaceEyeLidUpperRight', 'mFaceEyebrowCenterRight', 'mHandRing3Left', 'mHandMiddle3Right', 'mFaceLipCornerRight', 'mWing4FanLeft', 'mHandRing3Right', 'mHandIndex3Right', 'mFaceEyebrowCenterLeft', 'mHandMiddle3Left', 'mFaceLipUpperCenter', 'mFaceCheekLowerRight', 'mFaceLipCornerLeft', 'mFaceForeheadRight', 'mFaceEyeLidUpperLeft', 'mFaceEyecornerInnerLeft', 'mFaceEyebrowOuterRight', 'mFaceNoseBridge', 'mToeLeft', 'mFaceEar2Left', 'mFaceEyeLidLowerRight', 'mFaceNoseRight', 'mFaceForeheadLeft', 'mFaceForeheadCenter', 'mWing4FanRight', 'mFaceEyebrowOuterLeft', 'mHandPinky3Right', 'mFaceEyecornerInnerRight', 'mFaceCheekUpperLeft', 'mFaceEyebrowInnerLeft', 'mFaceLipLowerRight', 'mFaceEyebrowInnerRight', 'mToeRight', 'mFaceLipLowerLeft', 'mHandIndex3Left', 'mFaceLipLowerCenter', 'mFaceNoseLeft', 'mFaceCheekLowerLeft', 'mFaceCheekUpperRight', 'mFaceNoseCenter', 'mFaceEyeLidLowerLeft', 'mFaceNoseBase', 'mHandThumb3Right', 'mFaceEar2Right', 'mHandThumb3Left', 'mSkull',
+        },
+    'attach': {
+        'Left Shoulder', 'R Lower Leg', 'Right Pec', 'Neck', 'Left Pec', 'Chest', 'Pelvis', 'L Forearm', 'Stomach', 'Alt Left Eye', 'Left Eyeball', 'Mouth', 'Jaw', 'Left Ring Finger', 'Right Foot', 'Left Ear', 'Alt Left Ear', 'Spine', 'Left Hip', 'Avatar Center', 'Right Shoulder', 'Right Hand', 'Left Wing', 'Right Hind Foot', 'Alt Right Ear', 'Right Ring Finger', 'Right Wing', 'R Upper Leg', 'L Lower Leg', 'L Upper Arm', 'R Upper Arm', 'Skull', 'Left Hind Foot', 'L Upper Leg', 'Right Ear', 'Right Hip', 'Alt Right Eye', 'Chin', 'Nose', 'Left Hand', 'Right Eyeball', 'Left Foot', 'Tail Tip', 'Tail Base', 'Groin', 'R Forearm', 'Tongue',
+        },
+    'volume': {
+        'BUTT', 'UPPER_BACK', 'L_CLAVICLE', 'R_HAND', 'HEAD', 'LOWER_BACK', 'LEFT_PEC', 'R_UPPER_ARM', 'PELVIS', 'RIGHT_HANDLE', 'R_LOWER_LEG', 'L_LOWER_LEG', 'L_FOOT','R_UPPER_LEG', 'L_LOWER_ARM', 'R_CLAVICLE', 'L_UPPER_LEG', 'LEFT_HANDLE', 'NECK', 'RIGHT_PEC', 'R_LOWER_ARM', 'CHEST', 'BELLY', 'L_HAND', 'R_FOOT', 'L_UPPER_ARM',
+        },
+    }
 
 
 

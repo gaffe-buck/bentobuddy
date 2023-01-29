@@ -1,21 +1,4 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
-
 
 import os
 import bpy
@@ -38,6 +21,7 @@ from .presets import avastar_normalized
 path_bones = []
 
 U16MAX = 65535
+
 LL_MAX_PELVIS_OFFSET = 5.0
 
 
@@ -144,6 +128,7 @@ def export_sl_anim(armature=None, path=None):
     anim_fps = bb.animation_fps
     disable_location_offsets = bba.disable_location_offsets
     export_volume_motion = bb.export_volume_motion
+    export_attachment_motion = bb.export_attachment_motion
     mark_tol = anim.mark_tol
     mark_tol_rot = anim.mark_tol_rot
     mark_tol_loc = anim.mark_tol_loc
@@ -236,6 +221,7 @@ def export_sl_anim(armature=None, path=None):
         print("ease_out:", ease_out)
         print("disable_location_offsets:", disable_location_offsets)
         print("export_volume_motion:", export_volume_motion)
+        print("export_attachment_motion:", export_attachment_motion)
         print("mark_tol:", mark_tol)
         print("mark_tol_rot:", mark_tol_rot)
         print("mark_tol_loc:", mark_tol_loc)
@@ -337,6 +323,17 @@ def export_sl_anim(armature=None, path=None):
     loop_in_point = time_calc['loop_in_point']
     loop_out_point = time_calc['loop_out_point']
     time_per_frame = time_calc['time_per_frame']
+
+    if 1 == 0:
+        print()
+        print("---------------------------------------------------")
+        print("total_time:", str(total_time) )
+        print("loop_in_point:", str(loop_in_point) )
+        print("loop_out_point: ", str(loop_out_point) )
+        print("time_per_frame: ", str(time_per_frame) )
+        print("---------------------------------------------------")
+        print()
+
 
     
     
@@ -769,14 +766,6 @@ def export_sl_anim(armature=None, path=None):
                     last_frame = lerp_data[bone]['rots'][-1]
                     lerp_data[bone]['locs'] = [first_frame, last_frame]
 
-        if 1 == 1:
-            print("")
-            print("=====================================================")
-            print("if has_keys == False:")
-            print("lerp_data:")
-            print(lerp_data)
-            print("=====================================================")
-            print("")
 
         
 
@@ -1258,9 +1247,16 @@ def export_sl_anim(armature=None, path=None):
 
     
     if len(bone_data) == 0:
-        print("There was no bone data to write, bone_data is empty.  Turn on (Use Source Keys and/or Use Target Keys)")
-        print("This can happen if you have an animation associated with your rig but none of the bones qualify for animation")
-        popup("Empty bone data, turn on (use keys), see System Console for details", "Empty Bone Data", "ERROR")
+        txt =  "There's no bone data to write, bone_data is empty.\n"
+        txt += "You may need to turn on (Use Source Keys and/or (Use Target Keys)\n"
+        txt += "Are you exporting Volume and/or Attachment motion and forget to enable those?\n"
+        print(txt)
+        utils.popup(txt, "Empty Bone List", "ERROR")
+
+        
+        
+        
+
         anim.export_sl_anim_label_short = anim.export_sl_anim_label
         anim.export_sl_anim_alert = False
         return False
@@ -1289,6 +1285,15 @@ def export_sl_anim(armature=None, path=None):
         print("Total bones with location data:", len(locs))
         print("rots:", rots)
         print("locs:", locs)
+
+    if 1 == 0:
+        print()
+        print("------------------------------------")
+        print("bone_data:")
+        print("----------")
+        print(bone_data)
+        print("------------------------------------")
+        print()
 
 
     result = write_animation(
@@ -1367,13 +1372,19 @@ def write_animation(
     file_content['header']['sub_version'] = (0).to_bytes(2, byteorder='little')
 
     
+    if 1 == 0:
+        
+        
+        
+        if anim.anim_base_priority == -1:
+            neg_1 = "FFFFFFFF"
+            file_content['header']['base_priority'] = bytes.fromhex(neg_1)
+        else:
+            file_content['header']['base_priority'] = (anim.anim_base_priority).to_bytes(4, byteorder='little')
     
-    
-    if anim.anim_base_priority == -1:
-        neg_1 = "FFFFFFFF"
-        file_content['header']['base_priority'] = bytes.fromhex(neg_1)
     else:
-        file_content['header']['base_priority'] = (anim.anim_base_priority).to_bytes(4, byteorder='little')
+        file_content['header']['base_priority'] = (anim.anim_base_priority).to_bytes(4, byteorder='little', signed=True)
+
 
 
     file_content['header']['anim_length'] = struct.pack('f', total_time)
@@ -2058,6 +2069,9 @@ def get_baked_animation(
                     stage_one[bone]['locs'].append(frame)
 
     
+    
+    
+    
     if bb.export_volume_motion == False:
         bones_del = []
         for bone in stage_one:
@@ -2067,6 +2081,21 @@ def get_baked_animation(
             stage_one.pop(bone, "")
         print("Removed the following volume bones from animation:")
         print(bones_del)
+
+    
+    if bb.export_attachment_motion == False:
+        bones_del = []
+        for bone in stage_one:
+            if bone in skel.avatar_skeleton:
+                if skel.avatar_skeleton[bone]['type'] == 'attachment':
+                    bones_del.append(bone)
+        for bone in bones_del:
+            stage_one.pop(bone, "")
+        print("Removed the following attachment bones from animation:")
+        print(bones_del)
+    
+    
+    
 
     
     pelvis_bones = {'mpelvis', 'hip', 'hips'}
@@ -2200,6 +2229,8 @@ def get_animated_frames(
     bb_anim = bpy.context.scene.bb_anim
 
     export_volume_motion - bb.export_volume_motion
+    export_attachment_motion - bb.export_attachment_motion
+
 
     obj = bpy.data.objects
     armObj = obj[armature]
@@ -2231,7 +2262,12 @@ def get_animated_frames(
             if bb.export_volume_motion == False:
                 if bone in volumes.vol_joints:
                     continue
-
+            
+            
+            if bb.export_attachment_motion == False:
+                if bone in skel.avatar_skeleton:
+                    if skel.avatar_skeleton[bone]['type'] == 'attachment':
+                        continue
             frame_data[bone] = {}
             frame_data[bone]['rot'] = {}
             frame_data[bone]['rot']['frames'] = rot_frames
@@ -2419,6 +2455,13 @@ def get_animated_keys(
         if bb.export_volume_motion == False:
             if real_bone in volumes.vol_joints:
                 continue
+
+        
+        
+        if bb.export_attachment_motion == False:
+            if bone in skel.avatar_skeleton:
+                if skel.avatar_skeleton[bone]['type'] == 'attachment':
+                    continue
 
         
         rot_mode = armObj.pose.bones[real_bone].rotation_mode
@@ -2624,6 +2667,13 @@ def get_source_keys(
 
         
         
+        if bb.export_attachment_motion == False:
+            if bone in skel.avatar_skeleton:
+                if skel.avatar_skeleton[bone]['type'] == 'attachment':
+                    continue
+
+        
+        
         loc_rot = ''
 
         if transform_type == 'rotation_quaternion' or transform_type == 'rotation_euler':
@@ -2788,6 +2838,13 @@ def get_target_keys(
                 if bb.export_volume_motion == False:
                     if sbone in volumes.vol_joints:
                         continue
+
+                
+                
+                if bb.export_attachment_motion == False:
+                    if bone in skel.avatar_skeleton:
+                        if skel.avatar_skeleton[bone]['type'] == 'attachment':
+                            continue
 
                 
                 
@@ -3712,23 +3769,34 @@ def calculate_time(
     
 
 
-    total_frames = abs(anim_start_frame - anim_end_frame - 1)
-
-    print("total_frames:", total_frames)
-
+    
+    total_frames = abs(anim_start_frame - anim_end_frame - 1) 
+    
 
     total_steps = abs(anim_start_frame - anim_end_frame)
 
-    print("total_steps:", total_steps)
+    
+    
 
+    
+    
+    
+    
+    
+    
+    
 
-    total_time = round(total_steps / anim_fps, 6)
+    
+    
+    total_time = (total_steps / anim_fps)
+    time_per_frame = (total_time / total_steps)
+
 
     print("total_time:", total_time)
-
-    time_per_frame = round(total_time / total_steps, 6)
-
+    print("total_frames:", total_frames)
+    print("total_steps:", total_steps)
     print("time_per_frame:", time_per_frame)
+
 
 
     time_calc['total_frames'] = total_frames
@@ -3986,6 +4054,7 @@ def close_enough(a, b, tol=0.000001):
 def get_sl_rotation(bone=None, matrix=None):
 
     old = False
+    
 
     if old == True:
         deg = skel.avatar_skeleton[bone]['rot']
@@ -4005,14 +4074,61 @@ def get_sl_rotation(bone=None, matrix=None):
             bone = avastar_normalized.bone_map[bone]
             deg = skel.avatar_skeleton[bone]['rot']
 
+
+    
+    
+    
+    
+    
+    
+    
+    
+
+    d = deg
+    deg = [d[0], -d[1], -d[2]]
+
+    
+    
+    
+
+
     rad = [math.radians(a) for a in deg]
 
 
     
 
     
-    rot_offset = [-rad[1], -rad[0], -rad[2]]
-    euler = mathutils.Euler(rot_offset, 'ZXY')
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    if bone in skel.avatar_skeleton:
+        if skel.avatar_skeleton[bone]['type'] == 'attachment':
+            deg = skel.avatar_skeleton[bone]['rot']
+            rad = [math.radians(a) for a in deg]
+            
+            rot_offset = rad
+            euler = mathutils.Euler(rot_offset, 'ZXY')
+        else:
+            rot_offset = [-rad[1], -rad[0], -rad[2]]
+            euler = mathutils.Euler(rot_offset, 'ZXY')
+
+
+
+    
+    
+    
+    else:
+
+        rot_offset = [-rad[1], -rad[0], -rad[2]]
+        euler = mathutils.Euler(rot_offset, 'ZXY')
+
     mat3 = euler.to_matrix()
     ROTATION = mat3.to_4x4()
     quat = ( Z90I @ matrix @ ROTATION @ Z90 ).to_quaternion().normalized()
@@ -4053,18 +4169,39 @@ def get_sl_location(armature=None, bone=None, matrix=None):
     
     rot_offset = [rad[1], rad[0], rad[2]]
 
+
     
     
     
     
-    if bone in volumes.vol_joints:
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    vbs_x, vbs_y, vbs_z = mathutils.Vector((0,0,0))
+    if bone in skel.avatar_skeleton:
+        if skel.avatar_skeleton[bone]['type'] == 'collision':
             vbs_x, vbs_y, vbs_z = [
-            volumes.vol_joints[bone]['scale'][1],
-            volumes.vol_joints[bone]['scale'][0],
-            volumes.vol_joints[bone]['scale'][2]
-            ]
-    else:
-        vbs_x, vbs_y, vbs_z = mathutils.Vector((0,0,0))
+                skel.avatar_skeleton[bone]['scale'][1],
+                skel.avatar_skeleton[bone]['scale'][0],
+                skel.avatar_skeleton[bone]['scale'][2]
+                ]
+    
+    
+    
 
     bs_x, bs_y, bs_z = armObj.pose.bones[bone].scale
 
@@ -4076,7 +4213,7 @@ def get_sl_location(armature=None, bone=None, matrix=None):
     
     
     
-    if 1 == 1:
+    if 1 == 0:
     
         
         vbx_x, vbx_y, vbs_z = 0.0,0.0,0.0

@@ -1,21 +1,4 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
-
 
 import bpy
 import mathutils 
@@ -1276,7 +1259,62 @@ def restore_shape(mesh=None, shape=[]):
 
 
 
-def select_half(mesh):
+def select_half(mesh=None, distance=0.1):
+
+    import bpy
+    import bmesh
+    from mathutils.geometry import distance_point_to_plane
+    from mathutils import Vector
+
+    
+    utils.activate(mesh)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    for polygon in bpy.context.active_object.data.polygons:
+        polygon.select = False
+    for edge in bpy.context.active_object.data.edges:
+        edge.select = False
+    for vertex in bpy.context.active_object.data.vertices:
+        vertex.select = False
+    bpy.ops.object.mode_set(mode='EDIT')
+
+    context = bpy.context
+
+    def bbox(ob):
+        return (Vector(b) for b in ob.bound_box)
+
+    def bbox_center(ob):
+        return sum(bbox(ob), Vector()) / 8
+
+    def bbox_axes(ob):
+        bb = list(bbox(ob))
+        return tuple(bb[i] - bb[0] for i in (4, 3, 1))
+
+    ob = context.edit_object
+    o = bbox_center(ob)
+    x, y, z = bbox_axes(ob) 
+
+    print(o, x, y, z)
+    
+
+    me = ob.data
+    bm = bmesh.from_edit_mesh(me)
+    for v in bm.verts:
+        v.select = distance_point_to_plane(v.co, o, x) >= distance
+
+    bmesh.update_edit_mesh(me)
+    print("done")
+
+    return True
+
+
+
+
+
+
+
+
+
+def select_half_OLD(mesh):
     import bpy
     import bmesh
     from mathutils.geometry import distance_point_to_plane
@@ -2096,6 +2134,61 @@ def refresh_weights(meshObj):
 
     return True
 
+
+
+
+
+
+
+
+
+def add_armature_modifier(mesh=[], armature=None, show_viewport=True, show_render=True):
+
+    
+    
+    if isinstance(mesh, list) != True:
+        mesh = [mesh]
+    if len(mesh) == 0:
+        print("meshutils::add_armature_modifier - No mesh to process")
+        return False
+    if armature == None:
+        print("meshutils::add_armature_modifier - No armature to process")
+        return False
+    armObj = armature
+    if isinstance(armature, str):
+        armObj = bpy.data.objects[armature]
+
+    
+    qualified_mesh = []
+    for meshObj in mesh:
+        if isinstance(meshObj, str):
+            meshObj = bpy.data.objects[meshObj]
+        for m in meshObj.modifiers:
+            if m.type == 'ARMATURE':
+                print("Mesh", meshObj.name, "already has an armature modifier", m.name)
+                continue
+        qualified_mesh.append(meshObj)
+
+    if len(qualified_mesh) == 0:
+        print("meshutils::add_armature_modifer - None of the offered mesh qualidifed, probably because they all have armature modidifiers already")
+        return False
+
+    processed = []
+    for meshObj in qualified_mesh:
+        if meshObj.type != 'MESH':
+            print("Skipping non mesh item", meshObj.name)
+            continue
+        m =meshObj.modifiers.new(name='Armature', type='ARMATURE')
+        m.object = armObj
+        m.use_vertex_groups = True
+        m.show_viewport = show_viewport
+        m.show_render = show_render
+        meshObj['bb_armature_modifier'] = m.name
+        processed.append(meshObj.name)
+
+    print("Mesh processed:", processed)
+
+    return True
 
 
 

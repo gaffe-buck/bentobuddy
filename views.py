@@ -1,20 +1,3 @@
-
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
 import bpy
 import math
 import mathutils
@@ -107,12 +90,28 @@ def viewable_layers(context):
 
 
     bb_view = bpy.context.window_manager.bb_view
-    so = len(bpy.context.selected_objects)
+
+    
+    try:
+        so = len(bpy.context.selected_objects)
+    except:
+        so = 0
+        selected = []
+        for o in bpy.context.scene.objects:
+            if o.select_get() == True:
+                so += 1
+                selected.append(o)
     if so != 1:
         bb_view.rig_author_name = "Unknown"
         bb_view.rig_author_property = ""
         return
-    o = bpy.context.selected_objects[0]
+
+    
+    try:
+        o = bpy.context.selected_objects[0]
+    except:
+        o = selected[0]
+
     if o.type != 'ARMATURE':
         bb_view.rig_author_name = "Unknown"
         bb_view.rig_author_property = ""

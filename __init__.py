@@ -1,20 +1,11 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
+
+
+
+
+
+
+
 
 
 
@@ -37,7 +28,7 @@
 bl_info = {
        "name": "Bento Buddy",
        "author": "BinBash Resident (Second Life)",
-       "version": (3, 0, 8, 4),
+       "version": (3, 0, 10, 2),
        "blender": (2, 80, 0),
        "description": "Quick Bento / Animesh prototype tool, includes an advanced Character Converter and animation system",
        "warning": "",
@@ -49,17 +40,17 @@ bl_info = {
 
 
 
-print("NOTES:")
-print("-----")
-print(" * BentoBuddyCreateAnimationRig disabled until complete")
-print(" * snap_symmetry_enabled : False")
-print(" * BentoBuddyMotionHipCorrectionStart : Disabled")
-print(" * BentoBuddyMotionHipCorrectionEnd : Disabled")
-print(" * BentoBuddyMotionHipCorrectionReset : Disabled")
-print(" * BentoBuddyOnemapReverse : Not used yet, see BentoBuddyInheritReverseMap")
-print(" * Shape importer disabled, serves no user purpose, see (Body Shop)")
-print(" * This old class has been disabled, watch for bugs: CharacterConverterExpandMapper")
-print(" * Bulk animation exporter: export_mapped_animation needs work, see (export_retargeted_animation) instead")
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -185,7 +176,7 @@ from . import ragdoll
 from . import shape
 from . import visible
 from . import sliders
-
+from . import longshot
 
 
 
@@ -1577,7 +1568,17 @@ class BentoBuddySlidersProperties(bpy.types.PropertyGroup):
             sliders.restore_rig()
     sliders_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "NOTE: For efficiency sake, disable this menu item when not in use!"            "\n\n"            "WARNING: Only use this with rigs and associated content that has not been scaled, i.e. your own custom content only. "            "There is no other reason to use this tool except for your content that is not transformed.  If you do not honor this "            "warning you may very well damage your product."            "\n\n"            "This is a slider system for use with correcting weight problems but you can also use it as a character "            "shaper if you're careful.  If you're freezing the mesh your bone properties will be returned to their "            "natural state, the sliders neutralized, and you can start a new round of shaping.  Note that it's always "            "best to do your major work on the mesh itself and only use this for tweaking and/or deformation testing",
+        description = ""
+            "NOTE: For efficiency sake, disable this menu item when not in use!"
+            "\n\n"
+            "WARNING: Only use this with rigs and associated content that has not been scaled, i.e. your own custom content only. "
+            "There is no other reason to use this tool except for your content that is not transformed.  If you do not honor this "
+            "warning you may very well damage your product."
+            "\n\n"
+            "This is a slider system for use with correcting weight problems but you can also use it as a character "
+            "shaper if you're careful.  If you're freezing the mesh your bone properties will be returned to their "
+            "natural state, the sliders neutralized, and you can start a new round of shaping.  Note that it's always "
+            "best to do your major work on the mesh itself and only use this for tweaking and/or deformation testing",
         default = False,
         update=sliders_menu_enabled
         )
@@ -1590,19 +1591,22 @@ class BentoBuddySlidersProperties(bpy.types.PropertyGroup):
            self["sliders_scale"] = False
     sliders_location : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable the position sliders for view and manipulation",
+        description = ""
+            "Enable the position sliders for view and manipulation",
         default = False,
         update=update_location
         )
     sliders_scale : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable the sizing sliders for view and manipulation",
+        description = ""
+            "Enable the sizing sliders for view and manipulation",
         default = True,
         update=update_scale
         )
     sliders_show_all : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable the view of all bones in the selected rig.  This can be a lot of clutter.  The default is to show only selected pose bones",
+        description = ""
+            "Enable the view of all bones in the selected rig.  This can be a lot of clutter.  The default is to show only selected pose bones",
         default = False,
         )
     
@@ -1624,7 +1628,8 @@ class BentoBuddySlidersProperties(bpy.types.PropertyGroup):
         return 1
     sliders_set_rig : bpy.props.IntProperty(
         name = "",
-        description =            "- internal setter for sliders.set_rig()",
+        description = ""
+            "- internal setter for sliders.set_rig()",
         default = 0,
         get=sliders_set_rig
         )
@@ -1633,7 +1638,8 @@ class BentoBuddySlidersProperties(bpy.types.PropertyGroup):
         return 1
     sliders_restore_rig : bpy.props.IntProperty(
         name = "",
-        description =            "- internal getter for sliders.restore_rig()",
+        description = ""
+            "- internal getter for sliders.restore_rig()",
         default = 0,
         get=sliders_restore_rig
         )
@@ -1652,7 +1658,8 @@ class BentoBuddySlidersProperties(bpy.types.PropertyGroup):
 
     sliders_rig_display_stick : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable the view of all bones in the selected rig.  This can be a lot of clutter.  The default is to show only selected pose bones",
+        description = ""
+            "Enable the view of all bones in the selected rig.  This can be a lot of clutter.  The default is to show only selected pose bones",
         default = False,
         update=sliders_rig_display_stick
         )
@@ -2240,39 +2247,62 @@ class BentoBuddyCharacterConverterProperties(bpy.types.PropertyGroup):
             self["import_pose"] =  True
     import_pose : bpy.props.BoolProperty(
         name = "",
-        description =            "A humanoid converted character should have a somewhat compatible pose that will work with some degree of success with in-world "            "animations.  For this to happen you must pose your character manually, or using the pose library, an animation or even one from "            "the map file.  This option, if enabled, will use the existing pose that was previously saved in the map file.",
+        description = ""
+            "A humanoid converted character should have a somewhat compatible pose that will work with some degree of success with in-world "
+            "animations.  For this to happen you must pose your character manually, or using the pose library, an animation or even one from "
+            "the map file.  This option, if enabled, will use the existing pose that was previously saved in the map file.",
         default = False,
         update = update_import_pose
         )
     keep_pose : bpy.props.BoolProperty(
         name = "",
-        description =            "A humanoid converted character should have a somewhat compatible pose that will work with some degree of success with in-world "            "animations.  For this to happen you must pose your character manually, or using the pose library, an animation or even one from "            "the map file.  This option, if enabled, will use the pose that your character is currently in.",
+        description = ""
+            "A humanoid converted character should have a somewhat compatible pose that will work with some degree of success with in-world "
+            "animations.  For this to happen you must pose your character manually, or using the pose library, an animation or even one from "
+            "the map file.  This option, if enabled, will use the pose that your character is currently in.",
         default = True,
         update = update_keep_pose
         )
     copy : bpy.props.BoolProperty(
         name = "",
-        description =            "You have the option to make a copy of the items that will be converted instead of working directly on your content.",
+        description = ""
+            "You have the option to make a copy of the items that will be converted instead of working directly on your content.",
         default = False,
         )
     anchor_unmapped : bpy.props.BoolProperty(
         name = "",
-        description =            "Reskin unmapped bones that lead to an anchor that you already have mapped.  An anchor is a bone that is mapped from one "            "rig to another.  A reskin bone is a bone that is mapped to an anchor on the same rig because it will not be used.  The "            "reskin bone has its vertex groups merged with the anchor.  If you have loose bones that have no map but the chain in the "            "hierarchy leads them to an anchor then enabling this is effectively saying to (reskin) those to that anchor.  If an anchor "            "is not found in that loose chain then you have a map error and need to correct it.",
+        description = ""
+            "Reskin unmapped bones that lead to an anchor that you already have mapped.  An anchor is a bone that is mapped from one "
+            "rig to another.  A reskin bone is a bone that is mapped to an anchor on the same rig because it will not be used.  The "
+            "reskin bone has its vertex groups merged with the anchor.  If you have loose bones that have no map but the chain in the "
+            "hierarchy leads them to an anchor then enabling this is effectively saying to (reskin) those to that anchor.  If an anchor "
+            "is not found in that loose chain then you have a map error and need to correct it.",
         default = True,
         )
     remove_unused : bpy.props.BoolProperty(
         name = "",
-        description =            "Remove unused and unmappable bones"            "\n\n"            "If there are bones left over, after conversion, this option is for you.  When enabled it will simply remove them and the "            "associated vertex groups.  This is probably never what you want but if you know that there are items on the mesh that don't "            "need these joints then it shouldn't cause a problem.",
+        description = ""
+            "Remove unused and unmappable bones"
+            "\n\n"
+            "If there are bones left over, after conversion, this option is for you.  When enabled it will simply remove them and the "
+            "associated vertex groups.  This is probably never what you want but if you know that there are items on the mesh that don't "
+            "need these joints then it shouldn't cause a problem.",
         default = True
         )
     remove_unknown : bpy.props.BoolProperty(
         name = "",
-        description =            "Remove unknown vertex groups"            "\n\n"            "If there are unknown vertex groups left over after conversion they will be removed.  This could be the cause of a more serious "            "problem so keep an eye on the errors if you are using this.",
+        description = ""
+            "Remove unknown vertex groups"
+            "\n\n"
+            "If there are unknown vertex groups left over after conversion they will be removed.  This could be the cause of a more serious "
+            "problem so keep an eye on the errors if you are using this.",
         default = True
         )
     apply_transforms : bpy.props.BoolProperty(
         name = "",
-        description =            "This applies all transforms to the objects associated with the conversion before the conversion takes place.  This is "            "usually a good thing to do but I worry that it will break some content so it's here as an option.",
+        description = ""
+            "This applies all transforms to the objects associated with the conversion before the conversion takes place.  This is "
+            "usually a good thing to do but I worry that it will break some content so it's here as an option.",
         default = True,
         )
 
@@ -2479,10 +2509,14 @@ can use that instead, just don't load one"""
             mat = boneObj.matrix.copy()
             matb = animutils.get_matrix_basis(armature=armObj, bone=boneObj)
             matrix_basis[boneObj.name] = matb
+
         
-        for boneObj in armObj.pose.bones:
-            for C in boneObj.constraints:
-                boneObj.constraints.remove(C)
+        
+        
+
+        
+        
+        
         
         utils.update()
         for bone in matrix_basis:
@@ -2576,6 +2610,13 @@ can use that instead, just don't load one"""
             mesh_objects = mesh
             
             location_offset = 0.0
+
+
+        
+        
+        for boneObj in armObj.pose.bones:
+            for C in boneObj.constraints:
+                boneObj.constraints.remove(C)
 
         
 
@@ -3248,6 +3289,346 @@ class BentoBuddyCharacterConverterPanel(bpy.types.Panel):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class BentoBuddyLongshotProperties(bpy.types.PropertyGroup):
+
+    def update_longshot_blank(self, context):
+        self["longshot_blank"] = False
+    longshot_blank : bpy.props.BoolProperty(
+        default=False,
+        update = update_longshot_blank
+        )
+
+    def update_longshot_info(self, context):
+        self["longshot_info"] = False
+    longshot_info : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "- Long Shot -"
+            "\n\n"
+            "Long Shot will allow you to effectively break the Second Life(R) limits on animation distance."
+            "\n\n"
+            "Animated bones are allowed to be moved away from the avatar center only a distance of +/- 5 meters.  "
+            "\n\n"
+            "Long Shot allows you to chain multiple strings of bones together to get the longest "
+            "distance possible."
+            "\n\n"
+            "What is the limit when using Long Shot?  For a single rig, Animesh or avatar, the effective "
+            "end to end motion distance is 128 meters.  Keep in mind that a single axis dimension of an object "
+            "still limited to 64 meters."
+            "\n\n"
+            "What can you use it for?"
+            "\n"
+            " - smoothly deformed, and animated, longer than life tails."
+            "\n"
+            " - sim wide transit systems where your Animesh cars can move up to 128 meters from the anchor"
+            "\n"
+            " - simulated falling, bending, wobbling, flexing objects",
+        default=False,
+        update = update_longshot_info
+        )
+
+    longshot_inspector : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "Inspect bone chains for use with Long Shot",
+        default=False,
+        )
+
+    longshot_username : bpy.props.StringProperty(
+        name = "",
+        description = ""
+            "Username",
+        default=""
+        )
+    longshot_password : bpy.props.StringProperty(
+        name = "",
+        description = ""
+            "Password",
+        default=""
+        )
+
+    
+    def update_longshot_method(self, context):
+        method = self.longshot_method
+    longshot_method : bpy.props.StringProperty(
+        name = "",
+            description = ""
+                "method - internal",
+        default = "",
+        update = update_longshot_method
+        )
+
+    
+    longshot_chain_hand_left : bpy.props.BoolProperty(
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+
+        name = "",
+        description = ""
+            "- Left Hand Chain -"
+            "\n\n"
+            "Chain Length: 13\n"
+            "Usable in a set: 5 to 7\n"
+            "Bones used:\n"
+            "mHandMiddle2Left, mHandMiddle1Left, mWristLeft, mElbowLeft, mShoulderLeft, mCollarLeft, "
+            "mChest, mSpine4, mSpine3, mTorso, mSpine2, mSpine1, mPelvis\n"
+            "\n"
+            "",
+        default=False,
+        )
+
+
+    longshot_chain_hand_right : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "- Right Hand Chain -"
+            "\n\n"
+            "Chain Length: 13\n"
+            "Usable in a set: 5 to 7\n"
+            "Bones used:\n"
+            "mHandMiddle2Right, mHandMiddle1Right, mWristRight, mElbowRight, mShoulderRight, mCollarRight, "
+            "mChest, mSpine4, mSpine3, mTorso, mSpine2, mSpine1, mPelvis\n"
+            "\n"
+            "",
+        default=False,
+        )
+
+
+
+
+
+
+
+
+
+
+class BentoBuddyLongshotGetChainsOperator(bpy.types.Operator):
+    """This is an inspection tool to help find the best bone chains for your items.
+Select a bone, or multiple bones, to get the chain to its first root or
+deselect all bones to get all end bone chains to root"""
+
+    bl_idname = "bentobuddy.longshot_get_chains"
+    bl_label = "Get Chains"
+
+    
+    action : bpy.props.StringProperty(default = "");
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) > 1:
+            return False
+        if len(bpy.context.selected_objects) == 0:
+            return False
+        o = bpy.context.selected_objects[0]
+        if o.type != 'ARMATURE':
+            return False
+        if bpy.context.mode != 'POSE':
+            return False
+        return True
+
+    def execute(self, context):
+        bb_longshot = bpy.context.window_manager.bb_longshot
+        action = self.action
+
+        
+        armObj = bpy.context.selected_objects[0]
+
+        print("Longshot runs [", action, "]", sep="")
+
+
+        if action == "get_selected":
+            result = longshot.get_bone_chains(armature=armObj)
+            if result == False:
+                utils.popup("Something bad happened", "Error", "ERROR")
+                return {'FINISHED'}
+            print("Ran (chain)")
+
+            end_bones = result
+
+            
+
+            
+            
+            if len(bpy.context.selected_pose_bones) == 0:
+                for bone in end_bones:
+                    total = end_bones[bone]['total']
+                    print(bone, " : ", total, sep="")
+                    for c in end_bones[bone]['chain']:
+                        count = end_bones[bone]['chain'][c]['count']
+                        print("[", count, "] -> ", c, sep="")
+            else:
+                qualified_bones = [b.name for b in bpy.context.selected_pose_bones]
+
+                print("qualified_bones:", qualified_bones)
+
+                for bone in end_bones:
+                    if bone not in qualified_bones:
+                        continue
+                    total = end_bones[bone]['total']
+                    print(bone, " : ", total, sep="")
+                    for c in end_bones[bone]['chain']:
+                        count = end_bones[bone]['chain'][c]['count']
+                        print("[", count, "] -> ", c, sep="")
+        else:
+            print("Programmers dum: No known action provided!")
+
+        return {'FINISHED'}
+
+
+
+
+class BentoBuddyLongshotSetChainsOperator(bpy.types.Operator):
+    """Break the Second Life(R) limits"""
+
+    bl_idname = "bentobuddy.longshot_set_chains"
+    bl_label = "Set Chains"
+
+    action : bpy.props.StringProperty(default = "");
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) > 1:
+            return False
+        if len(bpy.context.selected_objects) == 0:
+            return False
+        o = bpy.context.selected_objects[0]
+        if o.type != 'ARMATURE':
+            return False
+        if bpy.context.mode != 'POSE':
+            return False
+        return True
+
+    def execute(self, context):
+        bb_longshot = bpy.context.window_manager.bb_longshot
+        action = self.action
+
+        
+        armObj = bpy.context.selected_objects[0]
+
+        print("Longshot set runs [", action, "]", sep="")
+
+        if action == "GOOFY":
+            print("would have run (GOOFY)")
+
+        elif action == "MOOFY":
+            print("would have run (MOOFY)")
+
+        return {'FINISHED'}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class BentoBuddyRigsMatchEditToView(bpy.types.Operator):
     """Match the edit bone view to the pose/data bone view.  To show or hide edit
 bones you need to toggle one of the switches above and then hit this button"""
@@ -3328,13 +3709,15 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
     
     onemap_message : bpy.props.StringProperty(
         name = "",
-        description =            "--internal",
+        description = ""
+            "--internal",
         default = "Choose rig to map and click Start",
         )
     
     onemap_template_name : bpy.props.StringProperty(
         name = "",
-        description =            "--internal",
+        description = ""
+            "--internal",
         default = "",
         )
 
@@ -3354,13 +3737,19 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
 
     onemap_platform_opensim : bpy.props.BoolProperty(
         name = "",
-        description =            "For Second Life and Opensim"            "\n\n"            "This is just a quick button.  When SL / OS is enabled a rig for that platform will be generated.",
+        description = ""
+            "For Second Life and Opensim"
+            "\n\n"
+            "This is just a quick button.  When SL / OS is enabled a rig for that platform will be generated.",
         default=True,
         update = update_onemap_platform_opensim
         )
     onemap_platform_other : bpy.props.BoolProperty(
         name = "",
-        description =            "For another platform"            "\n\n"            "When this is enabled then you'll have to provide an output/target rig for your mapping.",
+        description = ""
+            "For another platform"
+            "\n\n"
+            "When this is enabled then you'll have to provide an output/target rig for your mapping.",
         default=False,
         update = update_onemap_platform_other
         )
@@ -3369,14 +3758,23 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
         print("reskin triggered to off")
     onemap_edit : bpy.props.BoolProperty(
         name = "",
-        description =            "Edit Mode"            "\n\n"            "When a bone is maded it becomes frozen so that you can't mess up your work.  Enabling this mode allows you to select "            "mapped bones and unmap them or add reskin bones to them.",
+        description = ""
+            "Edit Mode"
+            "\n\n"
+            "When a bone is maded it becomes frozen so that you can't mess up your work.  Enabling this mode allows you to select "
+            "mapped bones and unmap them or add reskin bones to them.",
         default=False,
         update = update_onemap_edit
         )
 
     onemap_offset : bpy.props.FloatProperty(
         name = "",
-        description =            "Output rig offset from input rig"            "\n\n"            "This is a distance offset from the input rig in order to get a better visual between the two rigs, so that they "            "don't occupy the same space.  You can alway suspend the process while mapping and move the rigs yourself.  Note "            "that this is only useful when the mapper generates the rig for you.",
+        description = ""
+            "Output rig offset from input rig"
+            "\n\n"
+            "This is a distance offset from the input rig in order to get a better visual between the two rigs, so that they "
+            "don't occupy the same space.  You can alway suspend the process while mapping and move the rigs yourself.  Note "
+            "that this is only useful when the mapper generates the rig for you.",
         default = 0.6
          )
 
@@ -3397,30 +3795,49 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
     
     onemap_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the character mapper"            "\n\n"            "This is a generic character mapper that allows for any target and source platforms.  There is a reskin feature here "            "as well, much like the auto-weight mapper, but much easier to use.  The reskin idea may be a bit difficult to understand "            "but it's actually quite simple... if you think one or more bones are not compatible with the target platform you can "            "have the mesh weights attach to its parent bone, or some other anchor up the chain, and then this bone will be marked for "            "removal but the mesh will still move with the anchor bone you chose.",
+        description = ""
+            "Expand the character mapper"
+            "\n\n"
+            "This is a generic character mapper that allows for any target and source platforms.  There is a reskin feature here "
+            "as well, much like the auto-weight mapper, but much easier to use.  The reskin idea may be a bit difficult to understand "
+            "but it's actually quite simple... if you think one or more bones are not compatible with the target platform you can "
+            "have the mesh weights attach to its parent bone, or some other anchor up the chain, and then this bone will be marked for "
+            "removal but the mesh will still move with the anchor bone you chose.",
         default = False
         )
 
     onemap_load_pose : bpy.props.BoolProperty(
         name = "",
-        description =            "Load the pose that's stored in the map and apply it, if it exists.  This pose can then be saved with the map for "            "later use.  If you want to save this pose back to the file, make sure to enable the (Save Pose) option to store "            "your existing pose back to the file.",
+        description = ""
+            "Load the pose that's stored in the map and apply it, if it exists.  This pose can then be saved with the map for "
+            "later use.  If you want to save this pose back to the file, make sure to enable the (Save Pose) option to store "
+            "your existing pose back to the file.",
         default = True
         )
     onemap_save_pose : bpy.props.BoolProperty(
         name = "",
-        description =            "Save the current pose with your map"            "\n\n"            "If you want a usable pose for conversion you have to make one.  A good way to store poses is using the Bento Buddy "            "pose library features that can be found in two different places in the (Animation) section under (Pose Library) and "            "(Motion Processing).",
+        description = ""
+            "Save the current pose with your map"
+            "\n\n"
+            "If you want a usable pose for conversion you have to make one.  A good way to store poses is using the Bento Buddy "
+            "pose library features that can be found in two different places in the (Animation) section under (Pose Library) and "
+            "(Motion Processing).",
         default = True
         )
     
     onemap_apply_pose : bpy.props.BoolProperty(
         name = "",
-        description =            "Apply the stored pose to your rig.  Sometimes when mapping a rig you may want to move and rotate bones around to get "            "a better view and this change will travel with your file, if you switch on (Save Pose).  This button will restore "            "the pose to the one that was loaded, if it exists.",
+        description = ""
+            "Apply the stored pose to your rig.  Sometimes when mapping a rig you may want to move and rotate bones around to get "
+            "a better view and this change will travel with your file, if you switch on (Save Pose).  This button will restore "
+            "the pose to the one that was loaded, if it exists.",
         default = False
         )
 
     onemap_view_map : bpy.props.BoolProperty(
         name = "",
-        description =            "View the bone map",
+        description = ""
+            "View the bone map",
         default = False
         )
     
@@ -3434,7 +3851,8 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
 
     onemap_view_reskin : bpy.props.BoolProperty(
         name = "",
-        description =            "View reskin bones for this anchor",
+        description = ""
+            "View reskin bones for this anchor",
         default = False,
         update = update_onemap_view_reskin
         )
@@ -3501,13 +3919,28 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
 
     onemap_reskin : bpy.props.BoolProperty(
         name = "",
-        description =            "Reskin Mode"            "\n\n"            "If you enable this it will lock the bone and enable reskin mode.  After enabling it choose 1 or more bones for reskinning "            "and then disable the button.  Those bones will be anchored to the one you see and removed during the conversion process.",
+        description = ""
+            "Reskin Mode"
+            "\n\n"
+            "If you enable this it will lock the bone and enable reskin mode.  After enabling it choose 1 or more bones for reskinning "
+            "and then disable the button.  Those bones will be anchored to the one you see and removed during the conversion process.",
         default=False,
         update = update_onemap_reskin
         )
     onemap_move : bpy.props.BoolProperty(
         name = "",
-        description =            "Move Mode"            "\n\n"            "Instructions:"            "\n\n"            " * Choose an anchor bone then enable this."            "\n"            " * Choose another anchor bone then disable this, the reskin branch will move and/or merge."            "\n\n"            "This allows you to move a reskin branch so that you don't have to rebuild it in case you anchored them to the "            "wrong bone.  This will merge reskin bones branches if you choose an anchor that has reskin bones.  This only works "            "with anchors, if you need it to work on a bone that's not mapped you map the bone first then transfer.",
+        description = ""
+            "Move Mode"
+            "\n\n"
+            "Instructions:"
+            "\n\n"
+            " * Choose an anchor bone then enable this."
+            "\n"
+            " * Choose another anchor bone then disable this, the reskin branch will move and/or merge."
+            "\n\n"
+            "This allows you to move a reskin branch so that you don't have to rebuild it in case you anchored them to the "
+            "wrong bone.  This will merge reskin bones branches if you choose an anchor that has reskin bones.  This only works "
+            "with anchors, if you need it to work on a bone that's not mapped you map the bone first then transfer.",
         default=False,
         update = update_onemap_move
         )
@@ -3646,19 +4079,22 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
 
     onemap_hide_rename_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Click to restore the view of anchor bones.",
+        description = ""
+            "Click to restore the view of anchor bones.",
         default=False,
         update = update_onemap_hide_rename_bones
         )
     onemap_hide_reskin_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Click to restore the view of reskin bones.",
+        description = ""
+            "Click to restore the view of reskin bones.",
         default=False,
         update = update_onemap_hide_reskin_bones
         )
     onemap_hide_output_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Click to restore the view of output bones.",
+        description = ""
+            "Click to restore the view of output bones.",
         default=False,
         update = update_onemap_hide_output_bones
         )
@@ -3678,7 +4114,9 @@ class BentoBuddyOnemapProperties(bpy.types.PropertyGroup):
 
     onemap_follow : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable this to make the Actor bones follow the Director, which should allow for easier mapping of some items when "            "you're able to see what's in motion.  After using this rotate a bone on the Actor or setup a test animation beforehand.",
+        description = ""
+            "Enable this to make the Actor bones follow the Director, which should allow for easier mapping of some items when "
+            "you're able to see what's in motion.  After using this rotate a bone on the Actor or setup a test animation beforehand.",
         default=True,
         update = update_onemap_follow
         )
@@ -4778,10 +5216,16 @@ class BentoBuddyOneMapAction(bpy.types.Operator):
 
         
         
-        rigutils.rebind(inRig)
+
+
 
         
-        bpy.ops.object.transform_apply(scale=True, rotation=True, location=True)
+        if 1 == 0:
+            rigutils.rebind(inRig)
+
+            
+            bpy.ops.object.transform_apply(scale=True, rotation=True, location=True)
+
 
 
 
@@ -5831,7 +6275,14 @@ class BentoBuddySnapProperties(bpy.types.PropertyGroup):
 
     snap_export_mapped_old : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable this if you want the old behavior back"            "\n\n"            "The custom character exporter has evolved over time just as the SL skinned mesh exporter has.  They have grown out "            "of sync, however, and the similarities between the two types of exports have drifted that I decided to test the new "            "devkit mesh exporter on this type of set and it worked.  I'm leaving in the ability to use the old type in case the new "            "one has unforeseen bugs and it's not bad for testing.  There are limitations to the old type and one of which is that "            "there is no (Export path to pelvis) calculations done so keep that in mind, it could ruin your day",
+        description = ""
+            "Enable this if you want the old behavior back"
+            "\n\n"
+            "The custom character exporter has evolved over time just as the SL skinned mesh exporter has.  They have grown out "
+            "of sync, however, and the similarities between the two types of exports have drifted that I decided to test the new "
+            "devkit mesh exporter on this type of set and it worked.  I'm leaving in the ability to use the old type in case the new "
+            "one has unforeseen bugs and it's not bad for testing.  There are limitations to the old type and one of which is that "
+            "there is no (Export path to pelvis) calculations done so keep that in mind, it could ruin your day",
         default = False
         )
 
@@ -5847,41 +6298,63 @@ class BentoBuddySnapProperties(bpy.types.PropertyGroup):
         )
     snap_fill_protect : bpy.props.BoolProperty(
         name = "",
-        description =            "The chain mapper (fill) will stop when it encounters an already mapped bone.  This feature makes sure of that.  "            "If you don't care that it overwrites your existing maps then turn this off.",
+        description = ""
+            "The chain mapper (fill) will stop when it encounters an already mapped bone.  This feature makes sure of that.  "
+            "If you don't care that it overwrites your existing maps then turn this off.",
         default = True
         )
     snap_fill_cross : bpy.props.BoolProperty(
         name = "",
-        description =            "When (save/protect) is enabled so that you don't overwrite your existing mapped bones you can allow the fill mapper "            "to jump over them and continue mapping if this is enabled.",
+        description = ""
+            "When (save/protect) is enabled so that you don't overwrite your existing mapped bones you can allow the fill mapper "
+            "to jump over them and continue mapping if this is enabled.",
         default = False
         )
 
     snap_fill_reverse : bpy.props.BoolProperty(
         name = "",
-        description =            "When enabled the (Fill) will deposit the target bones in the reverse order",
+        description = ""
+            "When enabled the (Fill) will deposit the target bones in the reverse order",
         default = False
         )
 
 
     snap_fill_limit : bpy.props.IntProperty(
         name = "",
-        description =            "Maximum number of child links to follow.  A 0 means infinite.  A 1 is equal to what the mapper already does but "            "I allowed it here to test the speed of the feature.  A 2 is the minimum amount of effective links where this feature "            "is useful and a 0 is, of course, no limit.",
+        description = ""
+            "Maximum number of child links to follow.  A 0 means infinite.  A 1 is equal to what the mapper already does but "
+            "I allowed it here to test the speed of the feature.  A 2 is the minimum amount of effective links where this feature "
+            "is useful and a 0 is, of course, no limit.",
         min = 0,
         default = 0
         )
     snap_fill_next : bpy.props.BoolProperty(
         name = "",
-        description =            "When you're doing a (Fill) or (Collect) it's nice to keep working with the bone bag and just choose another sequence "            "parent to fill the target instead of going back and forth.  With this feature enabled the targets next parent in the "            "hierarchy will be selected and placed in the selected Directors bone slot ready for you to keep picking.  If there is "            "no parent then nothing happens.  If you have (Protect) enabled and the very next parent is a mapped bone it ends.",
+        description = ""
+            "When you're doing a (Fill) or (Collect) it's nice to keep working with the bone bag and just choose another sequence "
+            "parent to fill the target instead of going back and forth.  With this feature enabled the targets next parent in the "
+            "hierarchy will be selected and placed in the selected Directors bone slot ready for you to keep picking.  If there is "
+            "no parent then nothing happens.  If you have (Protect) enabled and the very next parent is a mapped bone it ends.",
         default = True
         )
     snap_deformable : bpy.props.BoolProperty(
         name = "",
-        description =            "Only allow mapping of bones that affect the mesh (use_deform == True). This prevents your IK and extraneous controllers from "            "getting into the mix and wasting bones."            "\n\n"            "If you want to map attachment bones you need to enable their deform property first.  To do this go into the panel named "            "(Skinning / Weights) and look at the toggle switch named (Skin to Attachments on / off).  If the indicator is red then "            "click it to turn it green.  If you are having trouble there could be a synch issue, just toggle it once then back to green",
+        description = ""
+            "Only allow mapping of bones that affect the mesh (use_deform == True). This prevents your IK and extraneous controllers from "
+            "getting into the mix and wasting bones."
+            "\n\n"
+            "If you want to map attachment bones you need to enable their deform property first.  To do this go into the panel named "
+            "(Skinning / Weights) and look at the toggle switch named (Skin to Attachments on / off).  If the indicator is red then "
+            "click it to turn it green.  If you are having trouble there could be a synch issue, just toggle it once then back to green",
         default = True
         )
     snap_release : bpy.props.BoolProperty(
         name = "",
-        description =            "With this enabled your Actor bones will stay where they are placed, if they are not mapped back to their original position "            "when you unmap them.  This allows you to move your Actor bones around for convenient visual sorting without them snapping "            "back to their default locations.  If you map a bone it is released from this modify state when you unmap it so that your "            "your visual is consistent with what is mapped and what is not mapped.",
+        description = ""
+            "With this enabled your Actor bones will stay where they are placed, if they are not mapped back to their original position "
+            "when you unmap them.  This allows you to move your Actor bones around for convenient visual sorting without them snapping "
+            "back to their default locations.  If you map a bone it is released from this modify state when you unmap it so that your "
+            "your visual is consistent with what is mapped and what is not mapped.",
         default = False
         )
 
@@ -5943,7 +6416,11 @@ class BentoBuddySnapProperties(bpy.types.PropertyGroup):
 
     snap_symmetry_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable Symmetry"            "\n\n"            "If you've chosen a pair for each rig then symmetry will be attempted.  This can fail and then you'll have to "            "manually do the other side but it should not fail often if it's a good rig.",
+        description = ""
+            "Enable Symmetry"
+            "\n\n"
+            "If you've chosen a pair for each rig then symmetry will be attempted.  This can fail and then you'll have to "
+            "manually do the other side but it should not fail often if it's a good rig.",
        default = False
         )
 
@@ -6005,13 +6482,15 @@ class BentoBuddySnapProperties(bpy.types.PropertyGroup):
 
     snap_symmetry_director : bpy.props.BoolProperty(
         name = "",
-        description =            "Choose first director bone",
+        description = ""
+            "Choose first director bone",
         default = False,
         update = update_snap_symmetry_director
         )
     snap_symmetry_actor : bpy.props.BoolProperty(
         name = "",
-        description =            "Choose first actor bone",
+        description = ""
+            "Choose first actor bone",
         default = False,
         update = update_snap_symmetry_actor
         )
@@ -6060,7 +6539,15 @@ class BentoBuddySnapProperties(bpy.types.PropertyGroup):
         return
     snap_target : bpy.props.BoolProperty(
         name = "",
-        description =            "Target platform is other than SL/OS"            "\n\n"            "Select your target platform rig and enable this, your rig name will be recorded and then you'll choose "            "the custom rig and click (Action!)."            "\n\n"            "For convenience it's assumed that the target platform is Second Life or Opensim but this button allows you "            "to choose a rig instead of having one automatically generated, where that rig will be your target platform rig "            "and will be recorded when you enable this button.",
+        description = ""
+            "Target platform is other than SL/OS"
+            "\n\n"
+            "Select your target platform rig and enable this, your rig name will be recorded and then you'll choose "
+            "the custom rig and click (Action!)."
+            "\n\n"
+            "For convenience it's assumed that the target platform is Second Life or Opensim but this button allows you "
+            "to choose a rig instead of having one automatically generated, where that rig will be your target platform rig "
+            "and will be recorded when you enable this button.",
         default = False,
         update = update_snap_target
         )
@@ -6947,6 +7434,14 @@ use (Deselect Non End Bones)"""
         
         
         
+        bpy.ops.bentobuddy.snap_view_actor_bones(action="show")
+        
+        
+        
+
+        
+        
+        
         
         
         
@@ -6957,7 +7452,7 @@ use (Deselect Non End Bones)"""
                 
                 
                 if boneObj.name == 'mSkull':
-                    print("Skipping mSkull")
+                    print("Skipping mSkull, if you want to map this do it manually")
                     continue
                 if bone not in relations:
                     print("Missing critical bone in relationship map:", bone)
@@ -7059,6 +7554,14 @@ else is selected on the Actor and use this button"""
             popup("Target missing", "Error", "ERROR")
             return {'FINISHED'}
 
+        
+        
+        
+        bpy.ops.bentobuddy.snap_view_actor_bones(action="show")
+        
+        
+        
+
         for boneObj in outRig.data.bones:
             if boneObj.name in volumes.vol_joints:
                 boneObj.select = True
@@ -7102,8 +7605,26 @@ under_score to replace the space and the SL uploading apparently supports that n
             popup("Target missing", "Error", "ERROR")
             return {'FINISHED'}
 
+        
+        
+        
+        bpy.ops.bentobuddy.snap_view_actor_bones(action="show")
+        
+        
+        
+
         for boneObj in outRig.data.bones:
             bone = boneObj.name
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             if bone in skel.avatar_skeleton:
                 if skel.avatar_skeleton[bone]['type'] == 'attachment':
                     boneObj.select = True
@@ -7618,9 +8139,6 @@ the Director since it is in control of the Actor rig"""
         inRig.select_set(True)
         outRig.select_set(True)
 
-
-
-
         
         
         
@@ -7630,9 +8148,10 @@ the Director since it is in control of the Actor rig"""
         for g in outRig.pose.bone_groups:
             outRig.pose.bone_groups.remove(g)
         
-
-
-
+        
+        
+        
+        
 
         bpy.ops.object.mode_set(mode='POSE')
 
@@ -7668,6 +8187,21 @@ the Director since it is in control of the Actor rig"""
             snap.props['actor_bone'] = ""
             snap.props['director_bone'] = ""
             bb_snap.snap_message = "Start picking"
+
+        
+        
+        
+        
+        
+        print("-------------------------------------------")
+        print("Showing mapped bones")
+        print("-------------------------------------------")
+        
+        
+        bpy.ops.bentobuddy.snap_view_mapped_bones(action="show")
+        
+        
+        
 
         return {'FINISHED'}
 
@@ -7729,10 +8263,10 @@ remove all mapped data associated with it and their flags"""
 
 
 
-class BentoBuddySnapClean(bpy.types.Operator):
-    """Clean out the map data"""
+class BentoBuddySnapRemove(bpy.types.Operator):
+    """Removes all map data"""
 
-    bl_idname = "bentobuddy.snap_clean"
+    bl_idname = "bentobuddy.snap_remove"
     bl_label = "Clear maps"
 
     @classmethod
@@ -7767,6 +8301,73 @@ class BentoBuddySnapClean(bpy.types.Operator):
             inRig.pop('bb_onemap_code', [])
             inRig.pop('bb_snap_map', [])
             inRig.pop('bb_snap_follow', [])
+
+        return {'FINISHED'}
+
+
+
+
+class BentoBuddySnapClean(bpy.types.Operator):
+    """Cleans out stale data from the maps.  The maps are examined for bones that do not exist in your source
+rig.  Be careful with this because some reskin bones can be identified, for various rigs, and you want to
+keep these and you can't see them here"""
+
+    bl_idname = "bentobuddy.snap_clean"
+    bl_label = "Clean Maps"
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) == 0:
+            return False
+        if bpy.context.selected_objects[0].type != 'ARMATURE':
+            return False
+        return True
+
+    def execute(self, context):
+        bb_snap = bpy.context.window_manager.bb_snap
+        inRig = snap.get_director(armature=bpy.context.active_object.name)
+        if inRig == False:
+            txt = "No Director: Can't match maps without a director, engage the mapper first"
+            print(txt)
+            popup(txt, "Error", "ERROR")
+            return {'FINISHED'}
+        outRig = inRig['bb_snap_actor']
+        if outRig == False:
+            txt = "No Actor: Can't match maps without an actor, engage the mapper first"
+            print(txt)
+            popup(txt, "Error", "ERROR")
+            return {'FINISHED'}
+
+        if inRig.get('bb_onemap_rename') == None:
+            inRig['bb_onemap_rename'] = {}
+
+        rename_map = inRig['bb_onemap_rename'].to_dict()
+
+        
+        rename_rev = {}
+        for sbone in rename_map:
+            tbone = rename_map[sbone]
+            if sbone in inRig.data.bones:
+                print("sbone is in inRig:", sbone)
+                if tbone in outRig.data.bones:
+                    print("tbone is in outRig:", tbone)
+                    rename_rev[tbone] = sbone
+
+        rename_map.clear()
+        for tbone in rename_rev:
+            rename_map[sbone] = tbone
+
+        inRig['bb_onemap_rename'] = rename_map
+
+        snap.apply_map(director=inRig, actor=outRig)
+
+        for boneObj in inRig.data.bones:
+            boneObj.select = False
+        for boneObj in outRig.data.bones:
+            boneObj.select = False
+
+        snap.props['actor_bone'] = ""
+        snap.props['director_bone'] = ""
 
         return {'FINISHED'}
 
@@ -8531,8 +9132,10 @@ keep your product as is with the ability to continue working on it"""
             arm, mesh = meshutils.get_one_armature(objects=selected)
             print("arm:", arm)
             if arm == False:
-                print("There is no usable armature associated with the mesh")
-                popup("Armature failure, see console", "Error", "ERROR")
+                text = "\n\n\n"
+                text += "There is no usable armature associated with the mesh\n"
+                text += "\n\n\n"
+                utils.popup(text, "Error", "ERROR")
                 return {'FINISHED'}
 
         armObj = obj[arm]
@@ -8877,7 +9480,8 @@ keep your product as is with the ability to continue working on it"""
                 matrices = devkit.get_matrices(armature=slRig, base=None, use_bind_pose=False, report=True)
 
                 result = devkit.export_dae(matrices=matrices, joint='bone_data', file=self.filepath, real=armObj)
-
+                if result == False:
+                    popup("There was a problem with the export, see console for details", "Error", "ERROR")
 
         else:
             f_in = open(file_in, "r", encoding='UTF8')
@@ -8904,6 +9508,44 @@ keep your product as is with the ability to continue working on it"""
         bb_devkit["apply_location"] = apply_location
         bb_devkit["apply_rotation"] = apply_rotation
         bb_devkit["fix_broken_bones"] = fix_broken_bones
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        no_parent = []
+        not_armature = []
+        print("Checking each object for a parent...")
+        for o in pre_select:
+            if o.parent == None:
+                if o.type == 'ARMATURE':
+                    print("Ignoring armature", o.name)
+                    continue
+                no_parent.append(o.name)
+            else:
+                if o.parent != armObj:
+                    not_armature.append(o.name)
+        text = ""
+        if len(no_parent) > 0:
+            text += " - Some objects had no parent, they may not have exported properly -\n"
+            for name in no_parent:
+                text += "   * " + name + "\n"
+        if len(not_armature) > 0:
+            text += " - Some of the parented objects did not target the rig, this could be problematic -\n"
+            for name in not_armature:
+                text += "   * " + name + "\n"
+
+        if text != "":
+            lines = "\n\n"
+            text = lines + "There was a problem with your export but it may still be usable, see below.\n" + text
+            text += "\n\n"
+            
+            print(text)
 
         
         
@@ -8947,7 +9589,8 @@ class BentoBuddyEditTemplateProperties(bpy.types.PropertyGroup):
 
     editor_manual_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the manual editors",
+        description = ""
+            "Expand the manual editors",
         default = False
         )
     
@@ -8955,13 +9598,30 @@ class BentoBuddyEditTemplateProperties(bpy.types.PropertyGroup):
     
     onemap_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the character mapper"            "\n\n"            "This is a generic character mapper that allows for any target and source platforms.  There is a reskin feature here "            "as well, much like the auto-weight mapper, but much easier to use.  The reskin idea may be a bit difficult to understand "            "but it's actually quite simple... if you think one or more bones are not compatible with the target platform you can "            "have the mesh weights attach to its parent bone, or some other anchor up the chain, and then this bone will be marked for "            "removal but the mesh will still move with the anchor bone you chose.",
+        description = ""
+            "Expand the character mapper"
+            "\n\n"
+            "This is a generic character mapper that allows for any target and source platforms.  There is a reskin feature here "
+            "as well, much like the auto-weight mapper, but much easier to use.  The reskin idea may be a bit difficult to understand "
+            "but it's actually quite simple... if you think one or more bones are not compatible with the target platform you can "
+            "have the mesh weights attach to its parent bone, or some other anchor up the chain, and then this bone will be marked for "
+            "removal but the mesh will still move with the anchor bone you chose.",
         default = False
         )
 
     load_txt_reversed : bpy.props.BoolProperty(
         name = "",
-        description =            "Load the text file with reversed bone order matching"            "\n\n"            "When making a text file to be converted into a CTM you'll usually put the name of the bone from the rig that you want to "            "convert into the first slot and then put the target system into the second slot.  These virtual (slots) are just a line "            "separated by a space.  Unfortunately some bones have spaces in them and the first bone cannot be defined with a space so "            "you may have to use the reverse in order to map your bones, if using a text file.  However, if both the source and the "            "target have spaces in their bones then even the reverse button, right here, won't help you and you'll have to map those "            "bones using this interface instead.  With that in mind, what this switch does is simple reverses the target/source order "            "after reading the file in and is just a convenience in case one of the systems doesn't have spaces in the bones.  Honestly "            "no bone should ever have a space, or white space, in its name but some armatures do this.",
+        description = ""
+            "Load the text file with reversed bone order matching"
+            "\n\n"
+            "When making a text file to be converted into a CTM you'll usually put the name of the bone from the rig that you want to "
+            "convert into the first slot and then put the target system into the second slot.  These virtual (slots) are just a line "
+            "separated by a space.  Unfortunately some bones have spaces in them and the first bone cannot be defined with a space so "
+            "you may have to use the reverse in order to map your bones, if using a text file.  However, if both the source and the "
+            "target have spaces in their bones then even the reverse button, right here, won't help you and you'll have to map those "
+            "bones using this interface instead.  With that in mind, what this switch does is simple reverses the target/source order "
+            "after reading the file in and is just a convenience in case one of the systems doesn't have spaces in the bones.  Honestly "
+            "no bone should ever have a space, or white space, in its name but some armatures do this.",
         default = False
         )
 
@@ -8977,19 +9637,34 @@ class BentoBuddyEditTemplateProperties(bpy.types.PropertyGroup):
         return
     info_bentobuddy_load_generic_template : bpy.props.BoolProperty(
         name = "Template Converter",
-        description =            "\n"            "The button you have hovered over is informative only, read below...\n\n"            "This feature is provided in order to convert a template map from one type to another for use in various areas of Bento Buddy."            "\n",
+        description = ""
+            "\n"
+            "The button you have hovered over is informative only, read below...\n\n"
+            "This feature is provided in order to convert a template map from one type to another for use in various areas of Bento Buddy."
+            "\n",
         default = False,
         update = update_info_bentobuddy_load_generic_template,
     )
 
     disable_map_pose : bpy.props.BoolProperty(
         name = "Push this to disable loading the pose",
-        description =            "When you're loading multiple maps you may want to keep a single working pose but not the rest.  Use this disable button "            "to prevent the loader from including the pose into the next loaded map.  When you have a pose in one of them that you're "            "sure about then you can re-enable the loading of the pose to allow the loader to record the included pose data.  In order to "            "check the pose, you can apply it to your skeleton in the Animation rollout and Enable Posing Library.  From there you can "            "load a pose from a CCM file to see what it looks like.  CTM files do not have poses in them so this can only apply to CCM.",
+        description = ""
+            "When you're loading multiple maps you may want to keep a single working pose but not the rest.  Use this disable button "
+            "to prevent the loader from including the pose into the next loaded map.  When you have a pose in one of them that you're "
+            "sure about then you can re-enable the loading of the pose to allow the loader to record the included pose data.  In order to "
+            "check the pose, you can apply it to your skeleton in the Animation rollout and Enable Posing Library.  From there you can "
+            "load a pose from a CCM file to see what it looks like.  CTM files do not have poses in them so this can only apply to CCM.",
         default = False,
         )
     disable_map_code : bpy.props.BoolProperty(
         name = "",
-        description =            "Code Loading"            "\n\n"            "In some newer versions of Bento Buddy we'll start using macros to help process difficult characters.  This code is "            "embedded in the map file and is only used where indicated and is always defaulted to OFF.  If the code is indicated "            "you should probably use it.  This feature allows you to disable overwrite of previously loaded code if you know that "            "a previously loaded map has usable code and you don't want to replace it.  This feature works just like the pose loader.",
+        description = ""
+            "Code Loading"
+            "\n\n"
+            "In some newer versions of Bento Buddy we'll start using macros to help process difficult characters.  This code is "
+            "embedded in the map file and is only used where indicated and is always defaulted to OFF.  If the code is indicated "
+            "you should probably use it.  This feature allows you to disable overwrite of previously loaded code if you know that "
+            "a previously loaded map has usable code and you don't want to replace it.  This feature works just like the pose loader.",
         default = True,
         )
 
@@ -9005,7 +9680,14 @@ class BentoBuddyEditTemplateProperties(bpy.types.PropertyGroup):
         return
     info_bentobuddy_combine_generic_template : bpy.props.BoolProperty(
         name = "Combine Templates",
-        description =            "\n"            "The button you have hovered over is informative only, read below...\n\n"            "This feature will allow you to load multiple modules to combine them for storing into a new map.  This merge "            "feature will allow you to work on different sections of your rig, or have multiple people working on different sections, "            "and then later combine them using this tool.  Each map that is loaded takes precedence over all other previously loaded maps, "            "which is to say, if there are duplicate mapped bones, the newest loaded map will override any existing duplicate maps."            "\n",
+        description = ""
+            "\n"
+            "The button you have hovered over is informative only, read below...\n\n"
+            "This feature will allow you to load multiple modules to combine them for storing into a new map.  This merge "
+            "feature will allow you to work on different sections of your rig, or have multiple people working on different sections, "
+            "and then later combine them using this tool.  Each map that is loaded takes precedence over all other previously loaded maps, "
+            "which is to say, if there are duplicate mapped bones, the newest loaded map will override any existing duplicate maps."
+            "\n",
         default = False,
         update = update_info_bentobuddy_combine_generic_template,
     )
@@ -9018,13 +9700,27 @@ class BentoBuddyEditTemplateProperties(bpy.types.PropertyGroup):
 
     
     show_map : bpy.props.BoolProperty(
-        description =            "Click to expand and show the map"            "\n\n"            "A display of icons will appear for each source bone, target armature and target bone.  The icon is simply a dot with a color "            "legend indicating a bone state.  In standard mode the icons are black and you are simply editing maps without the need for any "            "armatures.  In map mode, as with the other mappers, there are at least 2 armatures required for active mapping.  In this state "            "the icon colors will be red, green or yellow.  "            "\n\n"            "Red - missing item"            "\n"            "Green - item matches"            "\n"            "Yellow - the item would match if not for the prefix"            "\n",
+        description = ""
+            "Click to expand and show the map"
+            "\n\n"
+            "A display of icons will appear for each source bone, target armature and target bone.  The icon is simply a dot with a color "
+            "legend indicating a bone state.  In standard mode the icons are black and you are simply editing maps without the need for any "
+            "armatures.  In map mode, as with the other mappers, there are at least 2 armatures required for active mapping.  In this state "
+            "the icon colors will be red, green or yellow.  "
+            "\n\n"
+            "Red - missing item"
+            "\n"
+            "Green - item matches"
+            "\n"
+            "Yellow - the item would match if not for the prefix"
+            "\n",
         default = False
     )
 
     
     show_rigs : bpy.props.BoolProperty(
-        description =            "Click to enable and show a list of rigs contained within the template",
+        description = ""
+            "Click to enable and show a list of rigs contained within the template",
         default = False,
         
     )
@@ -9039,7 +9735,9 @@ class BentoBuddyEditTemplateProperties(bpy.types.PropertyGroup):
         return 
 
     source_active : bpy.props.BoolProperty(
-        description =            "Click to disable the active map, your changes will not be harmed but you need to save your work to a file using the save "            "feature because it does not save with the blender file",
+        description = ""
+            "Click to disable the active map, your changes will not be harmed but you need to save your work to a file using the save "
+            "feature because it does not save with the blender file",
         default = False,
         update = update_source_active
     )
@@ -11734,9 +12432,10 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
 
             col = box.column(align = True)
             row = col.row(align=True)
+
             row.operator(
                 "bentobuddy.onemap_view_actor_bones",
-                text = "Reset Bone View",
+                text = "Show Less Bones",
                 icon_value = ico.custom_icons["bone_red"].icon_id
                 ).action = "hide"
             row.operator(
@@ -12208,9 +12907,15 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
             row = col.row(align=True)
             row.operator(
                 "bentobuddy.snap_clean",
-                text = "Clear maps",
+                text = "Clean Maps",
                 icon_value = ico.custom_icons["clean"].icon_id
                 )
+            row.operator(
+                "bentobuddy.snap_remove",
+                text = "Remove Maps",
+                icon_value = ico.custom_icons["x_red"].icon_id
+                )
+ 
             row = col.row(align=True)
 
             
@@ -12246,7 +12951,7 @@ class BentoBuddyPanelTemplateEditor(bpy.types.Panel):
             row = col.row(align=True)
             row.operator(
                 "bentobuddy.snap_view_actor_bones",
-                text = "Reset Bone View",
+                text = "Show Less Bones",
                 icon_value = ico.custom_icons["bone_red"].icon_id
                 ).action = "hide"
             row.operator(
@@ -12954,7 +13659,15 @@ class BentoBuddyShapeProperties(bpy.types.PropertyGroup):
 
     shape_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Show / Hide the avatar shape features"            "\n\n"            "This is on the road map, we have an intuitive way to give you control over your shape without using unintuitive sliders.  "            "You'll be able to pick directly on your character and alter the appearence.  A set of sliders will be provided for use as "            "well but not required, these sliders allow you to see what the resulting numbers will be in SL but the shape export is "            "just fine for that and you never need to type this stuff in yourself.  Again, this is not functdional, it simply loads "            "a set of shape figures into the buffer where it can later be used for the indicated purpose, then that same information "            "is written back to a file.  This is effectively a shell to be filled later.",
+        description = ""
+            "Show / Hide the avatar shape features"
+            "\n\n"
+            "This is on the road map, we have an intuitive way to give you control over your shape without using unintuitive sliders.  "
+            "You'll be able to pick directly on your character and alter the appearence.  A set of sliders will be provided for use as "
+            "well but not required, these sliders allow you to see what the resulting numbers will be in SL but the shape export is "
+            "just fine for that and you never need to type this stuff in yourself.  Again, this is not functdional, it simply loads "
+            "a set of shape figures into the buffer where it can later be used for the indicated purpose, then that same information "
+            "is written back to a file.  This is effectively a shell to be filled later.",
         default = False
         )
 
@@ -13004,55 +13717,86 @@ class BentoBuddyShapeProperties(bpy.types.PropertyGroup):
     
     shape_tab_body : bpy.props.BoolProperty(
         name = "",
-        description =            "Body Sliders"            "\n\n"            "Height, Body Thickness, Body Fat, Hover",
+        description = ""
+            "Body Sliders"
+            "\n\n"
+            "Height, Body Thickness, Body Fat, Hover",
         default = False,
         update = update_shape_tab
         )
     shape_tab_head : bpy.props.BoolProperty(
         name = "",
-        description =            "Head Sliders"            "\n\n"            "Head Size, Head Stretch, Head Shape, Egg Head, Head Length, Face Shear, Forehead Angle, "            "Lower Cheek, Brow Size, Upper Cheeks, Cheek Bones",
+        description = ""
+            "Head Sliders"
+            "\n\n"
+            "Head Size, Head Stretch, Head Shape, Egg Head, Head Length, Face Shear, Forehead Angle, "
+            "Lower Cheek, Brow Size, Upper Cheeks, Cheek Bones",
         default = False,
         update = update_shape_tab
         )
     shape_tab_eyes : bpy.props.BoolProperty(
         name = "",
-        description =            "Eyes Sliders"            "\n\n"            "Eye Size, Eye Opening, Eye Spacing, Outer Eye Corner, Inner Eye Corner, Eye Depth, "            "Upper Eyelid Fold, Eye Bags, Puffy Eyelids",
+        description = ""
+            "Eyes Sliders"
+            "\n\n"
+            "Eye Size, Eye Opening, Eye Spacing, Outer Eye Corner, Inner Eye Corner, Eye Depth, "
+            "Upper Eyelid Fold, Eye Bags, Puffy Eyelids",
         default = False,
         update = update_shape_tab
         )
     shape_tab_ears : bpy.props.BoolProperty(
         name = "",
-        description =            "Ears Sliders"            "\n\n"            "Ear Size, Ear Tips",
+        description = ""
+            "Ears Sliders"
+            "\n\n"
+            "Ear Size, Ear Tips",
         default = False,
         update = update_shape_tab
         )
     shape_tab_nose : bpy.props.BoolProperty(
         name = "",
-        description =            "Nose Sliders"            "\n\n"            "Nose Size, Nose Width, Nostril Width, Nostril Division, Nose Thickness, Upper Bridge, "            "Lower Bridge, Bridge Width, Nose Tip Angle, Nose Tip Shape, Crooked Nose",
+        description = ""
+            "Nose Sliders"
+            "\n\n"
+            "Nose Size, Nose Width, Nostril Width, Nostril Division, Nose Thickness, Upper Bridge, "
+            "Lower Bridge, Bridge Width, Nose Tip Angle, Nose Tip Shape, Crooked Nose",
         default = False,
         update = update_shape_tab
         )
     shape_tab_mouth : bpy.props.BoolProperty(
         name = "",
-        description =            "Mouth Sliders"            "\n\n"            "Lip Width, Lip Fullness, Lip Thickness, Lip Ratio, Mouth Position, Mouth Corner, Lip Cleft Depth, Lip Cleft, Shift Mouth",
+        description = ""
+            "Mouth Sliders"
+            "\n\n"
+            "Lip Width, Lip Fullness, Lip Thickness, Lip Ratio, Mouth Position, Mouth Corner, Lip Cleft Depth, Lip Cleft, Shift Mouth",
         default = False,
         update = update_shape_tab
         )
     shape_tab_chin : bpy.props.BoolProperty(
         name = "",
-        description =            "Chin Sliders"            "\n\n"            "Chin Angle, Jaw Shape, Chin Depth, Jaw Angle, Jaw Jut, Chin-Neck",
+        description = ""
+            "Chin Sliders"
+            "\n\n"
+            "Chin Angle, Jaw Shape, Chin Depth, Jaw Angle, Jaw Jut, Chin-Neck",
         default = False,
         update = update_shape_tab
         )
     shape_tab_torso : bpy.props.BoolProperty(
         name = "",
-        description =            "Torso Sliders"            "\n\n"            "Torso Muscles, Neck Thickness, Neck Length, Shoulders, Breast Size, Breast Buoyancy, "            "Breast Cleavage, Arm Length, Hand Size, Torso Length, Love Handles, Belly Size",
+        description = ""
+            "Torso Sliders"
+            "\n\n"
+            "Torso Muscles, Neck Thickness, Neck Length, Shoulders, Breast Size, Breast Buoyancy, "
+            "Breast Cleavage, Arm Length, Hand Size, Torso Length, Love Handles, Belly Size",
         default = False,
         update = update_shape_tab
         )
     shape_tab_legs : bpy.props.BoolProperty(
         name = "",
-        description =            "Leg Sliders"            "\n\n"            "Leg Muscles, Leg Length, Hip Width, Hip Length, Butt Size, Saddle Bags, Knee Angle, Foot Size",
+        description = ""
+            "Leg Sliders"
+            "\n\n"
+            "Leg Muscles, Leg Length, Hip Width, Hip Length, Butt Size, Saddle Bags, Knee Angle, Foot Size",
         default = False,
         update = update_shape_tab
         )
@@ -13256,26 +14000,39 @@ class BentoBuddyControllerProperties(bpy.types.PropertyGroup):
 
     controller_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Show / Hide the avatar controller features"            "\n\n"            "This is more advanced but may be even easier to use, strangely enough.  From here you can target controllers to your "            "custom rig that drive a Bento Buddy rig, which allows you to do a variety of things.  One thing you can do is to retarget "            "animations, like the other more complicated tool, but also you can configure a rig with ik controllers, drivers and "            "anything else you want then attach a Bento Buddy rig to it for more animation control.  The tool can take a template from "            "a CTM or CCM but please be aware the, while CTM's are capable of addressing multiple rigs, this particular tool will not "            "read past the first rig encountered in the CTM, which simplifies the process a great deal.",
+        description = ""
+            "Show / Hide the avatar controller features"
+            "\n\n"
+            "This is more advanced but may be even easier to use, strangely enough.  From here you can target controllers to your "
+            "custom rig that drive a Bento Buddy rig, which allows you to do a variety of things.  One thing you can do is to retarget "
+            "animations, like the other more complicated tool, but also you can configure a rig with ik controllers, drivers and "
+            "anything else you want then attach a Bento Buddy rig to it for more animation control.  The tool can take a template from "
+            "a CTM or CCM but please be aware the, while CTM's are capable of addressing multiple rigs, this particular tool will not "
+            "read past the first rig encountered in the CTM, which simplifies the process a great deal.",
         default = False
         )
     
     controller_type_name : bpy.props.StringProperty(
         name = "",
-        description =            "--internal",
+        description = ""
+            "--internal",
         default = ""
         )
     
     controller_type_toggle : bpy.props.BoolProperty(
         name = "",
-        description =            "Controller type"            "\n\n"            "This is the type of controller you want to apply, or is already applied, to the rig set.",
+        description = ""
+            "Controller type"
+            "\n\n"
+            "This is the type of controller you want to apply, or is already applied, to the rig set.",
         default = True
         )
 
     
     controller_template_name : bpy.props.StringProperty(
         name = "",
-        description =            "--intermal",
+        description = ""
+            "--intermal",
         default = ""
         )
 
@@ -13286,14 +14043,25 @@ class BentoBuddyControllerProperties(bpy.types.PropertyGroup):
             bpy.ops.bentobuddy.controller_stabilize(action="off")
     controller_stabilize : bpy.props.BoolProperty(
         name = "",
-        description =            "This will attach a frozen controller to any bones that aren't mapped in order to stabilize your animation.  You can also "            "achieve a similar result by exporting a deformer mesh which may be preferable if you've already uploaded your animations.  "            "This adds an additional level of complexity since there will be two additional rigs but they are disposable.  If you get "            "confused just delete them and retarget again.  One rig is deal with unforsean problems with custom rigs and the other, "            "the stabilizer, deals with a known issue we call (wobble).",
+        description = ""
+            "This will attach a frozen controller to any bones that aren't mapped in order to stabilize your animation.  You can also "
+            "achieve a similar result by exporting a deformer mesh which may be preferable if you've already uploaded your animations.  "
+            "This adds an additional level of complexity since there will be two additional rigs but they are disposable.  If you get "
+            "confused just delete them and retarget again.  One rig is deal with unforsean problems with custom rigs and the other, "
+            "the stabilizer, deals with a known issue we call (wobble).",
         default = True,
         
         )
 
     controller_distance : bpy.props.FloatProperty(
         name = "",
-        description =            "This has no effect on your animation, it is purely visual, but may be convenient"            "\n\n"            "This is a depth factor.  The character depth is measured and the factor of its body depth, which would be length if it's "            "a quadruped, times the value (dimensions.y * n) will be the distance the resulting armature will be from the character, "            "unless the armature bones are glued to the character, then this isn't used and another method, for your convenience is "            "is used in order to give you easy access to the armature.",
+        description = ""
+            "This has no effect on your animation, it is purely visual, but may be convenient"
+            "\n\n"
+            "This is a depth factor.  The character depth is measured and the factor of its body depth, which would be length if it's "
+            "a quadruped, times the value (dimensions.y * n) will be the distance the resulting armature will be from the character, "
+            "unless the armature bones are glued to the character, then this isn't used and another method, for your convenience is "
+            "is used in order to give you easy access to the armature.",
         default = 0.0
         )
     def update_controller_glued(self, context):
@@ -13319,14 +14087,21 @@ class BentoBuddyControllerProperties(bpy.types.PropertyGroup):
 
     controller_glued : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable glued bones"            "\n\n"            "Disable this to detach the bones of the retarget armature from your animation source",
+        description = ""
+            "Disable glued bones"
+            "\n\n"
+            "Disable this to detach the bones of the retarget armature from your animation source",
         default = True,
         update = update_controller_glued
         )
 
     controller_to_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "Send details to animation tools"            "\n\n"            "This will send the range of your current animation to the (range) and (loop) settings in the "            "animation export tool.  The alternative is to use the (Acquire) button in the animation exporter "            "to grab the ranges.  Keep in mind that the (Loop) feature must be enabled in order for loop to work.",
+        description = ""
+            "Send details to animation tools"
+            "\n\n"
+            "This will send the range of your current animation to the (range) and (loop) settings in the "
+            "animation export tool.  The alternative is to use the (Acquire) button in the animation exporter "            "to grab the ranges.  Keep in mind that the (Loop) feature must be enabled in order for loop to work.",
         default = True,
         )
 
@@ -14259,7 +15034,8 @@ class BentoBuddyDynamicProperties(bpy.types.PropertyGroup):
 
     dynamic_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable he use of dynamic constraint testing.  This allows you to apply various constraints.",
+        description = ""
+            "Enable he use of dynamic constraint testing.  This allows you to apply various constraints.",
         default = False
         )
     dynamic_template_name : bpy.props.StringProperty(
@@ -14268,7 +15044,8 @@ class BentoBuddyDynamicProperties(bpy.types.PropertyGroup):
         )
     dynamic_distance : bpy.props.FloatProperty(
         name = "",
-        description =            "This is the distance a Bento Buddy rig will be placed away from the source (Animated Rig)",
+        description = ""
+            "This is the distance a Bento Buddy rig will be placed away from the source (Animated Rig)",
         default = 0.6
         )
     dynamic_message : bpy.props.StringProperty(
@@ -14321,12 +15098,14 @@ class BentoBuddyDynamicProperties(bpy.types.PropertyGroup):
 
     dynamic_location : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable and Disable location retargeting for the anchor bone, hip/pelvis/mPelvis",
+        description = ""
+            "Enable and Disable location retargeting for the anchor bone, hip/pelvis/mPelvis",
         update = update_dynamic_location
         )
     dynamic_rotation : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable and Disable rotation retargeting for the anchor bone, hip/pelvis/mPelvis",
+        description = ""
+            "Enable and Disable rotation retargeting for the anchor bone, hip/pelvis/mPelvis",
         update = update_dynamic_rotation
         )
 
@@ -16715,7 +17494,8 @@ class CharacterConverterLibProperties(bpy.types.PropertyGroup):
 
     pose_enable_library : bpy.props.BoolProperty(
         name = "ccl enable pose library",
-        description =            "Expand pose tools.  You can save, load, alter poses for this particular rig.",
+        description = ""
+            "Expand pose tools.  You can save, load, alter poses for this particular rig.",
         default = False,
         update = update_pose_enable_library
         )
@@ -16729,7 +17509,11 @@ class CharacterConverterLibProperties(bpy.types.PropertyGroup):
 
     pose_name : bpy.props.StringProperty(
         name = "cc pose name",
-        description =            "You cannot have duplicate names in the same library.  Put a unique name here.  "            "For the protection of your data, if you leave this blank or repeat an old name, "            "a unique identifier will be created for you. If you want to overwrite an old pose "            "you must delete it first.",
+        description = ""
+            "You cannot have duplicate names in the same library.  Put a unique name here.  "
+            "For the protection of your data, if you leave this blank or repeat an old name, "
+            "a unique identifier will be created for you. If you want to overwrite an old pose "
+            "you must delete it first.",
         default = ""
         )
     
@@ -16810,7 +17594,8 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
 
     cc_advanced_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand advanced options",
+        description = ""
+            "Expand advanced options",
         default = False
         )
 
@@ -16823,39 +17608,62 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
     
     use_ccm : bpy.props.BoolProperty(
         name="load map",
-        description = "Use the loaded CCM, Character Converter Map file as a starting template for your character of the same"            "target system.",
+        description = "Use the loaded CCM, Character Converter Map file as a starting template for your character of the same"
+            "target system.",
         default = False
         )
     
     cc_remove_unmatched_groups : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Remove groups that don't have a matching bone.  This happens often when a rig is complex with many controllers "            "and sometimes with shape tweakers, these tweakers are not compatible with SL so you may want to assign these "            "to something else if they are important, they cannot automatically be pulled in.",
+        description = ""
+            "Remove groups that don't have a matching bone.  This happens often when a rig is complex with many controllers "
+            "and sometimes with shape tweakers, these tweakers are not compatible with SL so you may want to assign these "
+            "to something else if they are important, they cannot automatically be pulled in.",
         default = True
         )
 
     cc_weight_unmapped_groups : bpy.props.BoolProperty(
         name = "cc_weight_unmapped_groups",
-        description = ""            "The default is enabled.  This tells Character Converter to follow bone chaines of those bones that were not mapped "            "and attempt to determine an anchor bone weight for each unmapped bone.  This usually works great.  An example would be "            "if you are mapping an arbitrary mesh where hair bones vary in each rig, Character Converter can find those bone ends and "            "map those weights to the head, which is usually the proper target.  This can fail if the unmapped bones do not end in a "            "single child and, instead, some how wrap around to another bone or meet up with an already mapped bone.  It's safe to "            "disable this of all of your bones are mapped to something. ",
+        description = ""
+            "The default is enabled.  This tells Character Converter to follow bone chaines of those bones that were not mapped "
+            "and attempt to determine an anchor bone weight for each unmapped bone.  This usually works great.  An example would be "
+            "if you are mapping an arbitrary mesh where hair bones vary in each rig, Character Converter can find those bone ends and "
+            "map those weights to the head, which is usually the proper target.  This can fail if the unmapped bones do not end in a "
+            "single child and, instead, some how wrap around to another bone or meet up with an already mapped bone.  It's safe to "
+            "disable this of all of your bones are mapped to something. ",
         default = True
         )
     cc_connect_links : bpy.props.BoolProperty(
         name = "cc_connect_links",
-        description =            "This connects bones to close the gap made when other bones have been removed.  Leaving the gaps can be unsightly "            "but not harmful.  Closing those gaps will definitely destroy an auto-mapped character.  Enable this only for testing.  "            "\n\n"            "You may want to enable this for testing.  It used to be enabled by default but now we can convert auto-mapped "            "characters directly into SL with a map generated from the auto-mapper.  Absolutely keep this disabled if you are "            "converting an auto-mapped character.",
+        description = ""
+            "This connects bones to close the gap made when other bones have been removed.  Leaving the gaps can be unsightly "
+            "but not harmful.  Closing those gaps will definitely destroy an auto-mapped character.  Enable this only for testing.  "
+            "\n\n"
+            "You may want to enable this for testing.  It used to be enabled by default but now we can convert auto-mapped "
+            "characters directly into SL with a map generated from the auto-mapper.  Absolutely keep this disabled if you are "
+            "converting an auto-mapped character.",
         default = False
         )
     cc_rename_to_targets : bpy.props.BoolProperty(
         name = "cc_rename_to_targets",
-        description = "Disable this default for debugging.  This can be helpful when debugging or creating a new Character "            "Converter Map.  The bones won't be renamed to the targets indicated in your map, so that you can see what's going "            "on with the left over and removed bones.",
+        description = "Disable this default for debugging.  This can be helpful when debugging or creating a new Character "
+            "Converter Map.  The bones won't be renamed to the targets indicated in your map, so that you can see what's going "
+            "on with the left over and removed bones.",
         default = True
         )
     cc_remove_unused_bones : bpy.props.BoolProperty(
         name = "cc_remove_unused_bones",
-        description = "This default enables the removal of unused bones after mapping.  Disabling it allows you to get a better "            "look at what's happening if you experience difficulties creating or editing a map file.  Please note that "            "this puts the armature into an unusable state and must be completed before upload.  Once you're done testing "            "then enable this feature to get a completed rig.",
+        description = "This default enables the removal of unused bones after mapping.  Disabling it allows you to get a better "
+            "look at what's happening if you experience difficulties creating or editing a map file.  Please note that "
+            "this puts the armature into an unusable state and must be completed before upload.  Once you're done testing "
+            "then enable this feature to get a completed rig.",
         default = True
         )
     cc_add_missing_groups : bpy.props.BoolProperty(
         name = "cc_add_missing_groups",
-        description = "In the skin section there might be a target, often times the root or pelvis, that had no weight group in "            "any of the mesh.  If this doesn't have a group then there's nothing to target for those remapped weights.  This "            "feature makes sure that those targets will exist for the mapping.  It shouldn't cause a problem.",
+        description = "In the skin section there might be a target, often times the root or pelvis, that had no weight group in "
+            "any of the mesh.  If this doesn't have a group then there's nothing to target for those remapped weights.  This "
+            "feature makes sure that those targets will exist for the mapping.  It shouldn't cause a problem.",
         default = True
         )
     
@@ -16888,13 +17696,27 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
     
     cc_bake_map_pose : bpy.props.BoolProperty(
         name = "cc bake map pose",
-        description =            "Apply the included pose from your map file to the source rig.  This applies when you load a map file either from "            "the converter panel or the expanded Custom Mapping Tools panel.  In the converter it's an automated single button "            "process so the pose is applied during conversion.  In the mapper the pose is applied immediately so that you can "            "change it if you want and re-save it.\n\n"            "WARNING:  This is a destructive process!  "            "But you must choose one if you are exporting for Second Life or Opensim.  "            "Don't be alarmed, just save your file beforehand.  But this is typically what you want, either to bake your pose from "            "the map file or bake it from the current pose.  It is essential to have the proper pose for SL.",
+        description = ""
+            "Apply the included pose from your map file to the source rig.  This applies when you load a map file either from "
+            "the converter panel or the expanded Custom Mapping Tools panel.  In the converter it's an automated single button "
+            "process so the pose is applied during conversion.  In the mapper the pose is applied immediately so that you can "
+            "change it if you want and re-save it.\n\n"
+            "WARNING:  This is a destructive process!  "
+            "But you must choose one if you are exporting for Second Life or Opensim.  "
+            "Don't be alarmed, just save your file beforehand.  But this is typically what you want, either to bake your pose from "
+            "the map file or bake it from the current pose.  It is essential to have the proper pose for SL.",
         default = False,
         update = update_bake_map_pose
         )
     cc_bake_current_pose : bpy.props.BoolProperty(
         name = "cc bake current pose",
-        description =            "Apply the existing pose to your rig during conversion.  This is typically set in the Bento Buddy pose library but "            "you can set any pose you want and it will keep it.\n\n"            "WARNING:  This is a destructive process!  "            "But you must choose one if you are exporting for Second Life or Opensim.  "            "Don't be alarmed, just save your file beforehand.  But this is typically what you want, either to bake your pose from "            "the map file or bake it from the current pose.  It is essential to have the proper pose for SL.",
+        description = ""
+            "Apply the existing pose to your rig during conversion.  This is typically set in the Bento Buddy pose library but "
+            "you can set any pose you want and it will keep it.\n\n"
+            "WARNING:  This is a destructive process!  "
+            "But you must choose one if you are exporting for Second Life or Opensim.  "
+            "Don't be alarmed, just save your file beforehand.  But this is typically what you want, either to bake your pose from "
+            "the map file or bake it from the current pose.  It is essential to have the proper pose for SL.",
         default = True,
         update = update_bake_current_pose
         )
@@ -16905,22 +17727,48 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
         )
     cc_integrity_check : bpy.props.BoolProperty(
         name = "cc integrity check",
-        description =            "Fix the bone hierarchy.  This is probably best left disabled, only enable it if you experience deformities."            "\n\n"            "This can only work if (Rename bones to target) is enabled.\n\n"            "Unfortunately some rigs are broken and the bones might not be parented as you would expect.  This integrity check will "            "examine the hierarchy after the conversion and make the appropriate changes to the rig in order to fix it.  "            "If this results in a broken conversion you'll want to disable this and run the conversion on a clean rig to see what "            "went wrong and possibly fix it yourself.  Often times it's pretty easy, just find a bone that's not parented properly and "            "parent it yourself before conversion and after that you can leave this feature disabled.",
+        description = ""
+            "Fix the bone hierarchy.  This is probably best left disabled, only enable it if you experience deformities."
+            "\n\n"
+            "This can only work if (Rename bones to target) is enabled.\n\n"
+            "Unfortunately some rigs are broken and the bones might not be parented as you would expect.  This integrity check will "
+            "examine the hierarchy after the conversion and make the appropriate changes to the rig in order to fix it.  "
+            "If this results in a broken conversion you'll want to disable this and run the conversion on a clean rig to see what "
+            "went wrong and possibly fix it yourself.  Often times it's pretty easy, just find a bone that's not parented properly and "
+            "parent it yourself before conversion and after that you can leave this feature disabled.",
         default = False
         )
     cc_apply_bone_roll : bpy.props.BoolProperty(
         name = "",
-        description =            "This applies a consistent bone roll to your mapped bones.  It usually matches the BB rig well enough for most things "            "like retargeting and motion mixing but the advancement of these tools has made this feature superfluous.  However, "            "you may find it useful in order to have a consistent bone angle outcome when working with multiple rigs that you need "            "compliant with some target.  The roll angles cannot be changed here but you can do it manually after conversion.",
+        description = ""
+            "This applies a consistent bone roll to your mapped bones.  It usually matches the BB rig well enough for most things "
+            "like retargeting and motion mixing but the advancement of these tools has made this feature superfluous.  However, "
+            "you may find it useful in order to have a consistent bone angle outcome when working with multiple rigs that you need "
+            "compliant with some target.  The roll angles cannot be changed here but you can do it manually after conversion.",
         default = False
         )
 
     cc_full_rig : bpy.props.BoolProperty(
         name = "Convert to full rig",
-        description =            "Convert to a full BB rig"            "\n\n"            "Usually your skeleton structure is as described in the map file.  With this enabled "            "the converted Second Life compatible character will have a complete rig which will work exactly the "            "same except you'll be able to modify how your character functions after conversion, for instance if you want to "            "skin part of your mesh to alternate bones that can be adjusted with sliders.  If you already converted your rig "            "with this disabled and changed your mind just expand the (Rig Tools) panel, choose your rig and click the button "            "(Convert partial rig to full rig) which accepts multiple rigs at a time."            "\n\n"            "Because of the folded spine bones it's very likely that you'll need a deformer even when uploading with joint "            "positions.  If you find yourself needing this, either because of the spine bones or because you chose to use other "            "non-sl-animated bones, like face bones, then it's best to upload without joint positions ticked and use your deformer "            "to bring the entire rig into compliance",
+        description = ""
+            "Convert to a full BB rig"
+            "\n\n"
+            "Usually your skeleton structure is as described in the map file.  With this enabled "
+            "the converted Second Life compatible character will have a complete rig which will work exactly the "
+            "same except you'll be able to modify how your character functions after conversion, for instance if you want to "
+            "skin part of your mesh to alternate bones that can be adjusted with sliders.  If you already converted your rig "
+            "with this disabled and changed your mind just expand the (Rig Tools) panel, choose your rig and click the button "
+            "(Convert partial rig to full rig) which accepts multiple rigs at a time."
+            "\n\n"
+            "Because of the folded spine bones it's very likely that you'll need a deformer even when uploading with joint "
+            "positions.  If you find yourself needing this, either because of the spine bones or because you chose to use other "
+            "non-sl-animated bones, like face bones, then it's best to upload without joint positions ticked and use your deformer "
+            "to bring the entire rig into compliance",
         )
     cc_apply_transforms : bpy.props.BoolProperty(
         name = "",
-        description =            "Apply transforms before conversion",
+        description = ""
+            "Apply transforms before conversion",
         )
     cc_map_filename : bpy.props.StringProperty(
         name = "cc filename",
@@ -16967,7 +17815,13 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
 
     cc_custom_mapping : bpy.props.BoolProperty(
         name = "cc_custom_mapping",
-        description =            "CAUTION!: This is a fully functional mapping system to convert any foreign character for use with Second Life, BUT..."            "this mapper was difficult to manage and bug fix, please try your hand at the new, replacement, mapper provided under "            "(Template Creator / Editor - Hybrid Mapper), it's much more fun and a lot easier to understand."            "\n\n"            "This enables a mapper which allows you to click and choose bones, "            "that can't be used in the target platform, and map them to an anchor bone that can be used.",
+        description = ""
+            "CAUTION!: This is a fully functional mapping system to convert any foreign character for use with Second Life, BUT..."
+            "this mapper was difficult to manage and bug fix, please try your hand at the new, replacement, mapper provided under "
+            "(Template Creator / Editor - Hybrid Mapper), it's much more fun and a lot easier to understand."
+            "\n\n"
+            "This enables a mapper which allows you to click and choose bones, "
+            "that can't be used in the target platform, and map them to an anchor bone that can be used.",
         default = False,
         update = populate_custom_map_ui
         )
@@ -17174,24 +18028,41 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
     
     record_source_rig : bpy.props.BoolProperty(
         name = "record_source_rig",
-        description =            "WARNING! If you get an error message about (prefix) use the template tools in the (Template Workshop) before trying again.  "            "This is different than the other map tools in that the (source) is your character rig and the (target) "            "will be the armature with the bone names that are properly named, for your target system.",
+        description = ""
+            "WARNING! If you get an error message about (prefix) use the template tools in the (Template Workshop) before trying again.  "
+            "This is different than the other map tools in that the (source) is your character rig and the (target) "
+            "will be the armature with the bone names that are properly named, for your target system.",
         default = False,
         update = update_record_source_rig
         )
     record_target_rig : bpy.props.BoolProperty(
         name = "record_target_rig",
-        description = "This is a rig from the target system that contains the proper bone names for that target.  These names will "            "be used on your source rig to rename the bones on the source and adjust weight groups according to your (Rename) and "            "(Reskin) selections",
+        description = "This is a rig from the target system that contains the proper bone names for that target.  These names will "
+            "be used on your source rig to rename the bones on the source and adjust weight groups according to your (Rename) and "
+            "(Reskin) selections",
         default = False,
         update = update_record_target_rig
         )
     disable_map_pose : bpy.props.BoolProperty(
         name = "load_map_pose",
-        description =            "This feature is helpful when you've saved a CCM when the rig was in a strange pose since any pose that the rig is "            "currently in will save along with the CCM.  This allows you to start with a clean CCM with mapping only, and no pose.  "            "With this (disable) button pushed the pose contained in the map file will not be loaded along with the mapping.  "            "This also means that the current pose will be saved with the map file and the pose in the new, saved, CCM will not "            "contain the pose from the loaded CCM.  If the CCM files are the same then of course the pose in the CCM will be "            "overwritten.  Make sure you know what's going on, it's safe to just use a different name when saving.",
+        description = ""
+            "This feature is helpful when you've saved a CCM when the rig was in a strange pose since any pose that the rig is "
+            "currently in will save along with the CCM.  This allows you to start with a clean CCM with mapping only, and no pose.  "
+            "With this (disable) button pushed the pose contained in the map file will not be loaded along with the mapping.  "
+            "This also means that the current pose will be saved with the map file and the pose in the new, saved, CCM will not "
+            "contain the pose from the loaded CCM.  If the CCM files are the same then of course the pose in the CCM will be "
+            "overwritten.  Make sure you know what's going on, it's safe to just use a different name when saving.",
         default = False,
         )
     disable_map_code : bpy.props.BoolProperty(
         name = "",
-        description =            "Code Loading"            "\n\n"            "In some newer versions of Bento Buddy we'll start using macros to help process difficult characters.  This code is "            "embedded in the map file and is only used where indicated and is always defaulted to OFF.  If the code is indicated "            "you should probably use it.  This feature allows you to disable overwrite of previously loaded code if you know that "            "a previously loaded map has usable code and you don't want to replace it.  This feature works just like the pose loader.",
+        description = ""
+            "Code Loading"
+            "\n\n"
+            "In some newer versions of Bento Buddy we'll start using macros to help process difficult characters.  This code is "
+            "embedded in the map file and is only used where indicated and is always defaulted to OFF.  If the code is indicated "
+            "you should probably use it.  This feature allows you to disable overwrite of previously loaded code if you know that "
+            "a previously loaded map has usable code and you don't want to replace it.  This feature works just like the pose loader.",
         default = True,
         )
 
@@ -17744,7 +18615,7 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
                 ccp['remap_stored']['reskin'][anchor] = reskin_bones
                 
                 for bone in reskin_candidates:
-                    obj[source].pose.bones[bone].bone_group =                        bpy.data.objects[source].pose.bone_groups[cc_reskin_group]
+                    obj[source].pose.bones[bone].bone_group = bpy.data.objects[source].pose.bone_groups[cc_reskin_group]
 
             
             ccp['map_editor']['active_anchor'] = ""
@@ -17752,66 +18623,100 @@ class CharacterConverterProperties(bpy.types.PropertyGroup):
         return
 
     show_full_map_enabled : bpy.props.BoolProperty(
-        description =            "Enable this to see a complete map for bones that will be renamed",
+        description = ""
+            "Enable this to see a complete map for bones that will be renamed",
         default = False,
         )
     isolation_mode : bpy.props.BoolProperty(
         name = "isolation_mode",
-        description =            "Choose an anchor bone and then click this and you will isolate the branch making everything else hidden.",
+        description = ""
+            "Choose an anchor bone and then click this and you will isolate the branch making everything else hidden.",
         default = False,
         update = update_isolation_mode
         )
     hide_mapped_bones : bpy.props.BoolProperty(
         name = "hide_mapped_bones",
-        description =            "Enabling this will cause all of the mapped bones to be hidden.  This can be helpful when working with a complex rig.  "            "Simply click it again to disable it in order to view the mapped bones again.",
+        description = ""
+            "Enabling this will cause all of the mapped bones to be hidden.  This can be helpful when working with a complex rig.  "
+            "Simply click it again to disable it in order to view the mapped bones again.",
         default = False,
         update = update_hide_mapped_bones
         )
     add_reskin_bone : bpy.props.BoolProperty(
         name = "Add reskin bones",
-        description =            "Click this while an anchor is selected and then select one or more bones to add to the reskin set and unclick "            "this to add those reskin bones to the branch.",
+        description = ""
+            "Click this while an anchor is selected and then select one or more bones to add to the reskin set and unclick "
+            "this to add those reskin bones to the branch.",
         default = False,
         update = update_add_reskin_bone
         )
     
     edit_mode : bpy.props.BoolProperty(
         name = "edit_mode",
-        description =                "Edit maps / Isolate Anchor Branches / Hide Mapped Anchor Bones etc."                "\n\n"                "This option must be enabled to use its associated features, some of which are indicated above."                "\n\n"                "When enabled all of the bones will be selectable and you can remove maps from the source by selecting them "                "and clicking the remove (X) button.  If an anchor is selected at the time then the entire tree is removed.",
+        description = ""
+                "Edit maps / Isolate Anchor Branches / Hide Mapped Anchor Bones etc."
+                "\n\n"
+                "This option must be enabled to use its associated features, some of which are indicated above."
+                "\n\n"
+                "When enabled all of the bones will be selectable and you can remove maps from the source by selecting them "
+                "and clicking the remove (X) button.  If an anchor is selected at the time then the entire tree is removed.",
         default = False,
         update = update_edit_mode
         )
     process_volume_bones : bpy.props.BoolProperty(
         name = "Process Volume Bones",
-        description =            "Export with Fitted Mesh properties\n"            "\n"            "When enabled the volume bone properties will be adjusted for SL.  If they are already meeting the "            "requirements for Second Life then this will break it.  Fortunately it makes a copy of your items before "            "operating on it so that your original is untouched.  If something goes wrong just try it again with this disabled.  "            "If your rig is facing +X there's a good chance that you need to disable this and use the rotate feature to bring "            "it back to -Y, by adding an X value of -90, for consistency.  See (Rig Tools) for easy adjustment.",
+        description = ""
+            "Export with Fitted Mesh properties\n"
+            "\n"
+            "When enabled the volume bone properties will be adjusted for SL.  If they are already meeting the "
+            "requirements for Second Life then this will break it.  Fortunately it makes a copy of your items before "
+            "operating on it so that your original is untouched.  If something goes wrong just try it again with this disabled.  "
+            "If your rig is facing +X there's a good chance that you need to disable this and use the rotate feature to bring "
+            "it back to -Y, by adding an X value of -90, for consistency.  See (Rig Tools) for easy adjustment.",
         default = True,
         )
 
     apply_modifiers : bpy.props.BoolProperty(
         name = "Apply Modifiers",
-        description =            "Export with modifiers applied non-destructively to a copy of the mesh(s)\n"            "\n",
+        description = ""
+            "Export with modifiers applied non-destructively to a copy of the mesh(s)\n"
+            "\n",
         default = False,
         )
     export_mesh_type_selection : bpy.props.BoolProperty(
         name = "Apply Type",
-        description =            "Export with modifiers applied non-destructively of the type render or view\n"            "\n",
+        description = ""
+            "Export with modifiers applied non-destructively of the type render or view\n"
+            "\n",
         default = False,
         )
 
     rotate_for_sl : bpy.props.BoolProperty(
         name = "Rotate for SL 90 deg cw",
-        description =            "If your rig is facing -y you'll want this enabled.  If it's facing +x disable it.  If it's facing any other way "            "then use the rotate rig tool in the Rig Tools section, that tool does more than just rotate it checks sanity."            "\n",
+        description = ""
+            "If your rig is facing -y you'll want this enabled.  If it's facing +x disable it.  If it's facing any other way "
+            "then use the rotate rig tool in the Rig Tools section, that tool does more than just rotate it checks sanity."
+            "\n",
         default = True,
         )
 
     apply_pose : bpy.props.BoolProperty(
         name = "Apply New Rest Post",
-        description =            "Export with the current pose as the new rest pose.  This is non-destructive and uses a copy of the mesh(s).\n"            "\n",
+        description = ""
+            "Export with the current pose as the new rest pose.  This is non-destructive and uses a copy of the mesh(s).\n"
+            "\n",
         default = False,
         )
 
     preserve_animation : bpy.props.BoolProperty(
         name = "Preserve animation",
-        description = "With this enabled all efforts to preserve usable animation of the converted character will be attempted. "            "This does not mean it will work, it only means that nothing else can be done to make it work, if it doesn't, "            "With additional effort you may be able to do this yourself.  This overrides the following properties - \n"            " - Connect bone links\n"            " - Bake Pose From:\n"            "      Map File\n"            "      Current Pose\n",
+        description = "With this enabled all efforts to preserve usable animation of the converted character will be attempted. "
+            "This does not mean it will work, it only means that nothing else can be done to make it work, if it doesn't, "
+            "With additional effort you may be able to do this yourself.  This overrides the following properties - \n"
+            " - Connect bone links\n"
+            " - Bake Pose From:\n"
+            "      Map File\n"
+            "      Current Pose\n",
         default = False
         )
 
@@ -18106,7 +19011,7 @@ class CharacterConverterSetRename(bpy.types.Operator):
         bpy.ops.pose.group_unassign()
 
 
-        obj[armObj.name].pose.bones[boneObj.name].bone_group =            obj[armObj.name].pose.bone_groups[cc_rename_group]
+        obj[armObj.name].pose.bones[boneObj.name].bone_group = obj[armObj.name].pose.bone_groups[cc_rename_group]
 
         obj[armObj.name].data.bones[boneObj.name].select = False
 
@@ -18186,7 +19091,7 @@ class CharacterConverterSetReskin(bpy.types.Operator):
             child_list.append(boneObj.name)
 
             
-            obj[armObj.name].pose.bones[boneObj.name].bone_group =                obj[armObj.name].pose.bone_groups[cc_reskin_group]
+            obj[armObj.name].pose.bones[boneObj.name].bone_group = obj[armObj.name].pose.bone_groups[cc_reskin_group]
 
             
             obj[armObj.name].data.bones[boneObj.name].hide_select = True
@@ -18262,7 +19167,7 @@ class CharacterConverterSetTarget(bpy.types.Operator):
         armObj = obj[ccp.target_rig_name]
         
         boneObj = bpy.context.selected_pose_bones[0]
-        obj[armObj.name].pose.bones[boneObj.name].bone_group =            obj[armObj.name].pose.bone_groups[cc_rename_group]
+        obj[armObj.name].pose.bones[boneObj.name].bone_group = obj[armObj.name].pose.bone_groups[cc_rename_group]
         obj[armObj.name].data.bones[boneObj.name].select = False
         ccp.set_rename_target = boneObj.name
 
@@ -19211,7 +20116,13 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
     
     project_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "With custom rigs, as is the case with almost every conversion, you'll want the projection of "            "a full rig in order to determine joint locations when uploading with (Joint Postitions).  You "            "probably always want this enabled in this panel.  There's a similar feature in the (Export Mesh) "            "area that does the same thing, and this toggle is actually a proxy to it but they can be set "            "independantly, so keep that in mind when you're over there.  You probably don't need this switch "            "when processing devkit material",
+        description = ""
+            "With custom rigs, as is the case with almost every conversion, you'll want the projection of "
+            "a full rig in order to determine joint locations when uploading with (Joint Postitions).  You "
+            "probably always want this enabled in this panel.  There's a similar feature in the (Export Mesh) "
+            "area that does the same thing, and this toggle is actually a proxy to it but they can be set "
+            "independantly, so keep that in mind when you're over there.  You probably don't need this switch "
+            "when processing devkit material",
         default = False,
         )
 
@@ -19226,13 +20137,20 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         )
     smooth_normals_precision : bpy.props.IntProperty(
         name = "",
-        description =            "Precision (rounding)"            "\n\n"            "This is a simple conversion by rounding the input location data to determine the relative distance between "            "vertex locations.  This is how it's determined if a vertex is close enough to another one to average normals "            "between them.",
+        description = ""
+            "Precision (rounding)"
+            "\n\n"
+            "This is a simple conversion by rounding the input location data to determine the relative distance between "
+            "vertex locations.  This is how it's determined if a vertex is close enough to another one to average normals "
+            "between them.",
         min=1,
         default = 6,
         )
     smooth_normals_angle : bpy.props.FloatProperty(
         name = "",
-        description =            "Some angles you may want to preserve, like hard edges at 45 degrees.  This will preserve those normal angles that "            "fall outside the tolerance range in degrees",
+        description = ""
+            "Some angles you may want to preserve, like hard edges at 45 degrees.  This will preserve those normal angles that "
+            "fall outside the tolerance range in degrees",
         default = 30.0,
         )
     smooth_normals_selected : bpy.props.BoolProperty(
@@ -19394,7 +20312,9 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
 
     pose_export_menu_enabled : bpy.props.BoolProperty(
         description =
-        "Click to expand more specific export options, including bind pose, rig and Avastar."        "You are cautioned not to use these options unless dealing with an existing dev kit.  "        "If you're starting a new project use the Second Life Safe option",
+        "Click to expand more specific export options, including bind pose, rig and Avastar."
+        "You are cautioned not to use these options unless dealing with an existing dev kit.  "
+        "If you're starting a new project use the Second Life Safe option",
         default = False,
         )
 
@@ -19411,7 +20331,11 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
     
 
     use_universal_data : bpy.props.BoolProperty(
-        description = ""            "This overrides everything and should be used predominantly.  Unfortunately there are some kit types that cannot "            "benefit from this tool.  DAE sourced material aught to use the (Bind Pose) option and some rigs like Tonic and possibly "            "male rig derived kits may be able to benefit from (Use Avastar Data).  All of the exporters are now able to generate a "            "DAE/Collada file that is compatible with other applications.",
+        description = ""
+            "This overrides everything and should be used predominantly.  Unfortunately there are some kit types that cannot "
+            "benefit from this tool.  DAE sourced material aught to use the (Bind Pose) option and some rigs like Tonic and possibly "
+            "male rig derived kits may be able to benefit from (Use Avastar Data).  All of the exporters are now able to generate a "
+            "DAE/Collada file that is compatible with other applications.",
         default = False,
         
         )
@@ -19428,7 +20352,13 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         
 
     use_safe_settings : bpy.props.BoolProperty(
-        description = ""            "Safe settings for rig pose"            "\n"            "This is the same as (Use Rig Data), it's a way to internally set default values that are known to work properly.  If you "            "want to move away from the craziness and find a solid and understandable way to generate mesh characters and their products "            "then this is the way to go.  This currently enables offsets for position and rotation so that you can have a normal bind pose "            "and be able to use and distribute your item across 3d applications to widen the creator pool for your product (devkit).",
+        description = ""
+            "Safe settings for rig pose"
+            "\n"
+            "This is the same as (Use Rig Data), it's a way to internally set default values that are known to work properly.  If you "
+            "want to move away from the craziness and find a solid and understandable way to generate mesh characters and their products "
+            "then this is the way to go.  This currently enables offsets for position and rotation so that you can have a normal bind pose "
+            "and be able to use and distribute your item across 3d applications to widen the creator pool for your product (devkit).",
         
         
         default = False,
@@ -19437,12 +20367,22 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         )
 
     use_rig_data : bpy.props.BoolProperty(
-        description = ""            "Use Rig Data (Bento Buddy / Avastar) "            "\n"            "Use with Converted Characters, Animesh and normal DAE.  This is your (go to) export option.",
+        description = ""
+            "Use Rig Data (Bento Buddy / Avastar) "
+            "\n"
+            "Use with Converted Characters, Animesh and normal DAE.  This is your (go to) export option.",
         default = True,
         update = update_pose_data_rig
         )
     use_bind_data : bpy.props.BoolProperty(
-        description = ""            "Use Bind Data"            "\n\n"            "If you imported a dae file, possibly one identified as a devkit, then it's also assumed that you enabled (Keep Bind Info) "            "which is required for this feature to work.  If you did not include that option then this feature cannot be used with your "            "mesh.  If you are starting new and imported a mesh, possibly even skinned, just to have a starting point to generate a new "            "character or to use one as a reference then you'll want to use the export option (Use Rig Data) from now on and enable all "            "calculate options for volume, location, rotation and scale for best versatility.",
+        description = ""
+            "Use Bind Data"
+            "\n\n"
+            "If you imported a dae file, possibly one identified as a devkit, then it's also assumed that you enabled (Keep Bind Info) "
+            "which is required for this feature to work.  If you did not include that option then this feature cannot be used with your "
+            "mesh.  If you are starting new and imported a mesh, possibly even skinned, just to have a starting point to generate a new "
+            "character or to use one as a reference then you'll want to use the export option (Use Rig Data) from now on and enable all "
+            "calculate options for volume, location, rotation and scale for best versatility.",
         default = False,
         update = update_pose_data_bind
         )
@@ -19463,14 +20403,33 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
 
     use_sl_compatible_data : bpy.props.BoolProperty(
         name = "",
-        description =            "Export for SL"            "\n\n"            "If you were able to import your devkit as dae file, and if that dae file is actually functional in SL, then this will "            "produce a perfect result.  This is only as good as the kit you have, a lot of kits are broken so don't blame Bento Buddy "            "for that other tool's problems, please.",
+        description = ""
+            "Export for SL"
+            "\n\n"
+            "If you were able to import your devkit as dae file, and if that dae file is actually functional in SL, then this will "
+            "produce a perfect result.  This is only as good as the kit you have, a lot of kits are broken so don't blame Bento Buddy "
+            "for that other tool's problems, please.",
         default = False,
         update = update_pose_data_sl_compatible
         )
     use_app_compatible_data : bpy.props.BoolProperty(
         name = "",
-        description =            "Export for other applications"            "\n\n"            "Many devkits have incorrect data as a result of the exporter that was used to produce the dae files, as well as the "            "joint configurations in their corresponding Blender kits.  This exporter option will allow you to export the correct "            "data for use with other 3d applications.  This type of export can also be used in Second Life."            "\n\n"            "If you're a devkit creator (Mesh Body Maker) and you've used Bento Buddy for your creations you don't need a specific "            "export.  Just hit the (Reset All) button and that's the safe state to export with."            "\n\n"            "If you're a devkit creator and if you didn't start your project using Bento Buddy there may be a snag.  If you're going "            "to re-work a kit to fix something but you're already established and items have been made for your kit be careful... "            "the story you're about to hear is true, the names have been changed to protect the guilty... If your stable item was "
-            "derived from AvaBurp and you uploaded with joint positions you're in a pickle, those joint positions are wrong but you're "            "stuck now so use our (Use SL Data) export switch, this preserves the AvaBurp errors so that you get what you have always "            "gotten, broken but expected behavior.",
+        description = ""
+            "Export for other applications"
+            "\n\n"
+            "Many devkits have incorrect data as a result of the exporter that was used to produce the dae files, as well as the "
+            "joint configurations in their corresponding Blender kits.  This exporter option will allow you to export the correct "
+            "data for use with other 3d applications.  This type of export can also be used in Second Life."
+            "\n\n"
+            "If you're a devkit creator (Mesh Body Maker) and you've used Bento Buddy for your creations you don't need a specific "
+            "export.  Just hit the (Reset All) button and that's the safe state to export with."
+            "\n\n"
+            "If you're a devkit creator and if you didn't start your project using Bento Buddy there may be a snag.  If you're going "
+            "to re-work a kit to fix something but you're already established and items have been made for your kit be careful... "
+            "the story you're about to hear is true, the names have been changed to protect the guilty... If your stable item was "
+            "derived from AvaBurp and you uploaded with joint positions you're in a pickle, those joint positions are wrong but you're "
+            "stuck now so use our (Use SL Data) export switch, this preserves the AvaBurp errors so that you get what you have always "
+            "gotten, broken but expected behavior.",
 
         default = False,
         update = update_pose_data_app_compatible
@@ -19482,27 +20441,43 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         )
     process_volume_bones : bpy.props.BoolProperty(
         name = "Process SL specific bone properties",
-        description = ""            "Sometimes this is not what you want.  If your rig is facing the X direction then there's a good chance that it "            "contains bind information that you don't want to change. If you're unsure just uncheck it and give it a try.  If "            "your resulting mesh looks like a flattened mosquito in Second Life then this feature needs to be enabled. ",
+        description = ""
+            "Sometimes this is not what you want.  If your rig is facing the X direction then there's a good chance that it "
+            "contains bind information that you don't want to change. If you're unsure just uncheck it and give it a try.  If "
+            "your resulting mesh looks like a flattened mosquito in Second Life then this feature needs to be enabled. ",
         default = True,
         )
     volume_bone_location : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This should be disabled for mapped mesh when you don't want the volume bones relocated."            "\n\n"            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
+        description = ""
+            "This should be disabled for mapped mesh when you don't want the volume bones relocated."
+            "\n\n"
+            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "
+            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
         default = True,
         )
     volume_bone_rotation : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This should be disabled for mapped mesh when you don't want the volume bones relocated."            "\n\n"            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
+        description = ""
+            "This should be disabled for mapped mesh when you don't want the volume bones relocated."
+            "\n\n"
+            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "
+            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
         default = True,
         )
     volume_bone_scale : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This should be ENABLED for mapped mesh if using volume bones in order to prevent deformations."            "\n\n"            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled",
+        description = ""
+            "This should be ENABLED for mapped mesh if using volume bones in order to prevent deformations."
+            "\n\n"
+            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "
+            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled",
         default = True,
         )
     rotate_for_sl : bpy.props.BoolProperty(
         name = "X facing for SL",
-        description = ""            "If your rig is facing -Y right now, this is what you want.  You won't see anything happen but it's required.",
+        description = ""
+            "If your rig is facing -Y right now, this is what you want.  You won't see anything happen but it's required.",
         default = True,
         )
     
@@ -19520,8 +20495,15 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         bpy.context.scene.bb_mesh.property_unset("choose_base_rig")
     choose_base_rig : bpy.props.BoolProperty(
         name = "", 
-        description =            "- Calculate Offsets -"
-            "\n\n"            "This button is informative only"            "\n\n"            "You shouldn't have to alter these and mostly they are not implemented as an option except for specific conditions. "            "They are placed here to test individual transform offsets for bind poses with various rig classes and types.  What it "            "does is enable or disable bind pose data with respect to the current rig associated with the mesh you're about to export "            "for that particular bone property or transform.  Internally these are usually set to (enabled) depending on the situation.",
+        description = ""
+            "- Calculate Offsets -"
+            "\n\n"
+            "This button is informative only"
+            "\n\n"
+            "You shouldn't have to alter these and mostly they are not implemented as an option except for specific conditions. "
+            "They are placed here to test individual transform offsets for bind poses with various rig classes and types.  What it "
+            "does is enable or disable bind pose data with respect to the current rig associated with the mesh you're about to export "
+            "for that particular bone property or transform.  Internally these are usually set to (enabled) depending on the situation.",
         default = False,
         update = update_choose_base_rig
         )
@@ -19581,38 +20563,75 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
             return
     export_full_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "Export Full Rig"            "\n\n"            "Exporting a full rig will prevent your mesh from being weight driven in Second Life, the option will not be available."            "This tool is to help deliver your complete kit to another platform with all bones included, a full rig, for better "            "versatility and manipulation.",
+        description = ""
+            "Export Full Rig"
+            "\n\n"
+            "Exporting a full rig will prevent your mesh from being weight driven in Second Life, the option will not be available."
+            "This tool is to help deliver your complete kit to another platform with all bones included, a full rig, for better "
+            "versatility and manipulation.",
         default = False,
         update = update_export_full_rig
         )
     export_path_to_pelvis : bpy.props.BoolProperty(
         name = "",
-        description =            "Export path to pelvis (1)"            "\n\n"            "This option will tell the exporter to include all bones that are missing on the way from an influencing bone to the pelvis.  "            "I put this in to help generate a mesh deformer as an alternative to the animation/pose deformer.  If you find that there are too "            "many bones in your mesh as a result of using this you will have to either use a mesh deformer found under (Mesh Tools),  split up "            "your mesh into multiple parts or use a corrective pose (deformer) in the animation panel.",
+        description = ""
+            "Export path to pelvis (1)"
+            "\n\n"
+            "This option will tell the exporter to include all bones that are missing on the way from an influencing bone to the pelvis.  "
+            "I put this in to help generate a mesh deformer as an alternative to the animation/pose deformer.  If you find that there are too "
+            "many bones in your mesh as a result of using this you will have to either use a mesh deformer found under (Mesh Tools),  split up "
+            "your mesh into multiple parts or use a corrective pose (deformer) in the animation panel.",
         default = True,
         update = update_export_path_to_pelvis
         )
 
     use_offset_volume : bpy.props.BoolProperty(
-        description = "Calculate Volume Bone Offsets"            "\n\n"            "This is a normal feature that should be available for Second Life but it will not work with Avastar rigs.  "            "If you are committed to using Bento Buddy to generate your character, bind pose and kit, turn this feature on "            "to get the most flexibility without future glitches.  If you are converting from an Avastar rig to a Bento Buddy rig "            "leave this feature off unless you plan to release it as a new character/avatar."            "\n\n"            "What does it do?"            "\n"            "It calculates a difference from when you generated your rig to what you did with it before binding the "            "character mesh to the rig.  It allows for those changes to be incorporated into your avatar shape in SL, effectively like sliders "            "but without the slider confusion.  This is specifically for volume bones since they are treated a bit differently than the "            "typical deform bones but it allows you to manipulate those bones just as you would the normal deform bones and get the results "            "that you expect.  It's safe to keep this off in any case.",
+        description = "Calculate Volume Bone Offsets"
+            "\n\n"
+            "This is a normal feature that should be available for Second Life but it will not work with Avastar rigs.  "
+            "If you are committed to using Bento Buddy to generate your character, bind pose and kit, turn this feature on "
+            "to get the most flexibility without future glitches.  If you are converting from an Avastar rig to a Bento Buddy rig "
+            "leave this feature off unless you plan to release it as a new character/avatar."
+            "\n\n"
+            "What does it do?"
+            "\n"
+            "It calculates a difference from when you generated your rig to what you did with it before binding the "
+            "character mesh to the rig.  It allows for those changes to be incorporated into your avatar shape in SL, effectively like sliders "
+            "but without the slider confusion.  This is specifically for volume bones since they are treated a bit differently than the "
+            "typical deform bones but it allows you to manipulate those bones just as you would the normal deform bones and get the results "
+            "that you expect.  It's safe to keep this off in any case.",
         default = False,
         )
     
     use_offset_location : bpy.props.BoolProperty(
-        description = "Calculate location offsets"            "\n\n"            "This calculates any changes in location to bones on the rig used to export the mesh.",
+        description = "Calculate location offsets"
+            "\n\n"
+            "This calculates any changes in location to bones on the rig used to export the mesh.",
         default = False,
         )
     
     use_offset_rotation : bpy.props.BoolProperty(
-        description = "Calculate rotation offsets"            "\n\n"            "This calculates any changes in rotations to bones on the rig used to export the mesh.",
+        description = "Calculate rotation offsets"
+            "\n\n"
+            "This calculates any changes in rotations to bones on the rig used to export the mesh.",
         default = False,
         )
     
     use_offset_scale : bpy.props.BoolProperty(
-        description = "Calculate scale offsets"            "\n\n"            "This calculates scale directly from bones on the rig used to export the mesh.  "            "This is how the real world does it but Blender doesn't export this property and, at the time of this writing, we're "            "unsure if bone scale can even be used as a reference but the option is here in case Blender improves in the future.  "            "It's very safe to leave this off, it's very NOT safe to turn it on.",
+        description = "Calculate scale offsets"
+            "\n\n"
+            "This calculates scale directly from bones on the rig used to export the mesh.  "
+            "This is how the real world does it but Blender doesn't export this property and, at the time of this writing, we're "
+            "unsure if bone scale can even be used as a reference but the option is here in case Blender improves in the future.  "
+            "It's very safe to leave this off, it's very NOT safe to turn it on.",
        default = False,
         )
     guess_offset_scale : bpy.props.BoolProperty(
-        description = "Guess and then calculate scale offsets"            "\n\n"            "This will attempt to guess the applied scale but it can fail if you have a custom bind pose.  The best thing to do is "            "try to revert back to the original size, apply your scales there, and then scale your rig up but do not apply that scale.  "            "That is, of course, if you actually wanted your avatar to be a different default size in-world.",
+        description = "Guess and then calculate scale offsets"
+            "\n\n"
+            "This will attempt to guess the applied scale but it can fail if you have a custom bind pose.  The best thing to do is "
+            "try to revert back to the original size, apply your scales there, and then scale your rig up but do not apply that scale.  "
+            "That is, of course, if you actually wanted your avatar to be a different default size in-world.",
         default = False,
         )
     scale_factor : bpy.props.FloatVectorProperty(
@@ -19623,23 +20642,38 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         )
 
     fix_broken_bones : bpy.props.BoolProperty(
-        description = "Fix use_deform property"            "\n\n"            "Blender bones have a global setting that tells the exporter if they have some influence on their weighted mesh.  This setting "            "is wrong on some kits produced using Avastar an can benefit from the use of this setting so keep this enabled to fix that.  If "            "your rig is not SL compliant this could break it.",
+        description = "Fix use_deform property"
+            "\n\n"
+            "Blender bones have a global setting that tells the exporter if they have some influence on their weighted mesh.  This setting "
+            "is wrong on some kits produced using Avastar an can benefit from the use of this setting so keep this enabled to fix that.  If "
+            "your rig is not SL compliant this could break it.",
        default = False,
         )
     remove_empty_groups : bpy.props.BoolProperty(
         name = "",
-        description = "Remove empty groups"            "\n\n"            "Pre-processing to remove empty weight groups.  The default behavior is to remove only groups that have no mirror counterpart.  "            "This test can only be specific to Second Life so if your mesh is not intended for SL then you may encounter unexpected results "            "if you enable (preserve counterparts)",
+        description = "Remove empty groups"
+            "\n\n"
+            "Pre-processing to remove empty weight groups.  The default behavior is to remove only groups that have no mirror counterpart.  "
+            "This test can only be specific to Second Life so if your mesh is not intended for SL then you may encounter unexpected results "
+            "if you enable (preserve counterparts)",
        default = True,
         )
     preserve_empty_counterparts : bpy.props.BoolProperty(
         name = "",
-        description =            "Preserve Empty Counterparts"            "\n\n"            "If you enabled (Remove Empty Groups) then you can utilize this (on/enabled) to preserve the mirrored group counterparts that have "            "no data just yet thus preventing them from being included in the pruning.",
+        description = ""
+            "Preserve Empty Counterparts"
+            "\n\n"
+            "If you enabled (Remove Empty Groups) then you can utilize this (on/enabled) to preserve the mirrored group counterparts that have "
+            "no data just yet thus preventing them from being included in the pruning.",
        default = True,
         )
 
     apply_scale : bpy.props.BoolProperty(
         name = "Apply scale before export",
-        description = ""            "This applies the scale to your items to be exported before it saves"            "\n\n"            "This is usually want you want, it's permanent, save save save!",
+        description = ""
+            "This applies the scale to your items to be exported before it saves"
+            "\n\n"
+            "This is usually want you want, it's permanent, save save save!",
         default = False,
         )
     
@@ -19647,12 +20681,18 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
     
     apply_rotation : bpy.props.BoolProperty(
         name = "Apply rotation before export",
-        description = ""            "This applies the rotation to your items to be exported before it saves"            "\n\n"            "This is usually want you want, it's permanent, save save save!",
+        description = ""
+            "This applies the rotation to your items to be exported before it saves"
+            "\n\n"
+            "This is usually want you want, it's permanent, save save save!",
         default = True,
         )
     apply_location : bpy.props.BoolProperty(
         name = "Apply location before export",
-        description = ""            "This applies the location to your items to be exported before it saves"            "\n\n"            "This is usually want you want, it's permanent, save save save!",
+        description = ""
+            "This applies the location to your items to be exported before it saves"
+            "\n\n"
+            "This is usually want you want, it's permanent, save save save!",
         default = False,
         )
     export_advanced : bpy.props.BoolProperty(
@@ -19661,12 +20701,15 @@ class BentoBuddyMeshProperties(bpy.types.PropertyGroup):
         )
     export_apply_modifiers : bpy.props.BoolProperty(
         name = "DAE / Collada export option",
-        description = ""            "This is a dae export option, it will not effect you Blender items but it will freeze your posed mesh, "            "if that's what you want, inside the DAE file, which will show up in SL or other apps.",
+        description = ""
+            "This is a dae export option, it will not effect you Blender items but it will freeze your posed mesh, "
+            "if that's what you want, inside the DAE file, which will show up in SL or other apps.",
         default = False,
         )
     export_mesh_type_selection : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Type is view and render for each modifier",
+        description = ""
+            "Type is view and render for each modifier",
         default = False,
         )
 
@@ -19880,12 +20923,24 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
 
     use_rig_data : bpy.props.BoolProperty(
-        description = ""            "Use Rig Data (Bento Buddy / Avastar) "            "\n"            "Use with Converted Characters, Animesh and normal DAE.  This is your (go to) export option."            "\n"            "If you have an altered bind pose with an Avastar rig then try the Avatar Pose.",
+        description = ""
+            "Use Rig Data (Bento Buddy / Avastar) "
+            "\n"
+            "Use with Converted Characters, Animesh and normal DAE.  This is your (go to) export option."
+            "\n"
+            "If you have an altered bind pose with an Avastar rig then try the Avatar Pose.",
         default = True,
         update = update_use_rig_data
         )
     use_bind_data : bpy.props.BoolProperty(
-        description = ""            "Use Bind Data"            "\n\n"            "If you imported a dae file, possibly one identified as a devkit, then it's also assumed that you enabled (Keep Bind Info) "            "which is required for this feature to work.  If you did not include that option then this feature cannot be used with your "            "mesh.  If you are starting new and imported a mesh, possibly even skinned, just to have a starting point to generate a new "            "character or to use one as a reference then you'll want to use the export option (Use Rig Data) from now on and enable all "            "calculate options for volume, location, rotation and scale for best versatility.",
+        description = ""
+            "Use Bind Data"
+            "\n\n"
+            "If you imported a dae file, possibly one identified as a devkit, then it's also assumed that you enabled (Keep Bind Info) "
+            "which is required for this feature to work.  If you did not include that option then this feature cannot be used with your "
+            "mesh.  If you are starting new and imported a mesh, possibly even skinned, just to have a starting point to generate a new "
+            "character or to use one as a reference then you'll want to use the export option (Use Rig Data) from now on and enable all "
+            "calculate options for volume, location, rotation and scale for best versatility.",
         default = False,
         update = update_use_bind_data
         )
@@ -19905,13 +20960,23 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     use_sl_compatible_data : bpy.props.BoolProperty(
         name = "",
-        description =            "Export for SL"            "\n\n"            "If you were able to import your devkit as dae file, and if that dae file is actually functional in SL, then this will "            "produce a perfect result.  This is only as good as the kit you have, a lot of kits are broken so don't blame Bento Buddy "            "for that other tool's problems, please.",
+        description = ""
+            "Export for SL"
+            "\n\n"
+            "If you were able to import your devkit as dae file, and if that dae file is actually functional in SL, then this will "
+            "produce a perfect result.  This is only as good as the kit you have, a lot of kits are broken so don't blame Bento Buddy "
+            "for that other tool's problems, please.",
         default = False,
         update = update_use_sl_compatible_data
         )
     use_app_compatible_data : bpy.props.BoolProperty(
         name = "",
-        description =            "Export for other applications"            "\n\n"            "This feature is the default for devkit material because it produces a compatible DAE file that you can often times use "            "with other 3d applcations.  In addition you can convert a devkit produced using the Avastar tool into a compatible set "            "for use with other 3d applications, something that Avastar was not capable of at the time of this writing - 1/3/2022",
+        description = ""
+            "Export for other applications"
+            "\n\n"
+            "This feature is the default for devkit material because it produces a compatible DAE file that you can often times use "
+            "with other 3d applcations.  In addition you can convert a devkit produced using the Avastar tool into a compatible set "
+            "for use with other 3d applications, something that Avastar was not capable of at the time of this writing - 1/3/2022",
         default = False,
         update = update_use_app_compatible_data
         )
@@ -19922,7 +20987,8 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     rotate_for_sl : bpy.props.BoolProperty(
         name = "X facing for SL",
-        description = ""            "If your rig is facing -Y right now, this is what you want.  You won't see anything happen but it's required.",
+        description = ""
+            "If your rig is facing -Y right now, this is what you want.  You won't see anything happen but it's required.",
         default = True,
         update = update_rotate_for_sl
         )
@@ -19933,13 +20999,21 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     remove_empty_groups : bpy.props.BoolProperty(
         name = "",
-        description = "Remove empty groups"            "\n\n"            "Pre-processing to remove empty weight groups.  The default behavior is to remove only groups that have no mirror counterpart.  "            "This test can only be specific to Second Life so if your mesh is not intended for SL then you may encounter unexpected results "            "if you enable (preserve counterparts)",
+        description = "Remove empty groups"
+            "\n\n"
+            "Pre-processing to remove empty weight groups.  The default behavior is to remove only groups that have no mirror counterpart.  "
+            "This test can only be specific to Second Life so if your mesh is not intended for SL then you may encounter unexpected results "
+            "if you enable (preserve counterparts)",
         default = True,
         update = update_remove_empty_groups
         )
     preserve_empty_counterparts : bpy.props.BoolProperty(
         name = "",
-        description =            "Preserve Empty Counterparts"            "\n\n"            "If you enabled (Remove Empty Groups) then you can utilize this (on/enabled) to preserve the mirrored group counterparts that have "            "no data just yet thus preventing them from being included in the pruning.",
+        description = ""
+            "Preserve Empty Counterparts"
+            "\n\n"
+            "If you enabled (Remove Empty Groups) then you can utilize this (on/enabled) to preserve the mirrored group counterparts that have "
+            "no data just yet thus preventing them from being included in the pruning.",
         default = True,
        )
 
@@ -19952,7 +21026,12 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     limit_groups : bpy.props.BoolProperty(
         name = "",
-        description =            "This feature is disabled and no longer needed"            "\n\n"            "Pre-processing to limit weight groups per vertex.  This is always assumed to be 4 for Second Life so if the targetis otherwise "            "then disable this and use the manualy tool found in (Skinning / Weights).  Note that this is applied after (Remove Empty Groups) "            "since this is the logical order, the reverse would produce unexpected results, so if you are doing this manually do so in this order",
+        description = ""
+            "This feature is disabled and no longer needed"
+            "\n\n"
+            "Pre-processing to limit weight groups per vertex.  This is always assumed to be 4 for Second Life so if the targetis otherwise "
+            "then disable this and use the manualy tool found in (Skinning / Weights).  Note that this is applied after (Remove Empty Groups) "
+            "since this is the logical order, the reverse would produce unexpected results, so if you are doing this manually do so in this order",
         default = False,
         update = update_limit_groups
         )
@@ -19962,7 +21041,14 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     export_copies : bpy.props.BoolProperty(
         name = "",
-        description =            "Export copies instead of originals"            "\n\n"            "This will duplicate the selected mesh and perform any indicated cleanup options on those copies instead of your original mesh.  "            "This is now the default in order to preserve your existing work.  Techically nothing wrong should happen to your mesh, just "            "some logical cleanup, if you disable this feature, but you may be in the middle of a testing work-flow and, for instance, "            "want to preserve any empty vertex groups.  You can disable this to test the facility to make sure it's doing what it is "            "supposed to do.  If the export process fails with an unhandled exception then you will be left with junk in your scene which "            "you aught to try to find and remove",
+        description = ""
+            "Export copies instead of originals"
+            "\n\n"
+            "This will duplicate the selected mesh and perform any indicated cleanup options on those copies instead of your original mesh.  "
+            "This is now the default in order to preserve your existing work.  Techically nothing wrong should happen to your mesh, just "
+            "some logical cleanup, if you disable this feature, but you may be in the middle of a testing work-flow and, for instance, "
+            "want to preserve any empty vertex groups.  You can disable this to test the facility to make sure it's doing what it is "
+            "supposed to do.  If the export process fails with an unhandled exception then you will be left with junk in your scene which "            "you aught to try to find and remove",
         default = True,
         update = update_export_copies
         )
@@ -19973,7 +21059,12 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     apply_rig_scale : bpy.props.BoolProperty(
         name = "",
-        description = "Apply rig scale"            "\n\n"            "These things aught to be done by the user but many creators have been following a broken hand-holding process for so long that it has "            "become a (thing) that may have introduced more disfuntional methods.  It's here to do the job and do it permanently, not just on export.  "            "This will modify your rig and if you did the right thing you can expect it to be fine.  Unfortunately any number of combinations of "            "settings in this export UI can introduce confusion if you didn't process your set correctly.  Always make sure to apply transforms beforehand",
+        description = "Apply rig scale"
+            "\n\n"
+            "These things aught to be done by the user but many creators have been following a broken hand-holding process for so long that it has "
+            "become a (thing) that may have introduced more disfuntional methods.  It's here to do the job and do it permanently, not just on export.  "
+            "This will modify your rig and if you did the right thing you can expect it to be fine.  Unfortunately any number of combinations of "
+            "settings in this export UI can introduce confusion if you didn't process your set correctly.  Always make sure to apply transforms beforehand",
         default = True,
         update = update_apply_rig_scale
         )
@@ -19984,7 +21075,10 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     apply_scale : bpy.props.BoolProperty(
         name = "Apply scale before export",
-        description = ""            "This applies the scale to your items to be exported before it saves"            "\n\n"            "This is usually want you want, it's permanent, save save save!",
+        description = ""
+            "This applies the scale to your items to be exported before it saves"
+            "\n\n"
+            "This is usually want you want, it's permanent, save save save!",
         default = False,
         update = update_apply_scale
         )
@@ -19995,7 +21089,10 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
     
     apply_rotation : bpy.props.BoolProperty(
         name = "Apply rotation before export",
-        description = ""            "This applies the rotation to your items to be exported before it saves"            "\n\n"            "This is usually want you want, it's permanent, save save save!",
+        description = ""
+            "This applies the rotation to your items to be exported before it saves"
+            "\n\n"
+            "This is usually want you want, it's permanent, save save save!",
         default = True,
         update = update_apply_rotation
         )
@@ -20005,7 +21102,10 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     apply_location : bpy.props.BoolProperty(
         name = "Apply location before export",
-        description = ""            "This applies the location to your items to be exported before it saves"            "\n\n"            "This is usually want you want, it's permanent, save save save!",
+        description = ""
+            "This applies the location to your items to be exported before it saves"
+            "\n\n"
+            "This is usually want you want, it's permanent, save save save!",
         default = False,
         update = update_apply_location
         )
@@ -20032,7 +21132,13 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     use_bind_pose : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Retain the shape of your character in SL without using joint positions"            "\n\n"            "As stated, you retain the shape of your avatar appearance without the need to upload with joint positions.  "            "If your avatar is not in a common T pose then this is probably what you want, for humanoid characters.  "            "For those characters that required custom joint positions, for instance very tiny or large, you'll be "            "wanting to upload those with joint positions.",
+        description = ""
+            "Retain the shape of your character in SL without using joint positions"
+            "\n\n"
+            "As stated, you retain the shape of your avatar appearance without the need to upload with joint positions.  "
+            "If your avatar is not in a common T pose then this is probably what you want, for humanoid characters.  "
+            "For those characters that required custom joint positions, for instance very tiny or large, you'll be "
+            "wanting to upload those with joint positions.",
         default = False,
         )
 
@@ -20046,17 +21152,31 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
 
     use_offset_location : bpy.props.BoolProperty(
-        description = "Calculate location offsets"            "\n\n"            "This preserves the difference between the expected zero (default) pose with respect to the existing pose.  "            "This feature allows you to have a custom bind pose, although not supported by Second Life, and will translate "            "correctly to other 3d applications.  When in doubt turn this off.",
+        description = "Calculate location offsets"
+            "\n\n"
+            "This preserves the difference between the expected zero (default) pose with respect to the existing pose.  "
+            "This feature allows you to have a custom bind pose, although not supported by Second Life, and will translate "
+            "correctly to other 3d applications.  When in doubt turn this off.",
         default = False,
         update = update_use_offset
         )
     use_offset_rotation : bpy.props.BoolProperty(
-        description = "Calculate rotation offsets"            "\n\n"            "This allows you to export a custom bind pose, for instance an (A) pose, while still maintaining compatibility "            "with Second Life's default rig.  This only works with rotations, if you have custom bone positions (location) "            "you can keep your bind pose for use with other applications by choosing this feature as well, Second Life does not "            "directly support this but.",
+        description = "Calculate rotation offsets"
+            "\n\n"
+            "This allows you to export a custom bind pose, for instance an (A) pose, while still maintaining compatibility "
+            "with Second Life's default rig.  This only works with rotations, if you have custom bone positions (location) "
+            "you can keep your bind pose for use with other applications by choosing this feature as well, Second Life does not "
+            "directly support this but.",
         default = False,
         update = update_use_offset
         )
     use_offset_scale : bpy.props.BoolProperty(
-        description = "Calculate scale offsets"            "\n\n"            "This calculates scale directly from bones on the rig used to export the mesh.  "            "This is how the real world does it but Blender doesn't export this property and, at the time of this writing, we're "            "unsure if bone scale can even be used as a reference but the option is here in case Blender improves in the future.  "            "It's very safe to leave this off, it's very NOT safe to turn it on.",
+        description = "Calculate scale offsets"
+            "\n\n"
+            "This calculates scale directly from bones on the rig used to export the mesh.  "
+            "This is how the real world does it but Blender doesn't export this property and, at the time of this writing, we're "
+            "unsure if bone scale can even be used as a reference but the option is here in case Blender improves in the future.  "
+            "It's very safe to leave this off, it's very NOT safe to turn it on.",
         default = False,
         update = update_use_offset
         )
@@ -20068,7 +21188,12 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     export_full_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "Export Full Rig"            "\n\n"            "Exporting a full rig will prevent your mesh from being weight driven in Second Life, the option will not be available."            "This tool is to help deliver your complete kit to another platform with all bones included, a full rig, for better "            "versatility and manipulation.",
+        description = ""
+            "Export Full Rig"
+            "\n\n"
+            "Exporting a full rig will prevent your mesh from being weight driven in Second Life, the option will not be available."
+            "This tool is to help deliver your complete kit to another platform with all bones included, a full rig, for better "
+            "versatility and manipulation.",
         default = False,
         update = update_export_full_rig
         )
@@ -20080,7 +21205,13 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     export_path_to_pelvis : bpy.props.BoolProperty(
         name = "",
-        description =            "Export path to pelvis (2)"            "\n\n"            "This option will tell the exporter to include all bones that are missing on the way from an influencing bone to the pelvis.  "            "I put this in to help generate a mesh deformer as an alternative to the animation/pose deformer.  If you find that there are too "            "many bones in your mesh as a result of using this you will have to either use a mesh deformer found under (Mesh Tools),  split up "            "your mesh into multiple parts or use a corrective pose (deformer) in the animation panel.",
+        description = ""
+            "Export path to pelvis (2)"
+            "\n\n"
+            "This option will tell the exporter to include all bones that are missing on the way from an influencing bone to the pelvis.  "
+            "I put this in to help generate a mesh deformer as an alternative to the animation/pose deformer.  If you find that there are too "
+            "many bones in your mesh as a result of using this you will have to either use a mesh deformer found under (Mesh Tools),  split up "
+            "your mesh into multiple parts or use a corrective pose (deformer) in the animation panel.",
         default = True,
         update = update_export_path_to_pelvis
         )
@@ -20088,7 +21219,14 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     export_joints : bpy.props.BoolProperty(
         name = "",
-        description =            "Export Joints"            "\n\n"            "Export the joints that have been set to (export) under the (Bone Control) section of the (Character Tools) panel.  These bones will "            "retain their expected positions in Second Life if uploaded with joint positions enabled.  This includes any bones that have been set "            "with this property, including mSkull, where previously this setting was specificaly for that bone it is now for all bones that have "            "been set to be exported in this way.  This is useful when you want to control a bones location without defining it in mesh.  A good "            "use of this is with a modulare set of items that are attached to Animesh and you'll want to keep their expected positions in tact",
+        description = ""
+            "Export Joints"
+            "\n\n"
+            "Export the joints that have been set to (export) under the (Bone Control) section of the (Character Tools) panel.  These bones will "
+            "retain their expected positions in Second Life if uploaded with joint positions enabled.  This includes any bones that have been set "
+            "with this property, including mSkull, where previously this setting was specificaly for that bone it is now for all bones that have "
+            "been set to be exported in this way.  This is useful when you want to control a bones location without defining it in mesh.  A good "
+            "use of this is with a modulare set of items that are attached to Animesh and you'll want to keep their expected positions in tact",
         default = True,
         update = update_export_joints
         )
@@ -20097,7 +21235,11 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     project_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "Project Rig"            "\n\n"            "Sometimes spine bones that are in odd locations will cause a distortion in the chain.  This can be avoided by enabling this option, "            "which builds a temporary full rig relative to your existing rig in order to repair these chain errors",
+        description = ""
+            "Project Rig"
+            "\n\n"
+            "Sometimes spine bones that are in odd locations will cause a distortion in the chain.  This can be avoided by enabling this option, "
+            "which builds a temporary full rig relative to your existing rig in order to repair these chain errors",
         default = False,
         update = update_project_rig
         )
@@ -20106,7 +21248,11 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     normalize_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Normalize Bones (disabled, not active yet)"            "\n\n"            "This effects the content that is exported only, it won't damage your product in Blender.  It corrects some obvious errors in bone properties, "            "one notable is scale on mBones",
+        description = ""
+            "Normalize Bones (disabled, not active yet)"
+            "\n\n"
+            "This effects the content that is exported only, it won't damage your product in Blender.  It corrects some obvious errors in bone properties, "
+            "one notable is scale on mBones",
         default = False,
         update = update_normalize_bones
         )
@@ -20115,7 +21261,10 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     export_real_shape : bpy.props.BoolProperty(
         name = "",
-        description =            "Export Real Shape (disabled, not active yet)"            "\n\n"            "Shape correction for Avastar devkit material",
+        description = ""
+            "Export Real Shape (disabled, not active yet)"
+            "\n\n"
+            "Shape correction for Avastar devkit material",
         default = True,
         update = update_export_real_shape
         )
@@ -20123,7 +21272,13 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     export_normalized_weights : bpy.props.BoolProperty(
         name = "",
-        description =            "Normalize Weights (report bugs please)"            "\n\n"            "This replicates the method that Avastar used when exporting weighted mesh (skinned mesh).  Despite that many "            "mesh items were seriously damaged by weight distribution, among other things, Avastar pruned and limited this "            "data so that the imported item would have at least some value in Second Life(r).  This tool does exactly the same "            "thing and produces the same vertex weight data with floating point accuracy",
+        description = ""
+            "Normalize Weights (report bugs please)"
+            "\n\n"
+            "This replicates the method that Avastar used when exporting weighted mesh (skinned mesh).  Despite that many "
+            "mesh items were seriously damaged by weight distribution, among other things, Avastar pruned and limited this "
+            "data so that the imported item would have at least some value in Second Life(r).  This tool does exactly the same "
+            "thing and produces the same vertex weight data with floating point accuracy",
         default = False,
         update = update_export_normalized_weights
         )
@@ -20136,7 +21291,9 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
     
     export_apply_modifiers : bpy.props.BoolProperty(
         name = "DAE / Collada export option",
-        description = ""            "This is a dae export option, it will not effect you Blender items but it will freeze your posed mesh, "            "if that's what you want, inside the DAE file, which will show up in SL or other apps.",
+        description = ""
+            "This is a dae export option, it will not effect you Blender items but it will freeze your posed mesh, "
+            "if that's what you want, inside the DAE file, which will show up in SL or other apps.",
         default = False,
         )
     
@@ -20324,46 +21481,93 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self["devkit_state"] = False
     devkit_state : bpy.props.BoolProperty(
         name = "",
-        description = ""            "If there is a message here it will indicate the status below.  This data is loaded when you load a preset or use the "            "dae or devkit import tool.  You'll recall (Devkit Manager) if you've used Avastar and this is the same thing except "            "it's just two steps and there's nothing else to fill out or know about the kit or armature."            "\n"            " - Unsaved Devkit -\n"            "   * Save your data or lose it on the next preset load or Blender restart\n"            "   * Data can be used during export but is unsaved for future use\n"            "   * The red X removes the data, if you want to, it's not required\n"            "\n"            " - Data Ready -\n"            "   * Devkit data has been saved\n"            "   * Data can be used during export\n"            "\n"            "NOTE: A blank notice means that the associated armature has no devkit data.  This is not a bad thing.\n"            "Blender devkits derived from Avastar Blender files will not have this data but if there's a known preset "            "for it just load it and you're ready to fun.",
+        description = ""
+            "If there is a message here it will indicate the status below.  This data is loaded when you load a preset or use the "
+            "dae or devkit import tool.  You'll recall (Devkit Manager) if you've used Avastar and this is the same thing except "
+            "it's just two steps and there's nothing else to fill out or know about the kit or armature."
+            "\n"
+            " - Unsaved Devkit -\n"
+            "   * Save your data or lose it on the next preset load or Blender restart\n"
+            "   * Data can be used during export but is unsaved for future use\n"
+            "   * The red X removes the data, if you want to, it's not required\n"
+            "\n"
+            " - Data Ready -\n"
+            "   * Devkit data has been saved\n"
+            "   * Data can be used during export\n"
+            "\n"
+            "NOTE: A blank notice means that the associated armature has no devkit data.  This is not a bad thing.\n"
+            "Blender devkits derived from Avastar Blender files will not have this data but if there's a known preset "
+            "for it just load it and you're ready to fun.",
         default = False,
         update = update_devkit_state
         )
 
     devkit_rotate : bpy.props.BoolProperty(
         name = "",
-        description = ""            "If your DAE file works in SL then enable this to get a more functional representation of the imported item. "            "This could break it if the dae was not targeted for SL.  For instance, maybe you're importing a kit that was "            "exported from Maya and not preparted for SL but only for distribution and use for products associated with that "            "kit, then it could be facing -Y and would not need this enabled.",
+        description = ""            "If your DAE file works in SL then enable this to get a more functional representation of the imported item. "
+            "This could break it if the dae was not targeted for SL.  For instance, maybe you're importing a kit that was "
+            "exported from Maya and not preparted for SL but only for distribution and use for products associated with that "
+            "kit, then it could be facing -Y and would not need this enabled.",
         default = True,
         )
 
     devkit_resize : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Adjust bone relationship transforms to the Z height of the imported set."            "\n\n"            "With this enabled the bone transforms are adjusted to match what's expected from the size of the incoming "            "rig, this is usually what you want.  Make sure you save before any conversion.",
+        description = ""            "Adjust bone relationship transforms to the Z height of the imported set."
+            "\n\n"
+            "With this enabled the bone transforms are adjusted to match what's expected from the size of the incoming "
+            "rig, this is usually what you want.  Make sure you save before any conversion.",
         default = True,
         )
     devkit_connect : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Known bones for SL can be connected where indicated and should be safe to do so.  Unfortunately many devkits were "            "damaged and these damages were recorded by exporting and then uploading to SL.  If items were made for these products "            "then enabling this could potentially damage your exports for that particular kit.  Use this for testing only, it's "            "absolutely not required.  When enabled this will link the head of one bone to its parent if the connect feature is "            "indicated for SL.  This can be most useful when (fix) and (match) are also used, which is really all you need instead "            "of this.  For those that understand what (use_connect) does then, of course, have at it, you may have a specific use case.",
+        description = ""            "Known bones for SL can be connected where indicated and should be safe to do so.  Unfortunately many devkits were "
+            "damaged and these damages were recorded by exporting and then uploading to SL.  If items were made for these products "
+            "then enabling this could potentially damage your exports for that particular kit.  Use this for testing only, it's "
+            "absolutely not required.  When enabled this will link the head of one bone to its parent if the connect feature is "
+            "indicated for SL.  This can be most useful when (fix) and (match) are also used, which is really all you need instead "
+            "of this.  For those that understand what (use_connect) does then, of course, have at it, you may have a specific use case.",
         default = False,
         )
     devkit_strip : bpy.props.BoolProperty(
         name = "",
-        description = ""            "When an imported kit has uknown bones this is useful for removing those.  Why would it have known bones?  Maybe you exported "            "a dae file using Avastar and enabled the (all bones) feature thinking that it would be compatible with something.  This will "            "probably fix it.",
+        description = ""            "When an imported kit has uknown bones this is useful for removing those.  Why would it have known bones?  Maybe you exported "
+            "a dae file using Avastar and enabled the (all bones) feature thinking that it would be compatible with something.  This will "
+            "probably fix it.",
         default = True,
         )
     devkit_align : bpy.props.BoolProperty(
         name = "",
-        description = ""            "The Bento Buddy Second Life rig is a perfect representation of that which is considered most compatible with standard SL shapes, "            "with an allowable tweak here and there to conform with animations produced by Avastar.  This is the tweaker.  However, this can "            "also be a huge (fixer) if your imported bone angles are way off.  Why would they be (way off)?  Because Avastar does not export "            "your skeleton definitions in its entirety and doesn't need to for compatibility with Second Life.  The bone angles are most useful "            "when using your kit in another application and when re-exporting a kit to that end or if using this imported kit as an animation rig."            "This is probably safe for imported DAE but this feature is also present when migrating a partial rig to a full rig so you will see "            "this there as well.  With that in mind this is NOT entirely safe for Blender sourced devkits that you've converted from Avastar",
+        description = ""            "The Bento Buddy Second Life rig is a perfect representation of that which is considered most compatible with standard SL shapes, "
+            "with an allowable tweak here and there to conform with animations produced by Avastar.  This is the tweaker.  However, this can "
+            "also be a huge (fixer) if your imported bone angles are way off.  Why would they be (way off)?  Because Avastar does not export "
+            "your skeleton definitions in its entirety and doesn't need to for compatibility with Second Life.  The bone angles are most useful "
+            "when using your kit in another application and when re-exporting a kit to that end or if using this imported kit as an animation rig."
+            "This is probably safe for imported DAE but this feature is also present when migrating a partial rig to a full rig so you will see "
+            "this there as well.  With that in mind this is NOT entirely safe for Blender sourced devkits that you've converted from Avastar",
         default = False,
         )
     devkit_fix : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This prepares your imported bones for best alignment with SL bones.  It will analyze the rig and determine if the tail of a parent "            "bone can be placed to the head of its only child.  This is usually safe, and should be done with imported DAE files but not always "            "when creating a full rig from a partial rig.  This preparation is almost always required if using (match) as well since the angle of "            "the existing bones determine where and how the new bones will be arranged.",
+        description = ""            "This prepares your imported bones for best alignment with SL bones.  It will analyze the rig and determine if the tail of a parent "
+            "bone can be placed to the head of its only child.  This is usually safe, and should be done with imported DAE files but not always "
+            "when creating a full rig from a partial rig.  This preparation is almost always required if using (match) as well since the angle of "
+            "the existing bones determine where and how the new bones will be arranged.",
         default = True,
         )
     devkit_match : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This enables or disables the alignment of generated bones"            "\n\n"            "If you have an ugly rig after the process then this may be for you.  During the import process, the rig is converted "            "from partial to full rig.  During that stage it's necessary for the tool to generate a known good rig for reference. "            "This known rig is a proxy rig (Bento Buddy Rig) and is adjusted in order to have the best match for your target rig. "            "After all of the work is done the target rig assumes the angles and locations of the adjusted proxy, making an almost "            "perfect match.  This should not cause usues with bones that already exist, since the match would be perfect, but for "            "those bones that did NOT exist prior to using this tool then this (match) options forces those into alignment with "
-            "known SL definitions which can pose a problem, especially for Blender devkits.  You probably want this enabled if you're "            "importing a devkit dae.",
+        description = ""
+            "This enables or disables the alignment of generated bones"
+            "\n\n"
+            "If you have an ugly rig after the process then this may be for you.  During the import process, the rig is converted "
+            "from partial to full rig.  During that stage it's necessary for the tool to generate a known good rig for reference. "
+            "This known rig is a proxy rig (Bento Buddy Rig) and is adjusted in order to have the best match for your target rig. "
+            "After all of the work is done the target rig assumes the angles and locations of the adjusted proxy, making an almost "
+            "perfect match.  This should not cause usues with bones that already exist, since the match would be perfect, but for "
+            "those bones that did NOT exist prior to using this tool then this (match) options forces those into alignment with "
+            "known SL definitions which can pose a problem, especially for Blender devkits.  You probably want this enabled if you're "
+            "importing a devkit dae.",
         default = True,
         )
     def update_mesh_export_blank(self, context):
@@ -20372,7 +21576,8 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     export_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the export options for this rig/kit",
+        description = ""
+            "Expand the export options for this rig/kit",
         default = False,
         )
     def update_process_volume_bones(self, context):
@@ -20380,7 +21585,10 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
         self.update_preset()
     process_volume_bones : bpy.props.BoolProperty(
         name = "Process SL specific bone properties",
-        description = ""            "Sometimes this is not what you want.  If your rig is facing the X direction then there's a good chance that it "            "contains bind information that you don't want to change. If you're unsure just uncheck it and give it a try.  If "            "your resulting mesh looks like a flattened mosquito in Second Life then this feature needs to be enabled. ",
+        description = ""
+            "Sometimes this is not what you want.  If your rig is facing the X direction then there's a good chance that it "
+            "contains bind information that you don't want to change. If you're unsure just uncheck it and give it a try.  If "
+            "your resulting mesh looks like a flattened mosquito in Second Life then this feature needs to be enabled. ",
         default = True,
         update = update_process_volume_bones,
         )
@@ -20389,20 +21597,32 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
     
     volume_bone_location : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This should be disabled for mapped mesh when you don't want the volume bones relocated."            "\n\n"            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
+        description = ""
+            "This should be disabled for mapped mesh when you don't want the volume bones relocated."
+            "\n\n"
+            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "
+            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
         default = True,
         update = update_preset_trigger
         )
 
     volume_bone_rotation : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This should be disabled for mapped mesh when you don't want the volume bones relocated."            "\n\n"            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
+        description = ""
+            "This should be disabled for mapped mesh when you don't want the volume bones relocated."
+            "\n\n"
+            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "
+            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled.",
         default = True,
         update = update_preset_trigger
         )
     volume_bone_scale : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This should be ENABLED for mapped mesh if using volume bones in order to prevent deformations."            "\n\n"            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled",
+        description = ""
+            "This should be ENABLED for mapped mesh if using volume bones in order to prevent deformations."
+            "\n\n"
+            "Volume bones have special properties of location, rotation and scale.  With custom mapped mesh the location and "
+            "rotation values should not be included and, instead, taken from the rig.  The scale option should be enabled",
         default = True,
         update = update_preset_trigger
         )
@@ -20425,7 +21645,10 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
     
     process_attachment_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Export Attachment Joints"            "\n\n"            "This will export attachment bones that are compatible with SL's uploader.",
+        description = ""
+            "Export Attachment Joints"
+            "\n\n"
+            "This will export attachment bones that are compatible with SL's uploader.",
         default = False,
         update = update_process_attachment_bones
         )
@@ -20479,7 +21702,12 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     process_unsupported_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Process Unsupported Points"            "\n\n"            "This only works with (Use Attach Points).  These particular joints are not compatible with SL skinning because they "            "have spaces in their names.  However, if you are using the Firestorm Viewer you can still use these bones form "            "mesh deformation like any other bone.  Things could get very strange but if you're into motion fun, enjoy!",
+        description = ""
+            "Process Unsupported Points"
+            "\n\n"
+            "This only works with (Use Attach Points).  These particular joints are not compatible with SL skinning because they "
+            "have spaces in their names.  However, if you are using the Firestorm Viewer you can still use these bones form "
+            "mesh deformation like any other bone.  Things could get very strange but if you're into motion fun, enjoy!",
         default = False,
         update = update_process_unsupported_bones
         )
@@ -20522,25 +21750,49 @@ class BentoBuddyDevkitProperties(bpy.types.PropertyGroup):
 
     rig_class_default : bpy.props.BoolProperty(
         name = "",
-        description =            "Default"            "\n\n"            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
+        description = ""
+            "Default"
+            "\n\n"
+            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "
+            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "
+            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "
+            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
         default = False,
         update = update_rig_class_default
         )
     rig_class_neutral : bpy.props.BoolProperty(
         name = "",
-        description =            "Neutral"            "\n\n"            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
+        description = ""
+            "Neutral"
+            "\n\n"
+            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "
+            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "
+            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "
+            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
         default = False,
         update = update_rig_class_neutral
         )
     rig_class_male_default : bpy.props.BoolProperty(
         name = "",
-        description =            "Default Male"            "\n\n"            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
+        description = ""
+            "Default Male"
+            "\n\n"
+            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "
+            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "
+            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "
+            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
         default = False,
         update = update_rig_class_male_default
         )
     rig_class_male_neutral : bpy.props.BoolProperty(
         name = "",
-        description =            "Neutral Male"            "\n\n"            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
+        description = ""
+            "Neutral Male"
+            "\n\n"
+            "Devkits have a class that they are based on.  Sometimes their existing rig configuration IS their class but "
+            "to make sure you get the proper export it's nice to know the class.  If you are unsure you can try default or "
+            "leave it blank to take the data directly from the rig.  If the rig has a custom pose, like an (A) pose, you "
+            "need to know what the original rig configuration was.  In this case try default first if you don't know.",
         default = False,
         update = update_rig_class_male_neutral
         )
@@ -22057,35 +23309,50 @@ class BentoBuddyImportProperties(bpy.types.PropertyGroup):
 
     dae_import_menu_enabled: bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the dae import menu",
+        description = ""
+            "Expand the dae import menu",
         default = False,
         )
     
     
     dae_keep_bind_info : bpy.props.BoolProperty(
-        description =            "Bento Buddy can utilize the bind information in dae files where there are skinned mesh.  "            "When exporting this you'll use the (Use Bind Data) option or you can convert the rig beforehand "            "and use the safer and more consistent route.",
+        description = ""
+            "Bento Buddy can utilize the bind information in dae files where there are skinned mesh.  "
+            "When exporting this you'll use the (Use Bind Data) option or you can convert the rig beforehand "
+            "and use the safer and more consistent route.",
         default = True,
         )
     
     
     dae_find_bone_chains : bpy.props.BoolProperty(
-        description =            "The importer will attempt to align bones to each other, which is visually much better and often times easier "            "to work with but should not break your rig.",
+        description = ""
+            "The importer will attempt to align bones to each other, which is visually much better and often times easier "
+            "to work with but should not break your rig.",
         default = True,
         )
 
     dae_build_missing_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "This is what fixes your broken devkit.  If your kit is NOT broken then this entire tool is likely to break it for you.  "            "If you're running into problems don't use this, use the dae importer with (Bind Info) enabled or use Blenders importer "            "with that same option enabled.",
+        description = ""
+            "This is what fixes your broken devkit.  If your kit is NOT broken then this entire tool is likely to break it for you.  "
+            "If you're running into problems don't use this, use the dae importer with (Bind Info) enabled or use Blenders importer "
+            "with that same option enabled.",
         default = True
         )
     dae_rotate_collada : bpy.props.BoolProperty(
         name = "",
-        description =            "This is more of a convenience but probably what you expect.  A properly configured dae kit will have its armature, "            "and subsequently its mesh, facing +X direction for compatibility with other 3d applications and Second Life.  This switch "            "rotates the kit so that it's facing -Y, since that is an expected behavior and easier to work with since some Blender tools "            "require this orientation for intended work-flow.",
+        description = ""
+            "This is more of a convenience but probably what you expect.  A properly configured dae kit will have its armature, "
+            "and subsequently its mesh, facing +X direction for compatibility with other 3d applications and Second Life.  This switch "
+            "rotates the kit so that it's facing -Y, since that is an expected behavior and easier to work with since some Blender tools "
+            "require this orientation for intended work-flow.",
         default = True
         )
     dae_fix_scale : bpy.props.BoolProperty(
         name = "",
-        description =            "There's a very good chance that youre dae kit will be scaled differently than you'd expect.  This will set it to a "            "1 which is not always what you want, you may want to do this yourself manually.",
+        description = ""
+            "There's a very good chance that youre dae kit will be scaled differently than you'd expect.  This will set it to a "
+            "1 which is not always what you want, you may want to do this yourself manually.",
         default = True
         )
 
@@ -22566,44 +23833,52 @@ class BentoBuddyAnimEditProperties(bpy.types.PropertyGroup):
         bpy.context.window_manager.bb_anim_edit["anim_blank"] = False
     anim_blank : bpy.props.BoolProperty(
         name = "",
-        description =            "blank",
+        description = ""
+            "blank",
         default = False,
         update = update_anim_blank
         )
 
     anim_loop_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "something",
+        description = ""
+            "something",
         default = True,
         )
     anim_loop_in : bpy.props.FloatProperty(
         name = "",
-        description =            "something",
+        description = ""
+            "something",
         default = 0,
         )
     anim_loop_out : bpy.props.FloatProperty(
         name = "",
-        description =            "something",
+        description = ""
+            "something",
         default = 0,
         )
     anim_ease_in : bpy.props.FloatProperty(
         name = "",
-        description =            "something",
+        description = ""
+            "something",
         default = 0.82,
         )
     anim_ease_out : bpy.props.FloatProperty(
         name = "",
-        description =            "something",
+        description = ""
+            "something",
         default = 0.82,
         )
     anim_menu_enabled: bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the menu to enable loading, editing and saving of anim files",
+        description = ""
+            "Expand the menu to enable loading, editing and saving of anim files",
         default = False,
         )
     anim_show_joints_menu_enabled: bpy.props.BoolProperty(
         name = "",
-        description =            "Show / HIde joint data",
+        description = ""
+            "Show / HIde joint data",
         default = False,
         )
     anim_last_loaded : bpy.props.StringProperty(
@@ -22632,9 +23907,9 @@ class BentoBuddyAnimEditProperties(bpy.types.PropertyGroup):
         bpy.ops.bentobuddy.update_anim()
 
     anim_base_priority : bpy.props.IntProperty(
-        min = -1,
-        max = 6,
-        default=2,
+        min = globals.BASE_PRIORITY_MIN, 
+        max = globals.BASE_PRIORITY_MAX,
+        default = globals.BASE_PRIORITY_DEFAULT,
         
         update = update_anim_all
         )
@@ -22670,7 +23945,11 @@ class BentoBuddyAnimEditProperties(bpy.types.PropertyGroup):
     
     anim_hand_pose_enabled : bpy.props.BoolProperty(
         name = "hand pose enabled",
-        description =            "This button must be pressed in for the feature to work"            "\n\n"            "A hand pose that becomes active during your animation.  This is pretty much obsoleted by Bento.  "            "This only works with the classic avatar, not mesh, because it's done with morphs, not bones.",
+        description = ""
+            "This button must be pressed in for the feature to work"
+            "\n\n"
+            "A hand pose that becomes active during your animation.  This is pretty much obsoleted by Bento.  "
+            "This only works with the classic avatar, not mesh, because it's done with morphs, not bones.",
         default = False,
         )
     anim_hand_poses_menu = [
@@ -22707,8 +23986,8 @@ class BentoBuddyAnimEditProperties(bpy.types.PropertyGroup):
     anim_joint_priority : bpy.props.IntProperty(
         name = "",
         description = "Alter priority for this joint",
-        min = -1,
-        max = 6,
+        min = globals.JOINT_PRIORITY_MIN, 
+        max = globals.JOINT_PRIORITY_MAX,
         default = 0,
         update = update_anim_joint_priority
         )
@@ -23978,7 +25257,8 @@ your mesh.  This exporter will be discontinued soon.
             
             joint_count = len(meshObj.vertex_groups)
             if joint_count > bb_settings['sl_joint_total']: 
-                txt = "Mesh error: " + "[" + meshObj.name + "]"                + "total bones exceeded, wanted " + str(bb_settings['sl_joint_total']) + " but got " + str(joint_count)
+                txt = "Mesh error: " + "[" + meshObj.name + "]"
+                + "total bones exceeded, wanted " + str(bb_settings['sl_joint_total']) + " but got " + str(joint_count)
                 mesh_problems.update({meshObj.name : txt})
 
 
@@ -24997,29 +26277,45 @@ class BentoBuddyAnimationProperties(bpy.types.PropertyGroup):
 
     rebind_keep_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "Keep the associated animation after rebinding.  This can cuase an issue but you can prepare your mesh and rig "            "beforehand in order to prevent distorion",
+        description = ""
+            "Keep the associated animation after rebinding.  This can cuase an issue but you can prepare your mesh and rig "
+            "beforehand in order to prevent distorion",
         default = True,
         )
 
     reference_pose_menu_enabled : bpy.props.BoolProperty(
-        description =            "Expand the reference pose options",
+        description = ""
+            "Expand the reference pose options",
         default = False,
         )
 
     pose_clear_location : bpy.props.BoolProperty(
         name = "Clear location data",
-        description =        "\n"        "This is almost never what you want but custom characters with animated bone locations (translations) can benefit from this "        "being reset."        "\n",
+        description = ""
+        "\n"
+        "This is almost never what you want but custom characters with animated bone locations (translations) can benefit from this "
+        "being reset."
+        "\n",
         default = False,
         )
     pose_clear_location_root : bpy.props.BoolProperty(
         name = "Clear location data from root bones",
-        description =        "\n"        "This is even more unusual and could break your rig, make sure you save first.  This will clear the location data from "        "all root bones, pelvis and hip(s) are usually root."        "\n",
+        description = ""
+        "\n"
+        "This is even more unusual and could break your rig, make sure you save first.  This will clear the location data from "
+        "all root bones, pelvis and hip(s) are usually root."
+        "\n",
         default = False,
         )
 
     reference_from_pose : bpy.props.BoolProperty(
         name = "From current pose",
-        description =        "\n"        "Create your reference pose from the current pose instead of the rest pose, which gives you more control, "        "basically what you see is what you get so give your character a pose, save it for later as well in the pose "        "library, enable this feature and hit the button."        "\n",
+        description = ""
+        "\n"
+        "Create your reference pose from the current pose instead of the rest pose, which gives you more control, "
+        "basically what you see is what you get so give your character a pose, save it for later as well in the pose "
+        "library, enable this feature and hit the button."
+        "\n",
         default = False,
         )
     def update_lock_source_armature(self, context):
@@ -25070,38 +26366,57 @@ class BentoBuddyAnimationProperties(bpy.types.PropertyGroup):
                 del bbp['target_armature']
 
     lock_source_armature : bpy.props.BoolProperty(
-        description =            "A source for the bone orientation has to be determined.  This will be the same source armature that "            "you'll be using as an animation receiver for your retargeting.  Often times this will be a Bento Buddy rig "            "but you can use any armature.  The map loader is used only if you are working with a non-converted source "            "so that the matcher can determine which bones are associated.  If your source and target skeleton have the "            "same bone names then you do not need to load a map and should not unless you are scrambling bones in some "            "unique way which could very well have a practical use.",
+        description = ""
+            "A source for the bone orientation has to be determined.  This will be the same source armature that "
+            "you'll be using as an animation receiver for your retargeting.  Often times this will be a Bento Buddy rig "
+            "but you can use any armature.  The map loader is used only if you are working with a non-converted source "
+            "so that the matcher can determine which bones are associated.  If your source and target skeleton have the "
+            "same bone names then you do not need to load a map and should not unless you are scrambling bones in some "
+            "unique way which could very well have a practical use.",
         default = False,
         update = update_lock_source_armature
         )
     lock_target_armature : bpy.props.BoolProperty(
-        description =            "This is the armature that will have to have its pose altered to match the source.  The result after posing "            "may not be ideal, visually, but that's not usually relevant.",
+        description = ""
+            "This is the armature that will have to have its pose altered to match the source.  The result after posing "
+            "may not be ideal, visually, but that's not usually relevant.",
         default = False,
         update = update_lock_target_armature
         )
     match_root_bones : bpy.props.BoolProperty(
         name = "Match root bones",
-        description =            "Root bone orientation can be a problem if re-adjusted.  Usually you're fine just leaving this feature alone but "            "this  process is non-descructive so you can give it a try and see how things look.  This feature, when disabled, "            "will skip over pelvis / hip, those kind of bones, and any root bones which are bones without parents.",
+        description = ""
+            "Root bone orientation can be a problem if re-adjusted.  Usually you're fine just leaving this feature alone but "
+            "this  process is non-descructive so you can give it a try and see how things look.  This feature, when disabled, "
+            "will skip over pelvis / hip, those kind of bones, and any root bones which are bones without parents.",
         default = False
         )
     match_pose_selected : bpy.props.BoolProperty(
         name = "Match to selected",
-        description =            "This feature cannot work globally for each rig.  You will have to experiment to see which bones can be adjusted "            "and using this (selection only) setting will be helpful to that end.  From experimentation I have learned that "            "that finger joints will probably benefit the most.  It is unlikely that face bones will be affected positively "            "by this",
+        description = ""
+            "This feature cannot work globally for each rig.  You will have to experiment to see which bones can be adjusted "
+            "and using this (selection only) setting will be helpful to that end.  From experimentation I have learned that "
+            "that finger joints will probably benefit the most.  It is unlikely that face bones will be affected positively "
+            "by this",
         default = False
         )
     match_x_axis : bpy.props.BoolProperty(
         name = "Match X Axis",
-        description =            "Match the source bone X axis.  This is usually what you want.",
+        description = ""
+            "Match the source bone X axis.  This is usually what you want.",
         default = True
         )
     match_y_axis : bpy.props.BoolProperty(
         name = "Match Y Axis",
-        description =            "Match the source bone Y axis.  This is usually NOT what you want because it is a base bone orientation but "            "the entire process is non-destructive so try whatever you like",
+        description = ""
+            "Match the source bone Y axis.  This is usually NOT what you want because it is a base bone orientation but "
+            "the entire process is non-destructive so try whatever you like",
         default = False
         )
     match_z_axis : bpy.props.BoolProperty(
         name = "Match Z Axis",
-        description =            "Match the source bone Z axis.  This is usually what you want.",
+        description = ""
+            "Match the source bone Z axis.  This is usually what you want.",
         default = True
         )
 
@@ -25132,7 +26447,11 @@ class BentoBuddyAnimationProperties(bpy.types.PropertyGroup):
     
     
     scale_animation_menu : bpy.props.BoolProperty(
-        description =            "Click to expand the animation compressor"            "\n\n"            "Here you can compress your animation into the desired frame range.  This can be helpful when "            "needing to adjust time, speed and size of animation for upload to Second Life",
+        description = ""
+            "Click to expand the animation compressor"
+            "\n\n"
+            "Here you can compress your animation into the desired frame range.  This can be helpful when "
+            "needing to adjust time, speed and size of animation for upload to Second Life",
         default=False
         )
     
@@ -25210,7 +26529,10 @@ class BentoBuddyAnimationProperties(bpy.types.PropertyGroup):
     
     exclude_pelvis : bpy.props.BoolProperty(
         name = "mPelvis animation",
-        description =            "The pelvis bone (mPelvis) can cause problems when animated.  Often times you can get away with this, for "            "repositioning the avatar in-world for instance.  But if you experience glitches, odd quick snapping, or even "            "the entire avatar seems twisted in some way, enable this and try again.",
+        description = ""
+            "The pelvis bone (mPelvis) can cause problems when animated.  Often times you can get away with this, for "
+            "repositioning the avatar in-world for instance.  But if you experience glitches, odd quick snapping, or even "
+            "the entire avatar seems twisted in some way, enable this and try again.",
         default = False
         )
 
@@ -25220,22 +26542,49 @@ class BentoBuddyAnimationProperties(bpy.types.PropertyGroup):
     
     disable_pelvis_location_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable location/position animations on the root bone, mPelvis and other variants like hip, Hips etc."            "\n\n"            "WARNING: This feature is switched off when using the (High Fidelity) options (Use Source/Target keys) and the options "            "provided with that feature are used instead.  Note that the High Fidelity feature is only useful for anim format so "            "if you are exporting BVH you can ignore this warning.",
+        description = ""
+            "Disable location/position animations on the root bone, mPelvis and other variants like hip, Hips etc."
+            "\n\n"
+            "WARNING: This feature is switched off when using the (High Fidelity) options (Use Source/Target keys) and the options "
+            "provided with that feature are used instead.  Note that the High Fidelity feature is only useful for anim format so "
+            "if you are exporting BVH you can ignore this warning.",
         default = False,
         )
     disable_location_offsets : bpy.props.BoolProperty(
         name = "Disable Joint Location Offsets",
-        description =            "This is an animation export feature.  It prevents offset location data from being exported with the animation.  "            "\n\n"            "WARNING: This feature is switched off when using the (High Fidelity) options (Use Source/Target keys) and the options "            "provided with that feature are used instead.  Note that the High Fidelity feature is only useful for anim format so "            "if you are exporting BVH you can ignore this warning."            "\n\n"            "This feature disables the export of location animations, except for the entire avatar, which is ROOT, or HIP, mPelvis.  "            "If you are not relocating bones to do something neat, then disabling location data will save a lot of space for more keys."            "You can still animate the movement (location), of your avatar by selecting the pelvis and key framing that.",
+        description = ""
+            "This is an animation export feature.  It prevents offset location data from being exported with the animation.  "
+            "\n\n"
+            "WARNING: This feature is switched off when using the (High Fidelity) options (Use Source/Target keys) and the options "
+            "provided with that feature are used instead.  Note that the High Fidelity feature is only useful for anim format so "
+            "if you are exporting BVH you can ignore this warning."
+            "\n\n"
+            "This feature disables the export of location animations, except for the entire avatar, which is ROOT, or HIP, mPelvis.  "
+            "If you are not relocating bones to do something neat, then disabling location data will save a lot of space for more keys."
+            "You can still animate the movement (location), of your avatar by selecting the pelvis and key framing that.",
         default = False
         )
     remove_isolated_keys : bpy.props.BoolProperty(
         name = "",
-        description =            "Remove isolated keys"            "\n\n"            "CAUTION! This will alter your animation directly but it's probably not a bad thing since you don't need these keys.  "            "This is probably something you should never disable but those experts out there may want to keep free floating keys around "            "for some reason.  Blender does this automatically when you save your file, but only in the saved file.  If you want the "            "data that Blender saves you'll need to load/open that saved file, but you can leave this enabled to save the hassle",
+        description = ""
+            "Remove isolated keys"
+            "\n\n"
+            "CAUTION! This will alter your animation directly but it's probably not a bad thing since you don't need these keys.  "
+            "This is probably something you should never disable but those experts out there may want to keep free floating keys around "
+            "for some reason.  Blender does this automatically when you save your file, but only in the saved file.  If you want the "
+            "data that Blender saves you'll need to load/open that saved file, but you can leave this enabled to save the hassle",
         default = True
         )
     fill_missing_keys : bpy.props.BoolProperty(
         name = "",
-        description =            "Fill Missing Keys"            "\n\n"            "Keep this enabled unless you are sure of what it does"            "\n\n"            "This adds two additional keys to each animated bone to accommodate your frame range of start and end.  This is necessary "            "in order to get normal expected behavior but the option is here in order to disable it if you are more comfortable "            "with the non-standard, and less accurate, way that some other tool provides.",
+        description = ""
+            "Fill Missing Keys"
+            "\n\n"
+            "Keep this enabled unless you are sure of what it does"
+            "\n\n"
+            "This adds two additional keys to each animated bone to accommodate your frame range of start and end.  This is necessary "
+            "in order to get normal expected behavior but the option is here in order to disable it if you are more comfortable "
+            "with the non-standard, and less accurate, way that some other tool provides.",
         default = True
         )
 
@@ -25448,7 +26797,10 @@ class BentoBuddyArmatureProperties(bpy.types.PropertyGroup):
     
     use_connect_all : bpy.props.BoolProperty(
         name = "Unlock All Bones",
-        description =            "Unlock all of the bones so that you can move them and, if you like, animate their positions.\n"            "NOTE: Volume bones can be animated if using the .anim exporter.  BVH export may cause problems.  "            "I'll have a look later to see if I can beat BVH into compliance as well.",
+        description = ""
+            "Unlock all of the bones so that you can move them and, if you like, animate their positions.\n"
+            "NOTE: Volume bones can be animated if using the .anim exporter.  BVH export may cause problems.  "
+            "I'll have a look later to see if I can beat BVH into compliance as well.",
         update = rp_use_connect_all,
         default = False
         )
@@ -25500,23 +26852,44 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
 
     object_props_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable view, copy, paste, of object and bone properties",
+        description = ""
+            "Enable view, copy, paste, of object and bone properties",
         default = False,
         )
 
     show_object_props : bpy.props.BoolProperty(
         name = "",
-        description =            "Show Object Properties"            "\n\n"            "Enable this if you want to see a list of the object properties.  Please note that this could cause errors in the "            "background and also slow down blender quite a bit so use it only temporarily to get an idea of what's contained within "            "the object and also note that the list could be extensive.  If the object is a rig and you are in pose mode with bones "            "selected then you will see the properties of those bones as well"            "\n\n"            "If it's a rig you must be in edit mode or pose mode to see its bone properties and a bone must be selected",
+        description = ""
+            "Show Object Properties"
+            "\n\n"
+            "Enable this if you want to see a list of the object properties.  Please note that this could cause errors in the "
+            "background and also slow down blender quite a bit so use it only temporarily to get an idea of what's contained within "
+            "the object and also note that the list could be extensive.  If the object is a rig and you are in pose mode with bones "
+            "selected then you will see the properties of those bones as well"
+            "\n\n"
+            "If it's a rig you must be in edit mode or pose mode to see its bone properties and a bone must be selected",
         default = False,
         )
     split_mesh_keep_originals : bpy.props.BoolProperty(
         name = "",
-        description =            "Keep Originals"            "\n\n"            "After splitting the mesh you have the option to keep the original mesh objects of those that were split.  "            "The objects that were not split are never deleted since those are part of your set for upload but this feature "            "is provided for testing in case something gets confusing if there's an actual bug.  By default the splitter will "            "remove the original objects of those that needed splitting.  It's assumed that you have disposable objects and/or "            "you've saved your data before this, this is be a destructive process so be careful.",
+        description = ""
+            "Keep Originals"
+            "\n\n"
+            "After splitting the mesh you have the option to keep the original mesh objects of those that were split.  "
+            "The objects that were not split are never deleted since those are part of your set for upload but this feature "
+            "is provided for testing in case something gets confusing if there's an actual bug.  By default the splitter will "
+            "remove the original objects of those that needed splitting.  It's assumed that you have disposable objects and/or "
+            "you've saved your data before this, this is be a destructive process so be careful.",
         default = False,
         )
     mesh_deformer_separate : bpy.props.BoolProperty(
         name = "",
-        description =            "Keep Separate"            "\n\n"            "Enabling this will prevent the deformer process from combining the resulting mesh which can make it easier to track down "            "problems.  The result of this type of product can still be uploaded to SL, and there are functional applications for it, but "            "it is heftier and usually unnecessary.",
+        description = ""
+            "Keep Separate"
+            "\n\n"
+            "Enabling this will prevent the deformer process from combining the resulting mesh which can make it easier to track down "
+            "problems.  The result of this type of product can still be uploaded to SL, and there are functional applications for it, but "
+            "it is heftier and usually unnecessary.",
         default = False,
         )
 
@@ -25524,20 +26897,24 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
     
     split_mesh_for_sl : bpy.props.BoolProperty(
         name = "",
-        description =            "After the process is complete split the mesh, if necessary, to comply with Second Life's requirement "            "that no single mesh has more than 110 bone definitions.  This allows you to upload the resulting mesh right away.",
+        description = ""
+            "After the process is complete split the mesh, if necessary, to comply with Second Life's requirement "
+            "that no single mesh has more than 110 bone definitions.  This allows you to upload the resulting mesh right away.",
         default = True,
         )
     
     
     group_count_limit : bpy.props.IntProperty(
         name = "",
-        description =            "The total number of vertex groups allowed per mesh.  For Second Life this is 110",
+        description = ""
+            "The total number of vertex groups allowed per mesh.  For Second Life this is 110",
         default = 55
         )
 
     mesh_from_attachment_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Allow attachment bones to be used in this mesh creation.",
+        description = ""
+            "Allow attachment bones to be used in this mesh creation.",
         default = True
         )
 
@@ -25545,54 +26922,84 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
     
     mesh_from_mapped_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "If there's a map on your rig it will be used to determine which bones are excluded from meshifying. "            "This helps keep your mesh complaint with the target system and uploads to SL.  It's safe to leave this on.",
+        description = ""
+            "If there's a map on your rig it will be used to determine which bones are excluded from meshifying. "
+            "This helps keep your mesh complaint with the target system and uploads to SL.  It's safe to leave this on.",
         default = False
         )
     mesh_to_middle : bpy.props.BoolProperty(
         name = "",
-        description =            "The default location for the mesh is at the joint, which is the head of the bone.  With this enabled the mesh "            "will be located between the head and the tail, which is the middle of the path.",
+        description = ""
+            "The default location for the mesh is at the joint, which is the head of the bone.  With this enabled the mesh "
+            "will be located between the head and the tail, which is the middle of the path.",
         default = False
         )
 
     overwrite_rig_data_backup : bpy.props.BoolProperty(
-        description =            "With this enabled each additional save will backup the old rig data first.  You probably don't want to do this.",
+        description = ""
+            "With this enabled each additional save will backup the old rig data first.  You probably don't want to do this.",
         default = False,
         )
 
     rig_rotate : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Enable this if your rig/character faces -Y"            "\n\n"            "Rotate the reference rig before the conversion.  The reference rig is the proxy rig used as a reference for your "            "bone properties.  Enable this if your rig and/or character orientation looks right.",
+        description = ""            "Enable this if your rig/character faces -Y"
+            "\n\n"
+            "Rotate the reference rig before the conversion.  The reference rig is the proxy rig used as a reference for your "
+            "bone properties.  Enable this if your rig and/or character orientation looks right.",
         default = True,
         )
 
     rig_resize : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Adjust bone relationship transforms to the Z height of the selected armature."            "\n\n"            "With this enabled the bone transforms are adjusted to match what's expected from the size of the kits "            "rig, this is usually what you want.  Make sure you save before any conversion.",
+        description = ""            "Adjust bone relationship transforms to the Z height of the selected armature."
+            "\n\n"
+            "With this enabled the bone transforms are adjusted to match what's expected from the size of the kits "
+            "rig, this is usually what you want.  Make sure you save before any conversion.",
         default = False,
         )
     rig_connect : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Known bones for SL can be connected where indicated and should be safe to do so.  Unfortunately many devkits were "            "damaged and these damages were recorded by exporting and then uploading to SL.  If items were made for these products "            "then enabling this could potentially damage your exports for that particular kit.  Use this for testing only, it's "            "absolutely not required.  When enabled this will link the head of one bone to its parent if the connect feature is "            "indicated for SL.  This can be most useful when (fix) and (match) are also used, which is really all you need instead "            "of this.  For those that understand what (use_connect) does then, of course, have at it, you may have a specific use case.",
+        description = ""            "Known bones for SL can be connected where indicated and should be safe to do so.  Unfortunately many devkits were "
+            "damaged and these damages were recorded by exporting and then uploading to SL.  If items were made for these products "
+            "then enabling this could potentially damage your exports for that particular kit.  Use this for testing only, it's "
+            "absolutely not required.  When enabled this will link the head of one bone to its parent if the connect feature is "
+            "indicated for SL.  This can be most useful when (fix) and (match) are also used, which is really all you need instead "
+            "of this.  For those that understand what (use_connect) does then, of course, have at it, you may have a specific use case.",
         default = False,
         )
     rig_strip : bpy.props.BoolProperty(
         name = "",
-        description = ""            "When a kit has uknown bones this is useful for removing those.  Why would it have unknown bones?  Maybe you haven't converted "            "it yet from Avastar?  Maybe it has controllers that you want to remove?  If a bone is unknown this will remove it during "            "the conversion.",
+        description = ""            "When a kit has uknown bones this is useful for removing those.  Why would it have unknown bones?  Maybe you haven't converted "
+            "it yet from Avastar?  Maybe it has controllers that you want to remove?  If a bone is unknown this will remove it during "
+            "the conversion.",
         default = True,
         )
     rig_align : bpy.props.BoolProperty(
         name = "",
-        description = ""            "The Bento Buddy Second Life rig is a perfect representation of that which is considered most compatible with standard SL shapes, "            "with an allowable tweak here and there to conform with animations produced by Avastar.  This is the tweaker.  However, this can "            "also be a huge (fixer) if your devkit bone angles are way off",
+        description = ""            "The Bento Buddy Second Life rig is a perfect representation of that which is considered most compatible with standard SL shapes, "
+            "with an allowable tweak here and there to conform with animations produced by Avastar.  This is the tweaker.  However, this can "
+            "also be a huge (fixer) if your devkit bone angles are way off",
         default = False,
         )
     rig_fix : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This prepares your imported bones for best alignment with SL bones.  It will analyze the rig and determine if the tail of a parent "            "bone can be placed to the head of its only child.  This is usually safe, and should be done with imported DAE files but not always "            "when creating a full rig from a partial rig.  This preparation is almost always required if using (match) as well since the angle of "            "the existing bones determine where and how the new bones will be arranged.",
+        description = ""            "This prepares your imported bones for best alignment with SL bones.  It will analyze the rig and determine if the tail of a parent "
+            "bone can be placed to the head of its only child.  This is usually safe, and should be done with imported DAE files but not always "
+            "when creating a full rig from a partial rig.  This preparation is almost always required if using (match) as well since the angle of "
+            "the existing bones determine where and how the new bones will be arranged.",
         default = True,
         )
     rig_match : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This enables or disables the alignment of generated bones"            "\n\n"            "If you have an ugly rig after the process then this may be for you.  During the conversion process, from partial to "            "full rigs, a proxy rig is generated and adjusted in order to have the best match for your target rig.  After all "            "of the work is done the target rig assumes the angles and locations of the adjusted proxy, making a perfect match. "            "This should not cause usues with bones that already exist, since the match would be perfect, but for those bones that did "            "NOT exist prior to using this tool then this (match) options forces those into alignment with known SL definitions which "            "can pose a problem, especially for Blender devkits.  You probably want this enabled if you didn't use Avastar.",
+        description = ""            "This enables or disables the alignment of generated bones"
+            "\n\n"
+            "If you have an ugly rig after the process then this may be for you.  During the conversion process, from partial to "
+            "full rigs, a proxy rig is generated and adjusted in order to have the best match for your target rig.  After all "
+            "of the work is done the target rig assumes the angles and locations of the adjusted proxy, making a perfect match. "
+            "This should not cause usues with bones that already exist, since the match would be perfect, but for those bones that did "
+            "NOT exist prior to using this tool then this (match) options forces those into alignment with known SL definitions which "
+            "can pose a problem, especially for Blender devkits.  You probably want this enabled if you didn't use Avastar.",
         default = True,
         )
 
@@ -25650,7 +27057,9 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
                     armObj.pose.bones[bone].use_custom_shape_bone_size = True
 
     select_bone_shape : bpy.props.BoolProperty(
-        description =            "Select 1 or more pose bones then enable this and then choose a mesh to shape your selected pose bones. "            "Once you've chosen your single mesh disable this to accept it as your shape.",
+        description = ""
+            "Select 1 or more pose bones then enable this and then choose a mesh to shape your selected pose bones. "
+            "Once you've chosen your single mesh disable this to accept it as your shape.",
         default = False,
         update = update_select_bone_shape
         )
@@ -25666,22 +27075,30 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
     
     
     from_default_class : bpy.props.BoolProperty(
-        description =            "Some tools require that the rig type flag be set to a specific name.  This uses a base of (default) if enabled.  "            "If you've already converted your rig you can use the tools below this to just set the flag but keep in mind that "            "the flag tool does not give you the bone positions of that flag.",
+        description = ""
+            "Some tools require that the rig type flag be set to a specific name.  This uses a base of (default) if enabled.  "
+            "If you've already converted your rig you can use the tools below this to just set the flag but keep in mind that "
+            "the flag tool does not give you the bone positions of that flag.",
         default = False,
         )
     to_full_rig : bpy.props.BoolProperty(
-        description =            "Durring the process also convert this to a full Bento Buddy rig.",
+        description = ""
+            "Durring the process also convert this to a full Bento Buddy rig.",
         default = False,
         )
     existing_bones_only : bpy.props.BoolProperty(
         name = "", 
-        description =            "Convert to a result that includes only the bones that exist in the source rig, no additional bones will be present, so it "            "may not be a full rig that is generated as a result of this process.",
+        description = ""
+            "Convert to a result that includes only the bones that exist in the source rig, no additional bones will be present, so it "
+            "may not be a full rig that is generated as a result of this process.",
         default = True
         )
     
     convert_with_animation : bpy.props.BoolProperty(
         name = "", 
-        description =            "Attempt to carry the animation with the converted rig.  You're best bet is to retarget the animation and bake it in instead "            "because there are controllers that might be animated and those animations will not carry over",
+        description = ""
+            "Attempt to carry the animation with the converted rig.  You're best bet is to retarget the animation and bake it in instead "
+            "because there are controllers that might be animated and those animations will not carry over",
         default = True
         )
     
@@ -25690,7 +27107,14 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
     
     use_old_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "Convert to old rig"            "\n\n"            "Don't be fooled by the use of face and finger bones in your rig.  To be sure that your kit uses the old method check for "            "spine bones.  We have mPelvis, mTorso, mChest in the old rig and mSpine01 to mSpine04 interweaved with those in the new rig.  "            "Bento Buddy will attempt to determine which to use but it will not remove bones that don't exist unless you tick this button, "            "except for the very strange mSpine? bones that will definitely break your mesh if you convert.  How will you know if it works?  "            "Just convert and upload your mesh, if it's broken then try this button.",
+        description = ""
+            "Convert to old rig"
+            "\n\n"
+            "Don't be fooled by the use of face and finger bones in your rig.  To be sure that your kit uses the old method check for "
+            "spine bones.  We have mPelvis, mTorso, mChest in the old rig and mSpine01 to mSpine04 interweaved with those in the new rig.  "
+            "Bento Buddy will attempt to determine which to use but it will not remove bones that don't exist unless you tick this button, "
+            "except for the very strange mSpine? bones that will definitely break your mesh if you convert.  How will you know if it works?  "
+            "Just convert and upload your mesh, if it's broken then try this button.",
             default = False,
         )
 
@@ -25707,20 +27131,36 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
 
     info_bentobuddy_bind_info : bpy.props.BoolProperty(
         name = "Bind Information",
-        description =            "\n"            "This feature allows you to manipulate bind information.  This is an advanced feature and was "            "initially placed here for testing."            "\n",
+        description = ""
+            "\n"
+            "This feature allows you to manipulate bind information.  This is an advanced feature and was "
+            "initially placed here for testing."
+            "\n",
         default = False,
         update = update_info_bentobuddy_bind_info,
     )
     
     enable_bind_data : bpy.props.BoolProperty(
         name = "Bind Data Manipulation",
-        description =            "\n"            "Utilize various features associated with the skeleton's bind information."            "\n",
+        description = ""
+            "\n"
+            "Utilize various features associated with the skeleton's bind information."
+            "\n",
         default = False,
     )
 
     right_blank : bpy.props.BoolProperty(
         name = "right_blank",
-        description =            "An intentionally blank page or vacant page (from Latin: vacare for \"being empty\"\) "            "is a page that is devoid of content and may be unexpected. Such pages may serve purposes "            "ranging from place-holding to space-filling and content separation. Sometimes, these pages "            "carry a notice such as \"This page [is] intentionally left blank.\" Such notices typically "            "appear in printed works, such as legal documents, manuals, and exam papers, in which the "            "reader might otherwise suspect that the blank pages are due to a printing error and where "            "missing pages might have serious consequences."            "\n\n"            "But that's not the case here.  I'm just goofy.",
+        description = ""
+            "An intentionally blank page or vacant page (from Latin: vacare for \"being empty\"\) "
+            "is a page that is devoid of content and may be unexpected. Such pages may serve purposes "
+            "ranging from place-holding to space-filling and content separation. Sometimes, these pages "
+            "carry a notice such as \"This page [is] intentionally left blank.\" Such notices typically "
+            "appear in printed works, such as legal documents, manuals, and exam papers, in which the "
+            "reader might otherwise suspect that the blank pages are due to a printing error and where "
+            "missing pages might have serious consequences."
+            "\n\n"
+            "But that's not the case here.  I'm just goofy.",
         default = False,
         )
 
@@ -25841,25 +27281,43 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
 
     rig_class_to_default : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Convert class to default"            "\n\n"            "The rig selection for starting a new devkit for your brand new Second Life avatar, for which you will eventually "            "make clothing and, possibly, distribute as a devkit, is a very important matter.  I suggest using a POS rig right off "            "the bat, this will avoid many errors that typically creep into the creation process and also allow for old, and very old, "            "animations to work without so many glitches.  However, this (default) option is provided because many devkits were made "            "using this Avastar style of joint positions and you may need to do the same, especially when making animations for that type",
+        description = ""
+            "Convert class to default"
+            "\n\n"
+            "The rig selection for starting a new devkit for your brand new Second Life avatar, for which you will eventually "
+            "make clothing and, possibly, distribute as a devkit, is a very important matter.  I suggest using a POS rig right off "
+            "the bat, this will avoid many errors that typically creep into the creation process and also allow for old, and very old, "
+            "animations to work without so many glitches.  However, this (default) option is provided because many devkits were made "
+            "using this Avastar style of joint positions and you may need to do the same, especially when making animations for that type",
         default = False,
         update = update_rig_class_to_default
         )
     rig_class_to_neutral : bpy.props.BoolProperty(
         name = "Convert class to neutral",
-        description = ""        "Convert class to neutral"        "\n\n"        "Read the description under the button that converts your rig to a (default) rig, this gives you exactly the same information ",
+        description = ""
+        "Convert class to neutral"
+        "\n\n"
+        "Read the description under the button that converts your rig to a (default) rig, this gives you exactly the same information ",
         default = False,
         update = update_rig_class_to_neutral
         )
     rig_class_to_pivot : bpy.props.BoolProperty(
         name = "",
-        description =            "Convert to pivot"            "\n\n"            "There are some devkits that use this, the neutral and default rig types used in Avastar had a type as well as a shape, or class, "            "of rig.  There was some misudnerstanding on what these terms meant and what the rig types were used for but it was only that, "            "confusion.  This feature is not implemented anymore because there's no need for it so if you see it tell someone please",
+        description = ""
+            "Convert to pivot"
+            "\n\n"
+            "There are some devkits that use this, the neutral and default rig types used in Avastar had a type as well as a shape, or class, "
+            "of rig.  There was some misudnerstanding on what these terms meant and what the rig types were used for but it was only that, "
+            "confusion.  This feature is not implemented anymore because there's no need for it so if you see it tell someone please",
         default = False,
         update = update_rig_class_to_pivot
         )
     rig_class_to_pos : bpy.props.BoolProperty(
         name = "",
-        description =            "Convert this rig to a POS rig"            "\n\n"            "Another discontinued feature that had no real use.  If you see it please tell someone",
+        description = ""
+            "Convert this rig to a POS rig"
+            "\n\n"
+            "Another discontinued feature that had no real use.  If you see it please tell someone",
         default = False,
         update = update_rig_class_to_pos
         )
@@ -26038,7 +27496,9 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
         )
     enable_attach2_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "View and hide the attachment bones with spaces in their names, previously you couldn't skin using these bones "            "but we've updated it to allow for this.",
+        description = ""
+            "View and hide the attachment bones with spaces in their names, previously you couldn't skin using these bones "
+            "but we've updated it to allow for this.",
         default = False,
         update = update_enable_attach2_bones
         )
@@ -26260,21 +27720,29 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
 
     refit_enabled : bpy.props.BoolProperty(
         name = "bb_enable_mesh_refit",
-        description =            "Expand the mesh refit menu.  You can refit your garments or other attachments, even weighted items, to"            "other targets/avatars of the same type.  If it is just a shape difference it just needs a fit.",
+        description = ""
+            "Expand the mesh refit menu.  You can refit your garments or other attachments, even weighted items, to"
+            "other targets/avatars of the same type.  If it is just a shape difference it just needs a fit.",
         default = False,
         )
     refit_lock_avatar_source : bpy.props.BoolProperty(
-        description =            "This is the object that wraps to your avatar mesh in order for the garment to fit.  This object can be temporary and "            "usually is.  An exception would be if you were refitting your garment to multiple shapes of the same avatar like Makehuman "            "or other object that has the same vertex order.  This wrap object can be created in Marvelous Designer but, with some "            "careful planning, can be done with Blender instead but not recommended for non-experts.",
+        description = ""
+            "This is the object that wraps to your avatar mesh in order for the garment to fit.  This object can be temporary and "
+            "usually is.  An exception would be if you were refitting your garment to multiple shapes of the same avatar like Makehuman "
+            "or other object that has the same vertex order.  This wrap object can be created in Marvelous Designer but, with some "
+            "careful planning, can be done with Blender instead but not recommended for non-experts.",
         default = False,
         update = update_refit_lock_avatar_source
         )
     refit_avatar_source_name : bpy.props.StringProperty(
-        description =            "This is the the object the garment is currently fitted to.",
+        description = ""
+            "This is the the object the garment is currently fitted to.",
         default = "",
         update = update_refit_check
         )
     refit_lock_garment_source : bpy.props.BoolProperty(
-        description =            "This is the the object, attachment or garment you want to duplicate and refit.",
+        description = ""
+            "This is the the object, attachment or garment you want to duplicate and refit.",
         default = False,
         update = update_refit_lock_garment_source
         )
@@ -26284,7 +27752,8 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
         )
     
     refit_lock_avatar_targets : bpy.props.BoolProperty(
-        description =            "Select your target avatars, or some qualified mesh object or objects, and click this.",
+        description = ""
+            "Select your target avatars, or some qualified mesh object or objects, and click this.",
         default = False,
         update = update_refit_lock_avatar_targets
         )
@@ -26301,12 +27770,20 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
     
     
     refit_assume_pose : bpy.props.BoolProperty(
-        description =            "This can only work if your wrap object has an armature and armature modifier.  The targets must have both while the "            "original, source, can get away with just the modifier.  If the vertex groups don't match this will fail.  "            "This will attempt to mimic the pose of the target.  Often times you'll have an avatar that is posed in some form "            "that does not match the rest pose.  You might see an armature in (A) pose but its rest pose is T-Pose.  With this "            "feature enabled the refitter will attempt to conform your garment to the current pose, and then freeze it.  A frozen "            "mesh in this instance is exactly what you are wanting and what is expected in Second Life when using these particular "            "kits.",
+        description = ""
+            "This can only work if your wrap object has an armature and armature modifier.  The targets must have both while the "
+            "original, source, can get away with just the modifier.  If the vertex groups don't match this will fail.  "
+            "This will attempt to mimic the pose of the target.  Often times you'll have an avatar that is posed in some form "
+            "that does not match the rest pose.  You might see an armature in (A) pose but its rest pose is T-Pose.  With this "
+            "feature enabled the refitter will attempt to conform your garment to the current pose, and then freeze it.  A frozen "
+            "mesh in this instance is exactly what you are wanting and what is expected in Second Life when using these particular "
+            "kits.",
         default = False,
         update = update_refit_lock_avatar_targets
         )
     refit_falloff : bpy.props.FloatProperty(
-        description =            "Deformation smoothness (falloff).  This can help fit some garments with difficult layers.  Try different values",
+        description = ""
+            "Deformation smoothness (falloff).  This can help fit some garments with difficult layers.  Try different values",
         min = 2,
         max = 16,
         default = 4,
@@ -26371,7 +27848,10 @@ class BentoBuddyMiscProperties(bpy.types.PropertyGroup):
             bbm.test_angle_pos_z = False
 
     test_angles_enabled : bpy.props.BoolProperty(
-        description =            "Test x,y,z angles, these are temporary buttons for testing only.  If there are floats they are overriden by any toggle buttons "            "that you see.  The toggles are a quick 90 degree angle, for larger angles use the floats instead and make sure all buttons are "            "disabled.",
+        description = ""
+            "Test x,y,z angles, these are temporary buttons for testing only.  If there are floats they are overriden by any toggle buttons "
+            "that you see.  The toggles are a quick 90 degree angle, for larger angles use the floats instead and make sure all buttons are "
+            "disabled.",
         default = False,
         )
     test_angle_pos_x : bpy.props.BoolProperty(default = False, update = update_test_angle_pos_x)
@@ -26422,13 +27902,18 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
         )
     mesh_show_selected_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Show the properties of the selected mesh(s)",
+        description = ""
+            "Show the properties of the selected mesh(s)",
         default = False
         )
 
     devkit_run_code : bpy.props.BoolProperty(
         name = "",
-        description = ""            "Some unique processes may be required when loading a devkit preset and code may have been added for that "            "specific kit.  If that's the case then this feature will run that required code, if enabled.  The feature "            "is allowed to be turned on and off because devkit creators may update their kit in the future making this "            "option, for that particular kit, obsolete, or damaging",
+        description = ""
+            "Some unique processes may be required when loading a devkit preset and code may have been added for that "
+            "specific kit.  If that's the case then this feature will run that required code, if enabled.  The feature "
+            "is allowed to be turned on and off because devkit creators may update their kit in the future making this "
+            "option, for that particular kit, obsolete, or damaging",
         default = True,
         )
 
@@ -26534,13 +28019,21 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
     
     map_to_mbones : bpy.props.BoolProperty(
         name = "map source to mbones",
-        description = ""            "If your rig's bones are name compatible with Second Life but, for some reason, it doesn't seam "            "to upload or, if so, doesn't work properly in Second Life, then this button might be for you, "            "give it a try.  This will move the source bones into the positions of your existing rig's "            "properly named bones allowing you to transfer your animations and mesh data to the source rig "            "so that they can be exported and then imported into SL properly.",
+        description = ""
+            "If your rig's bones are name compatible with Second Life but, for some reason, it doesn't seam "
+            "to upload or, if so, doesn't work properly in Second Life, then this button might be for you, "
+            "give it a try.  This will move the source bones into the positions of your existing rig's "
+            "properly named bones allowing you to transfer your animations and mesh data to the source rig "
+            "so that they can be exported and then imported into SL properly.",
         update = set_map_type_mbones,
         default = False
         )
     map_to_template : bpy.props.BoolProperty(
         name = "map source to template",
-        description =            "You can load a text file into the panel and the converter will use that file as the mapping template, where the "            "file content is a list, each line containing 3 items.  An armature name, mBone name (must be SL bone) and target "            "bone on your rig.",
+        description = ""
+            "You can load a text file into the panel and the converter will use that file as the mapping template, where the "
+            "file content is a list, each line containing 3 items.  An armature name, mBone name (must be SL bone) and target "
+            "bone on your rig.",
         update = set_map_type_template,
         default = False
         )
@@ -26552,14 +28045,21 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
         )
     enforce_settings : bpy.props.BoolProperty(
         name = "enforce_settings",
-        description =            "When using an alternative mapping there are some settings that are automatically altered to give expected results.  "            "The switches for this alternative mapping is on either side of the big Map and Retarget button.  If you prefer to use "            "the existing settings, without them being over-ridden by the alternative mapping feature, then enable this switch.  "            "Note that you may experience unexpected and unpredictable results.  You will want to disable (Enable use_connect).",
+        description = ""
+            "When using an alternative mapping there are some settings that are automatically altered to give expected results.  "
+            "The switches for this alternative mapping is on either side of the big Map and Retarget button.  If you prefer to use "
+            "the existing settings, without them being over-ridden by the alternative mapping feature, then enable this switch.  "
+            "Note that you may experience unexpected and unpredictable results.  You will want to disable (Enable use_connect).",
         default = False
         )
 
     
     custom_bone_list : bpy.props.BoolProperty(
         name = "use a custom bone order list",
-        description =            "Enable this button if you want to use a loaded list containing the bone order that you prefer.  Internally the "            "bone order that is used should be enough to get you started but a custom order will get you even closer to making "            "your completed template for later.",
+        description = ""
+            "Enable this button if you want to use a loaded list containing the bone order that you prefer.  Internally the "
+            "bone order that is used should be enough to get you started but a custom order will get you even closer to making "
+            "your completed template for later.",
         default = False
         )
     
@@ -26598,7 +28098,9 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
     
     animation_time : bpy.props.FloatProperty(
         name = "time sec:",
-        description =            "This is the total amount of time the animation takes, with respect to actual start and end frames,"            "not the ones you set.  This is (total frames - 1 / fames per second)",
+        description = ""
+            "This is the total amount of time the animation takes, with respect to actual start and end frames,"
+            "not the ones you set.  This is (total frames - 1 / fames per second)",
         precision = 4,
         default = 0.0,
         get = get_animation_time,
@@ -26656,7 +28158,8 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
     
     pos_rig : bpy.props.BoolProperty(
         name = "generate POS rig",
-        description =            "Generate a POS rig instead of a Pivot rig.",
+        description = ""
+            "Generate a POS rig instead of a Pivot rig.",
         default = False
         )
 
@@ -26668,7 +28171,11 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
     
     add_control_rig : bpy.props.BoolProperty(
         name = "Add a control rig with rig creation",
-        description =            "This is becoming obsoleted by (Add Bento Buddy Rig), use at your own risk.\n"            "A new animation rig will replace this with full features, if not already installed.\n\n"            "If this is enabled then the Bento Buddy rig creations will have a control rig attached.  This can make it easier "            "to animate and sometimes fixes problems with auto-map targets.  The animations created with this can also be exported "            "and sometimes turn out better.  The export will take a little longer so be aware of that before trying to upload.",
+        description = ""
+            "This is becoming obsoleted by (Add Bento Buddy Rig), use at your own risk.\n"
+            "A new animation rig will replace this with full features, if not already installed.\n\n"
+            "If this is enabled then the Bento Buddy rig creations will have a control rig attached.  This can make it easier "
+            "to animate and sometimes fixes problems with auto-map targets.  The animations created with this can also be exported "            "and sometimes turn out better.  The export will take a little longer so be aware of that before trying to upload.",
         default = False,
         )
     
@@ -26676,7 +28183,13 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
     
     add_animation_rig : bpy.props.BoolProperty(
         name = "Add animation controllers to the created rig",
-        description =            "\n"            "This doesn't work at the moment, coming soon."            "\n"            "\n"            "This creates some controller that allow your rig / character to simulate natural responsive motion, which is referred to "            "as IK, or Inverse Kinematics.  For instance, if you move a foot bone the entire leg should move in some natural way.",
+        description = ""
+            "\n"
+            "This doesn't work at the moment, coming soon."
+            "\n"
+            "\n"
+            "This creates some controller that allow your rig / character to simulate natural responsive motion, which is referred to "
+            "as IK, or Inverse Kinematics.  For instance, if you move a foot bone the entire leg should move in some natural way.",
         default = False,
         )
 
@@ -26712,65 +28225,118 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
 
     selected_reference : bpy.props.BoolProperty(
         name = "selected reference rig",
-        description =            "Make sure you are on the correct layer where (Choose bone source rig) is.\n\n"            "When this switch is disabled the button on the right will create a rig that is the suggested proportions for "            "making human characters and animations compatible with Second Life. \n\n"            "With this switch enabled Bento Buddy expects that there's a reference rig in the scene and is present in the "            "(Bone Source Rig) drop-down list.  Bento Buddy will then copy the positions of the bones creating a skeleton "            "from that.  This allows you to make adjustments to the reference rig and, in the case of MB-LAB or others, using the "            "controls associated with that system, and Bento Buddy will mimic  the proportions, positions, rotations and scale "            "after clicking the button on the right.  Each click of that button adds an additional rig.",
+        description = ""
+            "Make sure you are on the correct layer where (Choose bone source rig) is.\n\n"
+            "When this switch is disabled the button on the right will create a rig that is the suggested proportions for "
+            "making human characters and animations compatible with Second Life. \n\n"
+            "With this switch enabled Bento Buddy expects that there's a reference rig in the scene and is present in the "
+            "(Bone Source Rig) drop-down list.  Bento Buddy will then copy the positions of the bones creating a skeleton "
+            "from that.  This allows you to make adjustments to the reference rig and, in the case of MB-LAB or others, using the "
+            "controls associated with that system, and Bento Buddy will mimic  the proportions, positions, rotations and scale "
+            "after clicking the button on the right.  Each click of that button adds an additional rig.",
         update = add_selected_reference_rig,
         default = False
         )
     neutral_reference : bpy.props.BoolProperty(
         name = "neutral reference rig",
-        description =        "This is the default skeleton in SL without shape sliders adjusted.  Animations have a starting point, when the animation "        "includes location data for specific bones then you may see some discrepancy with where the bone should be and where it "        "starts in the animation.  Technically animations are not transferable between different avatar shapes with differing slider "        "values but it's close enough to use generically.  Keep this in mind when making animations for a character that is far beyond "        "the generic type.",
+        description = ""
+        "This is the default skeleton in SL without shape sliders adjusted.  Animations have a starting point, when the animation "
+        "includes location data for specific bones then you may see some discrepancy with where the bone should be and where it "
+        "starts in the animation.  Technically animations are not transferable between different avatar shapes with differing slider "
+        "values but it's close enough to use generically.  Keep this in mind when making animations for a character that is far beyond "
+        "the generic type.",
         update = add_neutral_reference_rig,
         default = False
         )
 
     bvh_menu_enabled : bpy.props.BoolProperty(
         name = "enable bvh features",
-        description =            "BVH Export Features",
+        description = ""
+            "BVH Export Features",
         default = False
         )
 
     bvh_to_sl : bpy.props.BoolProperty(
         name = "Animation Export to SL / BVH standard",
-        description =            "BVH compliant.  Use this option to make bvh joint names compatible with SL animations, it probably works without this but "            "most of these are standard BVH names and you may want to use this feature if you are going to alter the animation with "            "a different tool.",
+        description = ""
+            "BVH compliant.  Use this option to make bvh joint names compatible with SL animations, it probably works without this but "
+            "most of these are standard BVH names and you may want to use this feature if you are going to alter the animation with "
+            "a different tool.",
         default = False
         )
     extended_animation_options : bpy.props.BoolProperty(
-        description =            "Some additional options that you rarely need, good for testing though.",
+        description = ""
+            "Some additional options that you rarely need, good for testing though.",
         default=False
         )
 
     export_bentobuddy_disabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable check for Bento Buddy rig"            "\n\n"            "It can be confusing, and annoying, when your animation does absolutely nothing in SL.  This can happen when the animation source "            "is chosen while exporting the animation, instead of the Bento Buddy rig.  This check is enabled by default.  The button disableds "            "it in case you want to try exporting a different source, it probably won't work but it's here if you want to test it.",
+        description = ""
+            "Disable check for Bento Buddy rig"
+            "\n\n"
+            "It can be confusing, and annoying, when your animation does absolutely nothing in SL.  This can happen when the animation source "
+            "is chosen while exporting the animation, instead of the Bento Buddy rig.  This check is enabled by default.  The button disableds "
+            "it in case you want to try exporting a different source, it probably won't work but it's here if you want to test it.",
         default = False
         )
 
     export_avastar_disabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable check for Avastar rig"            "\n\n"            "Avastar rigs are detected so that you can export your existing animations properly from a previous work-flow.  Unfortunately there "            "can be some confusion about which bones to animate and, thus, which keys to utilize.  If an Avastar rig is detected then a translation "            "has to be performed if keys are detected on the control bones, which you can change using (Export Avastar Deform Bones).  The default "            "behavior is to attempt to asertain if the selected rig is an avastar rig and, if so, we'll process this translated data into a usable "            "animation. "            "\n\n"            "When should you enable this (disable) feature? -- If your deform (mBone) bones were animated instead of the control (Bone) bones and "            "you want to use the extended Bento Buddy animation export features, you want to enable this (disable) feature and then, if you have "            "static poses on any bones, you need to enable (Use Source Keys).",
+        description = ""
+            "Disable check for Avastar rig"
+            "\n\n"
+            "Avastar rigs are detected so that you can export your existing animations properly from a previous work-flow.  Unfortunately there "
+            "can be some confusion about which bones to animate and, thus, which keys to utilize.  If an Avastar rig is detected then a translation "
+            "has to be performed if keys are detected on the control bones, which you can change using (Export Avastar Deform Bones).  The default "
+            "behavior is to attempt to asertain if the selected rig is an avastar rig and, if so, we'll process this translated data into a usable "
+            "animation. "
+            "\n\n"
+            "When should you enable this (disable) feature? -- If your deform (mBone) bones were animated instead of the control (Bone) bones and "
+            "you want to use the extended Bento Buddy animation export features, you want to enable this (disable) feature and then, if you have "
+            "static poses on any bones, you need to enable (Use Source Keys).",
         default = False
         )
 
     export_sl_limitations_check_disabled : bpy.props.BoolProperty(
         name = "Disable check for SL and OS limitations",
-        description =            "\n"            "This will disable the checking for time and file size.  The file size limit can only work on .anim format.  If you "            "export BVH this check will not be usable but the SL BVH importer will tell you if it's too large.  This also checks the time "            "to make sure that the animation will be usable in SL/OS.  Currently the limitation is 60 seconds per clip.",
+        description = ""
+            "\n"
+            "This will disable the checking for time and file size.  The file size limit can only work on .anim format.  If you "
+            "export BVH this check will not be usable but the SL BVH importer will tell you if it's too large.  This also checks the time "
+            "to make sure that the animation will be usable in SL/OS.  Currently the limitation is 60 seconds per clip.",
         default = False
         )
 
     export_volume_motion : bpy.props.BoolProperty(
         name = "Export animated collision volumes",
-        description =            "If you've animated the collision volumes then you probably want to see those animations in Second Life.  This button allows "            "you to disable the export of those specific animated bones.  This feature is provided as a debug option to see where your "            "animations may be going wrong",
+        description = ""
+            "If you've animated the collision volumes then you probably want to see those animations in Second Life.  This button allows "
+            "you to disable the export of those specific animated bones.  This feature is provided as a debug option to see where your "
+            "animations may be going wrong",
         default = True
         )
     export_attachment_motion : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable export of attachment bone animations"            "\n\n"            "Attachment bone animations have a less useful purpose so this is disabled by default.  If you're exporting a static pose this is "            "probably best left disabled.",
-        default = False
+        description = ""
+            "Disable export of attachment bone animations"
+            "\n\n"
+            "Attachment bone animations have a less useful purpose so this is disabled by default.  If you're exporting a static pose this is "
+            "probably best left disabled.",
+        default = True
         )
 
     export_avastar_deform_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Export animation from the deform bones only"            "\n\n"            "Bento Buddy will prioritize exporting animation from control bones, which is expected.  However, if there are no keys present on "            "any control bones then any deform bones that have keys will be acknowledged as being the animation set for your export.  If you don't "            "want this method of detection, and are sure you want to export from the less popular deform bones (with respect to Avastar), then enable "            "this feature.  The default behavior (off) is for Bento Buddy to examine the rig to determin which bones are animated and globally "            "overwrite any mBone data (deform bones) with the control bone data, if even a single control bone has a key, then all deform bone "            "data will be ignored.  Motion detection is still enabled.",
+        description = ""
+            "Export animation from the deform bones only"
+            "\n\n"
+            "Bento Buddy will prioritize exporting animation from control bones, which is expected.  However, if there are no keys present on "
+            "any control bones then any deform bones that have keys will be acknowledged as being the animation set for your export.  If you don't "
+            "want this method of detection, and are sure you want to export from the less popular deform bones (with respect to Avastar), then enable "
+            "this feature.  The default behavior (off) is for Bento Buddy to examine the rig to determin which bones are animated and globally "
+            "overwrite any mBone data (deform bones) with the control bone data, if even a single control bone has a key, then all deform bone "
+            "data will be ignored.  Motion detection is still enabled.",
         default = False
         )
 
@@ -26778,20 +28344,38 @@ class BentoBuddyProperties(bpy.types.PropertyGroup):
     
     export_keys_only : bpy.props.BoolProperty(
         name = "",
-        description =            "Export the animation keys from the selected rig"            "\n\n"            "WARNING: This overrides (Use Source Keys) and (Use Target Keys) which can only be used with a High Fidelity Bake (motion detection).  The "            "selected rig must be the animation source (key framed)."            "\n\n"            "Bento Buddy goes through a series of prioritized methods before it even reaches this check.  If those methods result in no-acation, even a "            "failure, then this one is checked to see if this convenient method can be empolyed, otherwise it's business as usual for motion detection.  "            "What this feature does is to examine keys only, no motion detection is observed, and those keys will be used in your export.  This is useful "            "for a quick export when you know that the rig you're using is compatible, it has animation keys, and no controllers need to be exmained for "            "keys.  If you're using this with a control rig you'll need to key the underlying bones",
+        description = ""
+            "Export the animation keys from the selected rig"
+            "\n\n"
+            "WARNING: This overrides (Use Source Keys) and (Use Target Keys) which can only be used with a High Fidelity Bake (motion detection).  The "
+            "selected rig must be the animation source (key framed)."
+            "\n\n"
+            "Bento Buddy goes through a series of prioritized methods before it even reaches this check.  If those methods result in no-acation, even a "
+            "failure, then this one is checked to see if this convenient method can be empolyed, otherwise it's business as usual for motion detection.  "
+            "What this feature does is to examine keys only, no motion detection is observed, and those keys will be used in your export.  This is useful "
+            "for a quick export when you know that the rig you're using is compatible, it has animation keys, and no controllers need to be exmained for "
+            "keys.  If you're using this with a control rig you'll need to key the underlying bones",
         default = False
         )
 
     export_translations : bpy.props.BoolProperty(
         name = "Prevent export of bone translations",
-        description =            "This doesn't work yet, it's here as a reminder to finish it.  It will be part of the new BVH exporter."            "\n\n"            "Translation is just another term for motion that is not rotation or scale.  It's the forward, back, up, down, diagonal etc. "            "If you want your bones to move out of sync with its hierarchy, then you want translations.  It's almost "            "always safe to keep translations, unless you've animated a volume bone location, then there are other considerations.  "            "If you've animated volume bones",
+        description = ""
+            "This doesn't work yet, it's here as a reminder to finish it.  It will be part of the new BVH exporter."
+            "\n\n"
+            "Translation is just another term for motion that is not rotation or scale.  It's the forward, back, up, down, diagonal etc. "
+            "If you want your bones to move out of sync with its hierarchy, then you want translations.  It's almost "
+            "always safe to keep translations, unless you've animated a volume bone location, then there are other considerations.  "
+            "If you've animated volume bones",
         default = False
         )
     
     
     bake_animation : bpy.props.BoolProperty(
         name = "Bake animation",
-        description =            "\n"            "This property is no longer functional.  If you see it there's probably an operator button somewhere to do the same thing.",
+        description = ""
+            "\n"
+            "This property is no longer functional.  If you see it there's probably an operator button somewhere to do the same thing.",
         default = False
         )
 
@@ -26929,19 +28513,22 @@ class BentoBuddyRetargetProps(bpy.types.PropertyGroup):
 
     retarget_enabled : bpy.props.BoolProperty(
         name = "bbr enable retarget",
-        description =            "-- internal",
+        description = ""
+            "-- internal",
         default = False,
         update = update_retarget_enabled
         )
     retarget_set_source : bpy.props.BoolProperty(
         name = "bbr add source",
-        description =            "Select a rig then click this.  Transfer animation from this rig.",
+        description = ""
+            "Select a rig then click this.  Transfer animation from this rig.",
         default = False,
         update = update_retarget_set_source
         )
     retarget_set_target : bpy.props.BoolProperty(
         name = "bbr set target",
-        description =            "Select a rig then click this.  Transfer animation to this rig.",
+        description = ""
+            "Select a rig then click this.  Transfer animation to this rig.",
         default = False,
         update = update_retarget_set_target
         )
@@ -26996,7 +28583,9 @@ class BentoBuddyRetargetProps(bpy.types.PropertyGroup):
 
     retarget_suspend : bpy.props.BoolProperty(
         name = "bbr retarget suspend",
-        description =            "This button, or getting out of pose mode, when enabled, will allow you to move your rigs without losing your data.  "            "When you've finished click this button so that it's disabled (out) and you will be returned to your mapping stage.",
+        description = ""
+            "This button, or getting out of pose mode, when enabled, will allow you to move your rigs without losing your data.  "
+            "When you've finished click this button so that it's disabled (out) and you will be returned to your mapping stage.",
         default = False,
         update = update_retarget_suspend
         )
@@ -27016,7 +28605,9 @@ class BentoBuddyRetargetProps(bpy.types.PropertyGroup):
         return
     retarget_reset : bpy.props.BoolProperty(
         name = "bbr reterget reset",
-        description =            "This resets the retargeting and turns it off.  Save your work and then click this button to get a stable state "            "so that you can continue doing other things in Blender without the stale data and a possible crash.",
+        description = ""
+            "This resets the retargeting and turns it off.  Save your work and then click this button to get a stable state "
+            "so that you can continue doing other things in Blender without the stale data and a possible crash.",
         default = False,
         update = update_retarget_reset
         )
@@ -27199,8 +28790,8 @@ class BentoBuddyRetargetApply(bpy.types.Operator):
 
             
             if 1 == 1:
-                obj[bbr.retarget_source_name].data.edit_bones[sbone].head =                    mathutils.Vector(scaled_location) + mathutils.Vector(scale_factor_head)
-                obj[bbr.retarget_source_name].data.edit_bones[sbone].tail =                    mathutils.Vector(scaled_location) + mathutils.Vector(scale_factor_tail)
+                obj[bbr.retarget_source_name].data.edit_bones[sbone].head = mathutils.Vector(scaled_location) + mathutils.Vector(scale_factor_head)
+                obj[bbr.retarget_source_name].data.edit_bones[sbone].tail = mathutils.Vector(scaled_location) + mathutils.Vector(scale_factor_tail)
                 
                 
 
@@ -27208,8 +28799,8 @@ class BentoBuddyRetargetApply(bpy.types.Operator):
 
             
             if 1 == 0:
-                obj[bbr.retarget_source_name].data.edit_bones[sbone].head =                    transformed_location + mathutils.Vector(obj[bbr.retarget_target_name]['bone_data'][tbone]['pose']['head'])
-                obj[bbr.retarget_source_name].data.edit_bones[sbone].tail =                    transformed_location + mathutils.Vector(obj[bbr.retarget_target_name]['bone_data'][tbone]['pose']['tail'])
+                obj[bbr.retarget_source_name].data.edit_bones[sbone].head = transformed_location + mathutils.Vector(obj[bbr.retarget_target_name]['bone_data'][tbone]['pose']['head'])
+                obj[bbr.retarget_source_name].data.edit_bones[sbone].tail = transformed_location + mathutils.Vector(obj[bbr.retarget_target_name]['bone_data'][tbone]['pose']['tail'])
 
 
         bpy.ops.object.mode_set(mode='POSE')
@@ -27507,7 +29098,7 @@ class BentoBuddyRetargetLoad(bpy.types.Operator, ImportHelper):
 
             
             obj[bbr.retarget_source_name].data.bones[sbone].select = True
-            obj[bbr.retarget_source_name].pose.bones[sbone].bone_group =                bpy.data.objects[bbr.retarget_source_name].pose.bone_groups[bb_source_group]
+            obj[bbr.retarget_source_name].pose.bones[sbone].bone_group = bpy.data.objects[bbr.retarget_source_name].pose.bone_groups[bb_source_group]
 
         
         bpy.ops.pose.select_all(action = 'DESELECT')
@@ -27515,7 +29106,7 @@ class BentoBuddyRetargetLoad(bpy.types.Operator, ImportHelper):
         activate(bbr.retarget_target_name)
         for tbone in tmap:
             obj[bbr.retarget_target_name].data.bones[tbone].select = True
-            obj[bbr.retarget_target_name].pose.bones[tbone].bone_group =                bpy.data.objects[bbr.retarget_target_name].pose.bone_groups[bb_target_group]
+            obj[bbr.retarget_target_name].pose.bones[tbone].bone_group = bpy.data.objects[bbr.retarget_target_name].pose.bone_groups[bb_target_group]
 
         
         if len(smap) == 0:
@@ -27621,12 +29212,19 @@ class BentoBuddyRigProperties(bpy.types.PropertyGroup):
 
     rig_rotate : bpy.props.BoolProperty(
         name = "",
-        description =            "Second life rigs face the X direction.  It's difficult, and may be impossible, to use some blender tools "            "with the rig in this orientation so most of the time you probably see the rig facing -Y instead.  That's what "            "this button is for but you can disable it and have a correct facing rig, if you really need that for something.",
+        description = ""
+            "Second life rigs face the X direction.  It's difficult, and may be impossible, to use some blender tools "
+            "with the rig in this orientation so most of the time you probably see the rig facing -Y instead.  That's what "
+            "this button is for but you can disable it and have a correct facing rig, if you really need that for something.",
         default = True
         )
     rig_clean : bpy.props.BoolProperty(
         name = "",
-        description =            "This is an expected process, it will clean the original rig so that there's no influences that will interfere with "            "the new controllers as a result of attaching a proxy rig.  This is necessary in order to get clean motion.  Your "            "original rig is copied first, retaining all drivers, controllers and other influences, then the original rig is cleaned "            "so that it's prepared properly for this symmetry.",
+        description = ""
+            "This is an expected process, it will clean the original rig so that there's no influences that will interfere with "
+            "the new controllers as a result of attaching a proxy rig.  This is necessary in order to get clean motion.  Your "
+            "original rig is copied first, retaining all drivers, controllers and other influences, then the original rig is cleaned "
+            "so that it's prepared properly for this symmetry.",
         default = True
         )
 
@@ -27667,7 +29265,11 @@ class BentoBuddyRigProperties(bpy.types.PropertyGroup):
     
     lock_selected : bpy.props.BoolProperty(
         name = "",
-        description =            "Lock the selection"            "\n\n"            "Use this to continue to view the bone transforms even when the rig is not selected.  This was useful for me when testing "            "various aspects of Blender and how it interprets transform relations.  Disable it to lose the connection.",
+        description = ""
+            "Lock the selection"
+            "\n\n"
+            "Use this to continue to view the bone transforms even when the rig is not selected.  This was useful for me when testing "
+            "various aspects of Blender and how it interprets transform relations.  Disable it to lose the connection.",
         default = False,
         update = update_lock_selected
         )
@@ -27678,12 +29280,14 @@ class BentoBuddyRigProperties(bpy.types.PropertyGroup):
         )
     rig_selected : bpy.props.StringProperty(
         name = "",
-        description =            "-- internal base property used to identify a target rig",
+        description = ""
+            "-- internal base property used to identify a target rig",
         default = ""
         )
     bone_selected : bpy.props.StringProperty(
         name = "",
-        description =            "-- internal base property used to identify a bone selected in the target rig",
+        description = ""
+            "-- internal base property used to identify a bone selected in the target rig",
         default = ""
         )
     
@@ -27701,12 +29305,15 @@ class BentoBuddyRigProps(bpy.types.PropertyGroup):
     
     
     rigs_enabled : bpy.props.BoolProperty(
-        description = "Use this to enable showing and usage of the old rigs, which can be useful if creating "            "characters from scratch, clothing or using a kit.  They can be directly animated and the resulting "            "animation can be uploaded to Second Life using the Bento Buddy animation exporter.",
+        description = "Use this to enable showing and usage of the old rigs, which can be useful if creating "
+            "characters from scratch, clothing or using a kit.  They can be directly animated and the resulting "
+            "animation can be uploaded to Second Life using the Bento Buddy animation exporter.",
         default=False
         )
 
     rigs_create : bpy.props.BoolProperty(
-        description = "This generates a rig from internal data, it's slower.  If you have a lot of things in your "            "scene try turning this off, then the rig will be fetched from a saved library.",
+        description = "This generates a rig from internal data, it's slower.  If you have a lot of things in your "
+            "scene try turning this off, then the rig will be fetched from a saved library.",
         default=True
         )
 
@@ -27997,7 +29604,8 @@ class BentoBuddyExpireProperties(bpy.types.PropertyGroup):
     
     expire_ready : bpy.props.BoolProperty(
         name = "expire ready",
-        description =            "does nothing",
+        description = ""
+            "does nothing",
         default = False,
         
         )
@@ -28024,7 +29632,12 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
     
     bone_control_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "This section is for  manipulating bone locations so that you get a better visual representation "            "in Second Life as well as the ability to control these bones better.  This is a bone packer "            "and stabilizer mesh to control where your bones end up in SL.  The mesh is required to be "            "uploaded to SL with joint positions enabled and attached to the same object as your Animesh "            "or attached to your avatar if that's the target you're going for.",
+        description = ""
+            "This section is for  manipulating bone locations so that you get a better visual representation "
+            "in Second Life as well as the ability to control these bones better.  This is a bone packer "
+            "and stabilizer mesh to control where your bones end up in SL.  The mesh is required to be "
+            "uploaded to SL with joint positions enabled and attached to the same object as your Animesh "
+            "or attached to your avatar if that's the target you're going for.",
         default = False,
         )
 
@@ -28042,7 +29655,11 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
     
     
     mapper_attach_from_start : bpy.props.BoolProperty(
-        description =            "This makes sure your time slider is moved to the start frame where it belongs before attaching.  "            "If the controllers are attached while your subjects(s) are in a non-reference pose then your animation transfer "            "will not work properly.  There is no easy way to determine your start frame, it's left up to you to make sure that "            "your (Start) on the (Timeline) window is correct and is on or before your reference pose.",
+        description = ""
+            "This makes sure your time slider is moved to the start frame where it belongs before attaching.  "
+            "If the controllers are attached while your subjects(s) are in a non-reference pose then your animation transfer "
+            "will not work properly.  There is no easy way to determine your start frame, it's left up to you to make sure that "
+            "your (Start) on the (Timeline) window is correct and is on or before your reference pose.",
         default = True
         )
 
@@ -28181,24 +29798,36 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
         return
 
     mapper_menu_enabled : bpy.props.BoolProperty(
-        description =            "Enable the Character Mapper and animation Retargeter"            "\n\n"            "In here you can instantly generate a Second Life compatible character, with included animation, from an "            "arbitrary source.  You can use this for Animes of verious types or even wear the resulting character as your ow.",
+        description = ""
+            "Enable the Character Mapper and animation Retargeter"
+            "\n\n"
+            "In here you can instantly generate a Second Life compatible character, with included animation, from an "
+            "arbitrary source.  You can use this for Animes of verious types or even wear the resulting character as your ow.",
         default = False
         )
     mapper_lock_source : bpy.props.BoolProperty(
         name = "anim add source",
-        description =            "Select your bone source rig, this might, for instance, be a Bento Buddy rig designed for Second Life or Opensim.",
+        description = ""
+            "Select your bone source rig, this might, for instance, be a Bento Buddy rig designed for Second Life or Opensim.",
         default = False,
         update = update_mapper_lock_source
         )
     mapper_lock_target : bpy.props.BoolProperty(
         name = "animesh set targets",
-        description =            "Select 1 or more of your character armatures.  These armatures are associated with the characters that you want to "            "bring into Second Life, Opensim or remap to another platform.  For Second Life the bone total cannot be more than 110 "            "per mesh.  The mapper will do the math for you, when source and target are enabled, and let you know if there's a problem.",
+        description = ""
+            "Select 1 or more of your character armatures.  These armatures are associated with the characters that you want to "
+            "bring into Second Life, Opensim or remap to another platform.  For Second Life the bone total cannot be more than 110 "
+            "per mesh.  The mapper will do the math for you, when source and target are enabled, and let you know if there's a problem.",
         default = False,
         update = update_mapper_lock_target
         )
     mapper_restore_pose : bpy.props.BoolProperty(
         name = "Restore Manual Pose",
-        description = "\n"            "If you set a non animated pose for your start frame, so that the armatures/bones match up better, keep this enabled in order "            "to revert back to that same pose between map cycles (reset/load).  This will also snap your frame back to the first frame of "            "your animation which is the only way this can work.  If you don't like the jolt of being tossed back to your start frame then "            "disable this and use the Bento Buddy pose library to restore your poses where you like them.",
+        description = "\n"
+            "If you set a non animated pose for your start frame, so that the armatures/bones match up better, keep this enabled in order "
+            "to revert back to that same pose between map cycles (reset/load).  This will also snap your frame back to the first frame of "
+            "your animation which is the only way this can work.  If you don't like the jolt of being tossed back to your start frame then "
+            "disable this and use the Bento Buddy pose library to restore your poses where you like them.",
         default = True,
         )
     
@@ -28306,35 +29935,64 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
     
     
     mapper_morph_pose : bpy.props.BoolProperty(
-        description =            "Test tool, generates a corrective morph pose in order to use all mbones.  This is part of the Shape Shifter tools"            "\n\n"            "If you see this you probably want to use it always.  When it finally vanishes then the feature is already part of "            "the background mapper process.",
+        description = ""
+            "Test tool, generates a corrective morph pose in order to use all mbones.  This is part of the Shape Shifter tools"
+            "\n\n"
+            "If you see this you probably want to use it always.  When it finally vanishes then the feature is already part of "
+            "the background mapper process.",
         default=False,
         )
     mapper_safe_bones : bpy.props.BoolProperty(
-        description =            "This guarantees that the automapper uses only those bones that can be animated properly with arbitrarily mapped characters.  "            "That doesn't mean you are limited to this amount, it just means easier and quicker prototyping before you set on a set of bones "            "that you'll be using.  The idea of the automapper is to click a few times and see your results in Second Life, and that's just "            "what it does.  The process is non-destructive so you can continue to change bones, names, positions and bind poses to get where "            "you're going before commitng to a set.",
+        description = ""
+            "This guarantees that the automapper uses only those bones that can be animated properly with arbitrarily mapped characters.  "
+            "That doesn't mean you are limited to this amount, it just means easier and quicker prototyping before you set on a set of bones "
+            "that you'll be using.  The idea of the automapper is to click a few times and see your results in Second Life, and that's just "
+            "what it does.  The process is non-destructive so you can continue to change bones, names, positions and bind poses to get where "
+            "you're going before commitng to a set.",
         default=True,
         update = update_mapper_safe_bones
         )
     mapper_allow_all_bones : bpy.props.BoolProperty(
-        description =            "The mapper will use safe bones first, then the remainder of the typical deform bone, which includes what you may be referring to as "
-            "bento bones.  After which volume bones will be appended to the list if they were enabled.  If you want to map all bones try it with "            "the Shape Shifter option enabled to prevent wobble and out-right bone explosions",
+        description = ""
+            "The mapper will use safe bones first, then the remainder of the typical deform bone, which includes what you may be referring to as "
+            "bento bones.  After which volume bones will be appended to the list if they were enabled.  If you want to map all bones try it with "
+            "the Shape Shifter option enabled to prevent wobble and out-right bone explosions",
         default=False,
         update = update_mapper_allow_all_bones
         )
     mapper_force_pelvis_map : bpy.props.BoolProperty(
-        description =            "If you're going to carry your auto-map as a ctm you'll want a heads up here.  The pelvis must be mapped for smooth "            "animation retargeting.  The very useful (Retarget Only) feature cannot be used without an anchor, this is your anchor.",
+        description = ""
+            "If you're going to carry your auto-map as a ctm you'll want a heads up here.  The pelvis must be mapped for smooth "
+            "animation retargeting.  The very useful (Retarget Only) feature cannot be used without an anchor, this is your anchor.",
         default=False,
         )
     mapper_allow_volume_bones : bpy.props.BoolProperty(
-        description =            "Include bones in your chosen set."            "\n\n"            "You can add volume bones to the list of bones to map along with your chosen set, they will be added to the end of the series "            "so that they are used last.  You're always able to make your own map, bone by bone, instead of relying on Bento Buddy but these "            "auto-map features are a nice addition to prototype testing and can speed up your discovery process quite a bit.",
+        description = ""
+            "Include bones in your chosen set."
+            "\n\n"
+            "You can add volume bones to the list of bones to map along with your chosen set, they will be added to the end of the series "
+            "so that they are used last.  You're always able to make your own map, bone by bone, instead of relying on Bento Buddy but these "
+            "auto-map features are a nice addition to prototype testing and can speed up your discovery process quite a bit.",
         default=False,
         )
     mapper_retarget_only : bpy.props.BoolProperty(
-        description =            "This is a primary mode of retargetting animations.  It is the suggested method for a typical setup.  This feature allows you "            "to use proxy objects, which is already set for you, to create a master and slave object in order to drive your working rig.  "            "Rotation data from the animated bones will be transmitted to the working rig's bones.  There are other options associated with "            "this type of retargetting, location data and anchor.  Typically you'll want the anchor bone to be enabled and location data "            "to be disabled.  Additionally, having this feature enabled prevents the creation, and usage, of the sticky rig (fly_paper).",
+        description = ""
+            "This is a primary mode of retargetting animations.  It is the suggested method for a typical setup.  This feature allows you "
+            "to use proxy objects, which is already set for you, to create a master and slave object in order to drive your working rig.  "
+            "Rotation data from the animated bones will be transmitted to the working rig's bones.  There are other options associated with "
+            "this type of retargetting, location data and anchor.  Typically you'll want the anchor bone to be enabled and location data "
+            "to be disabled.  Additionally, having this feature enabled prevents the creation, and usage, of the sticky rig (fly_paper).",
         default=False,
         )
     mapper_auto_fix_bvh : bpy.props.BoolProperty(
         name = "Auto Fix BVH / SL map",
-        description = ""            "\n"            "BVH names are used in Second Life and some exporters used this map, Avastar for instance, to export your animation.  "            "This auto-fix will detect that and fix it for you if you haven't already.  There is a tool for it to do it yourself in "            "(Rig Tools / Fix SL BVH Rig) but this button does it virtually, without changing the bone names.  It's usually safe to "            "keep this enabled but if you ever run ito the odd situation where your SL bone name matches some other target system then "            "you want to disable this.  Essentially if you're expecting an SL animation then use this feature.",
+        description = ""
+            "\n"
+            "BVH names are used in Second Life and some exporters used this map, Avastar for instance, to export your animation.  "
+            "This auto-fix will detect that and fix it for you if you haven't already.  There is a tool for it to do it yourself in "
+            "(Rig Tools / Fix SL BVH Rig) but this button does it virtually, without changing the bone names.  It's usually safe to "
+            "keep this enabled but if you ever run ito the odd situation where your SL bone name matches some other target system then "
+            "you want to disable this.  Essentially if you're expecting an SL animation then use this feature.",
         default = True,
         )
 
@@ -28434,7 +30092,10 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
 
     
     location_data : bpy.props.BoolProperty(
-        description =            "Use location data for all bones.  This is probably not practical since it will effectively give you the same results "            "as mapping without the (Retarget Only) feature but it could come in handy for debugging a difficult rig.  Note, this "            "setting overrides the anchor property.",
+        description = ""
+            "Use location data for all bones.  This is probably not practical since it will effectively give you the same results "
+            "as mapping without the (Retarget Only) feature but it could come in handy for debugging a difficult rig.  Note, this "
+            "setting overrides the anchor property.",
         default=False,
         )
 
@@ -28491,20 +30152,36 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
 
     mapper_anchor_enabled : bpy.props.BoolProperty(
         name = "Enable Pelvis Anchor",
-        description =            "\n"            "Having this enabled is usually what you want and will allow the working rig to follow the animated rig's location.  "            "The target rig in this case is the animated rig, which we are using as a source for our rig that's not animated.  Keep in "            "mind that the source and target definitions here are different than what you'd expect in a (retargeting) system since this "            "particular tool is designed for something a bit different but has the added benefit of being able to retarget animations.",
+        description = ""
+            "\n"
+            "Having this enabled is usually what you want and will allow the working rig to follow the animated rig's location.  "
+            "The target rig in this case is the animated rig, which we are using as a source for our rig that's not animated.  Keep in "
+            "mind that the source and target definitions here are different than what you'd expect in a (retargeting) system since this "
+            "particular tool is designed for something a bit different but has the added benefit of being able to retarget animations.",
         default=True,
         update = update_mapper_anchor_enabled
         )
     mapper_anchor_source_name : bpy.props.StringProperty(
-        description =            "This is the name of the bone that will follow along with the animated subject, this aught to be a root bone and it "            "will be location linked to its counterpart.  This is something you probably want and the default is shown as the first "            "root bone found in the skeleton.  If it's wrong change it.  It's probably not wrong.",
+        description = ""
+            "This is the name of the bone that will follow along with the animated subject, this aught to be a root bone and it "
+            "will be location linked to its counterpart.  This is something you probably want and the default is shown as the first "
+            "root bone found in the skeleton.  If it's wrong change it.  It's probably not wrong.",
         default="",
         )
     mapper_proxy_objects : bpy.props.BoolProperty(
-        description =            "With this enabled the (Attach) will generate proxy objects to help prevent glitches with animation transfers.  "            "Using this is the default because it's almost always what you want.  The alternative, without it, is a direct "            "bone mapping, which actually works at times, and can give you a quick view of how things look and may be helpful "            "for debugging.  The associated objects will be removed automatically when the mapper is no longer active on the "            "intended items unless you 'Disconnect Mapped Items'.",
+        description = ""
+            "With this enabled the (Attach) will generate proxy objects to help prevent glitches with animation transfers.  "
+            "Using this is the default because it's almost always what you want.  The alternative, without it, is a direct "
+            "bone mapping, which actually works at times, and can give you a quick view of how things look and may be helpful "
+            "for debugging.  The associated objects will be removed automatically when the mapper is no longer active on the "
+            "intended items unless you 'Disconnect Mapped Items'.",
         default=True,
         )
     mapper_edit_targets : bpy.props.BoolProperty(
-        description =            "Enabling this will expand a list of mapped bones.  You can remove bones from the map to test your exported animation.  "            "This is useful for testing to see which bones are causing difficulties in your end result.  You'll want to create a new "            "map file, when you have everything working, so that you won't have to edit them again.",
+        description = ""
+            "Enabling this will expand a list of mapped bones.  You can remove bones from the map to test your exported animation.  "
+            "This is useful for testing to see which bones are causing difficulties in your end result.  You'll want to create a new "
+            "map file, when you have everything working, so that you won't have to edit them again.",
         default=False,
         )
 
@@ -28513,7 +30190,8 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
     
     mapper_template_path : bpy.props.StringProperty(
         name = "mapper template name",
-        description = "This area is really for internal use, it stores the location of "            "template you loaded, you really shouldn't mess with it.",
+        description = "This area is really for internal use, it stores the location of "
+            "template you loaded, you really shouldn't mess with it.",
         default = "",
         )
     
@@ -28532,12 +30210,24 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
     mapper_enabled : bpy.props.BoolProperty(default=False)
 
     mapper_fitted : bpy.props.BoolProperty(
-        description = "This is for fitted mesh for Second Life, if you're mapping for a system other than Second Life "            "then you don't need this.  The default is on because most people will probably be using this.  Even if you are "            "not interested in using the fitted mesh (volume bones) option, it probably will not break anything leaving it "            "enabled.  In addition, if you find that you want to use volume bones, for some special purpose, then you will want this "            "feature enabled or the results in Second Life may be strange since these bones are treated differently and the mapper "            "knows how to process them for export to limit the visible weirdness that could occur.",
+        description = "This is for fitted mesh for Second Life, if you're mapping for a system other than Second Life "
+            "then you don't need this.  The default is on because most people will probably be using this.  Even if you are "
+            "not interested in using the fitted mesh (volume bones) option, it probably will not break anything leaving it "
+            "enabled.  In addition, if you find that you want to use volume bones, for some special purpose, then you will want this "
+            "feature enabled or the results in Second Life may be strange since these bones are treated differently and the mapper "
+            "knows how to process them for export to limit the visible weirdness that could occur.",
         default=True,
         )
     mapper_stabilize : bpy.props.BoolProperty(
         name = "Stabilize Animation Transfers",
-        description =            "NOTE:  This does not apply to the (Retarget Only) feature\n\n"            "This feature may be going away, it is not performing as expected and the introduction of the .anim format "            "should be able to replace this in the future.  Until then it can provide some stability in oddly transformed rigs.  \n\n"            "The lock makes the bones stick to the targets, this ensures that your animation will transfer although the "            "quality will vary.  This feature (stabilize) goes further and secures the unused bones so that they don't move."            "This can allow a cleaner transition into Second Life.  The object created in your scene for this purpose is "            "(Fly Paper) and is a copy of your source armature.  It's removed when you reset the mapper.",
+        description = ""
+            "NOTE:  This does not apply to the (Retarget Only) feature\n\n"
+            "This feature may be going away, it is not performing as expected and the introduction of the .anim format "
+            "should be able to replace this in the future.  Until then it can provide some stability in oddly transformed rigs.  \n\n"
+            "The lock makes the bones stick to the targets, this ensures that your animation will transfer although the "
+            "quality will vary.  This feature (stabilize) goes further and secures the unused bones so that they don't move."
+            "This can allow a cleaner transition into Second Life.  The object created in your scene for this purpose is "
+            "(Fly Paper) and is a copy of your source armature.  It's removed when you reset the mapper.",
         default=True,
         )
 
@@ -28578,43 +30268,93 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
 
     mapper_pack_bones : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable this toggle to expand the options:"            "\n\n"            "This will pack the unused bones into a grid, away from their default positions, ensuring that any mesh attached "            "to them can be uploaded with joint positions.  This is a feature to help stabilize your animations.  "            "This is sometimes necessary because foreign rigs do not usually end up with the same amount of usable bones after "            "conversion and the free floating bones, unused bones, can cause mesh distortions and animation wobble.  You might "            "consider using this without joint positions but with a deformer pose instead."            "\n\n"            "IMPORTANT!: Animations affecting the packed bones will cause interference with your target area.  To prevent this "            "use the (Glue Packed Bones) option which will create a duplicate of your mesh and constrain your packed bones to it",
+        description = ""
+            "Enable this toggle to expand the options:"
+            "\n\n"
+            "This will pack the unused bones into a grid, away from their default positions, ensuring that any mesh attached "
+            "to them can be uploaded with joint positions.  This is a feature to help stabilize your animations.  "
+            "This is sometimes necessary because foreign rigs do not usually end up with the same amount of usable bones after "
+            "conversion and the free floating bones, unused bones, can cause mesh distortions and animation wobble.  You might "
+            "consider using this without joint positions but with a deformer pose instead."
+            "\n\n"
+            "IMPORTANT!: Animations affecting the packed bones will cause interference with your target area.  To prevent this "
+            "use the (Glue Packed Bones) option which will create a duplicate of your mesh and constrain your packed bones to it",
         default=False,
 
         )
     mapper_rebuild_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "Rebuild SL Rig"            "\n\n"            "If this is an SL compatible rig you're asking the packer to rebuild it before packing the bones.  This is what you want "            "if the rig is SL compatible and there's a very good chance that the results will not be ideal if you do NOT choose this "            "option.  If your rig has been determined to be incompatible with SL this rebuild will not happen at all.",
+        description = ""
+            "Rebuild SL Rig"
+            "\n\n"
+            "If this is an SL compatible rig you're asking the packer to rebuild it before packing the bones.  This is what you want "
+            "if the rig is SL compatible and there's a very good chance that the results will not be ideal if you do NOT choose this "
+            "option.  If your rig has been determined to be incompatible with SL this rebuild will not happen at all.",
         default=True,
         )
     mapper_rebuild_rig_attachment : bpy.props.BoolProperty(
         name = "",
-        description =            "Rebuild Attachment Bones"            "\n\n"            "This may or may not be a good idea to add, I haven't tested skinning to attachment bones very well yet.  But the option is here "            "for you to enabled.  If enabled then the attachment bones, those that can be skinned to, will be generated and the resulting "            "stabilizer mesh, when generated, will have those as definitions.  Your stabilizer mesh may very well be highly deformed when "            "using this option, as well as when using volume bones.",
+        description = ""
+            "Rebuild Attachment Bones"
+            "\n\n"
+            "This may or may not be a good idea to add, I haven't tested skinning to attachment bones very well yet.  But the option is here "
+            "for you to enabled.  If enabled then the attachment bones, those that can be skinned to, will be generated and the resulting "
+            "stabilizer mesh, when generated, will have those as definitions.  Your stabilizer mesh may very well be highly deformed when "
+            "using this option, as well as when using volume bones.",
         default=False,
         )
     mapper_rebuild_rig_volume : bpy.props.BoolProperty(
         name = "",
-        description =            "Rebuild Volume Bones"            "\n\n"            "Just like the attachment bone option this may deform your flat stabilizer mesh but it shouldn't matter really, the idea of using "            "a stabilizer is to force bones into a genera vacinity and to stay there.  But the option is here for you to enable if you choose.",
+        description = ""
+            "Rebuild Volume Bones"
+            "\n\n"
+            "Just like the attachment bone option this may deform your flat stabilizer mesh but it shouldn't matter really, the idea of using "
+            "a stabilizer is to force bones into a genera vacinity and to stay there.  But the option is here for you to enable if you choose.",
         default=False,
         )
     mapper_pack_pelvis : bpy.props.BoolProperty(
         name = "",
-        description =            "Include Pelvis"            "\n\n"            "This will include the pelvis (mPelvis) if it's not already skinned to.  I have no idea if this option is useful but it seems to "            "make sense to include it at least as a test, to rule out any issues with this bone.  If this is enabled then the mPelvis bone "            "will be packed along with the other unused bones.",
+        description = ""
+            "Include Pelvis"
+            "\n\n"
+            "This will include the pelvis (mPelvis) if it's not already skinned to.  I have no idea if this option is useful but it seems to "
+            "make sense to include it at least as a test, to rule out any issues with this bone.  If this is enabled then the mPelvis bone "
+            "will be packed along with the other unused bones.",
         default=True,
         )
     mapper_pack_compress : bpy.props.BoolProperty(
         name = "",
-        description =            "Compress to a point.  If enabled this combines (Pack) with the (Custom Stabilizer) process so you only need this."            "\n\n"            "This is an alternative to the grid pattern arrangement and is more suited for bulk manipulation and accuracy.  You will "            "sometimes want to control where an Animesh is placed, either when worn or with respect to its base/root object.  This "            "option will give you that control much easier since it places everything in a specific location in your 3d arena determined "            "by you.  If you enable (Selected) virtually anything can be used as a locator item such as selected object (mesh or rig) "            "or a selected vertex or even a selected bone.  All of the unused bones will be packed into this one location and a mesh "            "will be created to support them.  The (Length) value in the options area will be used for the bone length",
+        description = ""
+            "Compress to a point.  If enabled this combines (Pack) with the (Custom Stabilizer) process so you only need this."
+            "\n\n"
+            "This is an alternative to the grid pattern arrangement and is more suited for bulk manipulation and accuracy.  You will "
+            "sometimes want to control where an Animesh is placed, either when worn or with respect to its base/root object.  This "
+            "option will give you that control much easier since it places everything in a specific location in your 3d arena determined "
+            "by you.  If you enable (Selected) virtually anything can be used as a locator item such as selected object (mesh or rig) "
+            "or a selected vertex or even a selected bone.  All of the unused bones will be packed into this one location and a mesh "
+            "will be created to support them.  The (Length) value in the options area will be used for the bone length",
         default=False,
         )
     mapper_pack_selected : bpy.props.BoolProperty(
         name = "",
-        description =            "Compress to selected.  All of your bones and a resulting mesh will appear at the designated location."            "\n\n"            "If this is enabled then your compressed set will be located at the area logically suited for the mode you are in. "            "If you are in edit mode on a mesh object then a selected vertex will be used as a locator.  If you're in edit mode or "            "pose mode on a rig then a selected bone will be used.  If you are in object mode then a selected object location "            "will be used.  Without this enabled your compressed set will be located at origin (0,0,0)",
+        description = ""
+            "Compress to selected.  All of your bones and a resulting mesh will appear at the designated location."
+            "\n\n"
+            "If this is enabled then your compressed set will be located at the area logically suited for the mode you are in. "
+            "If you are in edit mode on a mesh object then a selected vertex will be used as a locator.  If you're in edit mode or "
+            "pose mode on a rig then a selected bone will be used.  If you are in object mode then a selected object location "
+            "will be used.  Without this enabled your compressed set will be located at origin (0,0,0)",
         default=True,
         )
     mapper_pack_glue : bpy.props.BoolProperty(
         name = "",
-        description =            "This stabilizes your packed bones.  You will notice a new rig in your scene if using this.  This rig is designed to tack your"            "packed bones into place so that they don't move.  This can clear up some wigglies but if your rig and animation are not "            "properly setup then the influences may be too much for SL to handle.  In that case you would have to choose which bones are "            "going to be influenced.  The reason for the pack feature is to direct Second Life to place all of your bones where you chose "            "and not where it wants them, and should be good enough even without gluing the bones down but the resulting stabilizer mesh "            "may move and be an ugly show so you would want to make that mesh invisible.",
+        description = ""
+            "This stabilizes your packed bones.  You will notice a new rig in your scene if using this.  This rig is designed to tack your"
+            "packed bones into place so that they don't move.  This can clear up some wigglies but if your rig and animation are not "
+            "properly setup then the influences may be too much for SL to handle.  In that case you would have to choose which bones are "
+            "going to be influenced.  The reason for the pack feature is to direct Second Life to place all of your bones where you chose "
+            "and not where it wants them, and should be good enough even without gluing the bones down but the resulting stabilizer mesh "
+            "may move and be an ugly show so you would want to make that mesh invisible.",
         default=True,
         )
 
@@ -28664,35 +30404,45 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
         )
     mapper_pack_bones_spacing_x : bpy.props.FloatProperty(
         name = "spacing x",
-        description =            "NOTE: Overrides Gap\n\n"            "The X spacing between bones.  This is for visual readability.",
+        description = ""
+            "NOTE: Overrides Gap\n\n"
+            "The X spacing between bones.  This is for visual readability.",
         min = 0.0,
         default = 0.0,
         update = update_spacing
         )
     mapper_pack_bones_spacing_y : bpy.props.FloatProperty(
         name = "spacing y",
-        description =            "NOTE: Overrides Gap\n\n"            "The Y spacing between bones.  This is for visual readability.",
+        description = ""
+            "NOTE: Overrides Gap\n\n"
+            "The Y spacing between bones.  This is for visual readability.",
         min = 0.0,
         default = 0.0,
         update = update_spacing
         )
     mapper_pack_bones_spacing_z : bpy.props.FloatProperty(
         name = "spacing z",
-        description =            "NOTE: Overrides Gap\n\n"            "The Z spacing between bones.  This is for visual readability.",
+        description = ""
+            "NOTE: Overrides Gap\n\n"
+            "The Z spacing between bones.  This is for visual readability.",
         min = 0.0,
         default = 0.0,
         update = update_spacing
         )
     mapper_pack_bones_gap : bpy.props.FloatProperty(
         name = "gap",
-        description =            "NOTE: Overrides Spacing\n\n"            "This is the gap between rows and columns.  This for visual readability.",
+        description = ""
+            "NOTE: Overrides Spacing\n\n"
+            "This is the gap between rows and columns.  This for visual readability.",
         min = 0.0,
         default = 0.05,
         update = update_gap
         )
     mapper_pack_bones_length : bpy.props.FloatProperty(
         name = "Length:",
-        description =            "The visual length of each bone.  This is always on the Z axis.  The vertical spacing will take this into account.  "            "This is an essential property and must be more than 0 or the bone will vanish visually and internally.",
+        description = ""
+            "The visual length of each bone.  This is always on the Z axis.  The vertical spacing will take this into account.  "
+            "This is an essential property and must be more than 0 or the bone will vanish visually and internally.",
         min = 0.01,
         default = 0.1,
         )
@@ -28705,12 +30455,24 @@ class BentoBuddyMapperProps(bpy.types.PropertyGroup):
     
     mapper_custom_stabilizer : bpy.props.BoolProperty(
         name = "",
-        description =            "This is the original stabilizer that used to be found in another area that became discontinued.  It is now "            "re-introduced because of its Animesh usefulness but you can use it for your avatar as well.  There's an "            "alternative option to pack and stabilize (Compress) if you want better accuracy instead of pretty bones."            "\n\n"            "This is probably not very useful unless you used (Pack Bones) first but you can still use it if you want, "            "your testing might reveal something interesting that I haven't run into. \n\n"            "This will create a mesh with a vertex located at every unused bone position and weighted to "            "that bone, and only that bone.  This will allow you to upload a stabilizer mesh that, when worn or attached to your "            "Animesh, will snap the bones into place where they belong, instead of where Second Life thinks they belong.",
+        description = ""
+            "This is the original stabilizer that used to be found in another area that became discontinued.  It is now "
+            "re-introduced because of its Animesh usefulness but you can use it for your avatar as well.  There's an "
+            "alternative option to pack and stabilize (Compress) if you want better accuracy instead of pretty bones."
+            "\n\n"
+            "This is probably not very useful unless you used (Pack Bones) first but you can still use it if you want, "
+            "your testing might reveal something interesting that I haven't run into. \n\n"
+            "This will create a mesh with a vertex located at every unused bone position and weighted to "
+            "that bone, and only that bone.  This will allow you to upload a stabilizer mesh that, when worn or attached to your "
+            "Animesh, will snap the bones into place where they belong, instead of where Second Life thinks they belong.",
         default=False,
         update = update_mapper_custom_stabilizer
         )
     mapper_visual_stabilizer : bpy.props.BoolProperty(
-        description =            "This can do the same thing as the custom stabilizer except that this one gives you a better visual representation "            "of the stray bones that need to be worked into the mesh at the cost of more vertices, which also translates to more LI.  "            "I would suggest using this to prototype and use the custom one for the finished product.",
+        description = ""
+            "This can do the same thing as the custom stabilizer except that this one gives you a better visual representation "
+            "of the stray bones that need to be worked into the mesh at the cost of more vertices, which also translates to more LI.  "
+            "I would suggest using this to prototype and use the custom one for the finished product.",
         default=False,
         update = update_mapper_visual_stabilizer
         )
@@ -31488,7 +33250,8 @@ class BentoBuddyJointControlProperties(bpy.types.PropertyGroup):
 
     joints_show : bpy.props.BoolProperty(
         name="",
-        description =            "Show a list of joints with their export property set.  You can remove this property using the (X)",
+        description = ""
+            "Show a list of joints with their export property set.  You can remove this property using the (X)",
         default=False
     )
 
@@ -32427,13 +34190,17 @@ class BentoBuddyAlignBonesProperties(bpy.types.PropertyGroup):
 
     first : bpy.props.BoolProperty(
         name = "",
-        description =            "These do not have to be in some order.  Pick a bone and click this, pick another bone and click the (last) button.  "            "Once you've made your selection click the (Align Bones) button.",
+        description = ""
+            "These do not have to be in some order.  Pick a bone and click this, pick another bone and click the (last) button.  "
+            "Once you've made your selection click the (Align Bones) button.",
         default = False,
         update = update_first
         )
     last : bpy.props.BoolProperty(
         name = "",
-        description =            "These do not have to be in some order.  Pick a bone and click the (first) button, pick another bone and click this "            "button.  Once you've made your selection click the (Align Bones) button.",
+        description = ""
+            "These do not have to be in some order.  Pick a bone and click the (first) button, pick another bone and click this "
+            "button.  Once you've made your selection click the (Align Bones) button.",
         default = False,
         update = update_last
         )
@@ -32441,29 +34208,57 @@ class BentoBuddyAlignBonesProperties(bpy.types.PropertyGroup):
         self["align_bones_info"] = False
     align_bones_info : bpy.props.BoolProperty(
         name = "",
-        description =            "This section allows you to align segments of bones, or in the case of a snake you can do the entire rig.  "            "\n\n"            "The usefulness of this may not be clear but here's an example."
-            "\n\n"            "You have a snake, cylinder possibly, that you've used a method, maybe a path and deform, so that you can get "            "a visually appealing snake, worm, into a curled pose.  However, this pose is just its static rest pose and "            "would be difficult to adjust skin weights for it and do any other meaningful work.  If you have an armature "            "associated with this mesh you can easily straighten it out for further work.  The original pose will be "            "preserved in an animation and your original animation, if any, is still accessible in the scene.  This can "            "straighten any bone segment, not just a single chain with only 1 child, just choose your first and last bones "            "and click (Align Bones).",
+        description = ""
+            "This section allows you to align segments of bones, or in the case of a snake you can do the entire rig.  "
+            "\n\n"
+            "The usefulness of this may not be clear but here's an example."
+            "\n\n"
+            "You have a snake, cylinder possibly, that you've used a method, maybe a path and deform, so that you can get "
+            "a visually appealing snake, worm, into a curled pose.  However, this pose is just its static rest pose and "
+            "would be difficult to adjust skin weights for it and do any other meaningful work.  If you have an armature "
+            "associated with this mesh you can easily straighten it out for further work.  The original pose will be "
+            "preserved in an animation and your original animation, if any, is still accessible in the scene.  This can "
+            "straighten any bone segment, not just a single chain with only 1 child, just choose your first and last bones "
+            "and click (Align Bones).",
         default = False,
         update = update_align_bones_info
         )
     animate : bpy.props.BoolProperty(
         name = "",
-        description =            "This feature, when enabled, creates an animation between the existing arrangement of the bones "            "and the new, straightened, arrangement of the bones.  The new shape of the skeleton, or skeleton area, "            "will be the rest pose and the resulting animation will be a way to motion your bones back to where "            "they once were.  It's expected that there's a sensible hierarchy to follow, and associated influences, "            "if that is missing or the influences are not sane then this can, and probably will, go horribly wrong!",
+        description = ""
+            "This feature, when enabled, creates an animation between the existing arrangement of the bones "
+            "and the new, straightened, arrangement of the bones.  The new shape of the skeleton, or skeleton area, "
+            "will be the rest pose and the resulting animation will be a way to motion your bones back to where "
+            "they once were.  It's expected that there's a sensible hierarchy to follow, and associated influences, "
+            "if that is missing or the influences are not sane then this can, and probably will, go horribly wrong!",
         default = False
         )
     move : bpy.props.BoolProperty(
         name = "",
-        description =            "Your bones may be separated visually, not connected, and there's nothing wrong with this arrangement.  "            "However you can use this switch to move the head of the next bone to the tail of its parent bone and "            "this is not the same as the (connected) feature in the bone properties panel, it moves the entire bone.  "            "All bones will keep their length but their positions will change if this is enabled.",
+        description = ""
+            "Your bones may be separated visually, not connected, and there's nothing wrong with this arrangement.  "
+            "However you can use this switch to move the head of the next bone to the tail of its parent bone and "
+            "this is not the same as the (connected) feature in the bone properties panel, it moves the entire bone.  "
+            "All bones will keep their length but their positions will change if this is enabled.",
         default = False
         )
     rebind : bpy.props.BoolProperty(
         name = "",
-        description =            "This can be a non-destructive process, but is less useful in that state.  With this button enabled the new "            "rest pose will be its straightened state, allowing you to skin the mesh to the new rest pose without unexpected "            "distortions.  With this disabled there will be no new rest pose and the animation will be the only affected property.  "            "This applied animation will bring you to the original state, if you enabled that.",
+        description = ""
+            "This can be a non-destructive process, but is less useful in that state.  With this button enabled the new "
+            "rest pose will be its straightened state, allowing you to skin the mesh to the new rest pose without unexpected "
+            "distortions.  With this disabled there will be no new rest pose and the animation will be the only affected property.  "
+            "This applied animation will bring you to the original state, if you enabled that.",
         default = True
         )
     offsets : bpy.props.BoolProperty(
         name = "",
-        description =            "With this enabled the result may not loook accurate but it is.  The less accurate version, without this enabled, "            "is probably what most people are expecting and that's why this is disabled by default."            "\n\n"            "Enable this to preserve the bone offset of an adjusted bone with respect to its parent, this offset is for location "            "data only, all angles will match the first parent in the chain regardless of which options you choose.",
+        description = ""
+            "With this enabled the result may not loook accurate but it is.  The less accurate version, without this enabled, "
+            "is probably what most people are expecting and that's why this is disabled by default."
+            "\n\n"
+            "Enable this to preserve the bone offset of an adjusted bone with respect to its parent, this offset is for location "
+            "data only, all angles will match the first parent in the chain regardless of which options you choose.",
         default = False
         )
 
@@ -32472,7 +34267,10 @@ class BentoBuddyAlignBonesProperties(bpy.types.PropertyGroup):
     
     angle : bpy.props.BoolProperty(
         name = "",
-        description =            "The angle of a bone can be important with respect to its parent, so this is disabled by default.  This feature, "            "when enabled, will rotation align all of the bones in the chain with the starting bone, the one you selected.  "            "The resulting animation from this, if you enabled (animate), may turn out to be very strange.",
+        description = ""
+            "The angle of a bone can be important with respect to its parent, so this is disabled by default.  This feature, "
+            "when enabled, will rotation align all of the bones in the chain with the starting bone, the one you selected.  "
+            "The resulting animation from this, if you enabled (animate), may turn out to be very strange.",
         default = True
         )
 
@@ -32872,16 +34670,36 @@ class BentoBuddySnapRigProperties(bpy.types.PropertyGroup):
         )
     snap_info : bpy.props.BoolProperty(
         name = "",
-        description = ""            "This tool is intended for a more advanced work-flow with regard to retargeting your animations.  It's here "            "in order to use your own method of hierarchy control so that you can generate some interesting long chain "            "animations without the usual distortions, allowing you to add more constraints and drivers, where you can "            "invert child rotations of the parent that separates a segment of bone chains when opposing each other, "            "allowing for a much longer chain in an unusual hierarchy."            "\n\n"            "This feature will do 3 simple things.  First it will generate an SL safe rig, which contains all of "            "the available SL bones, then it will snap those bones to the rig, according to the map provided on "            "the rig.  The tool will then apply constraints to those mapped bones so that they stay where they are put, "            "which allows you to do some intricate manual retargeting that the other automated tools are otherwise not "            "designed for",
+        description = ""            "This tool is intended for a more advanced work-flow with regard to retargeting your animations.  It's here "
+            "in order to use your own method of hierarchy control so that you can generate some interesting long chain "
+            "animations without the usual distortions, allowing you to add more constraints and drivers, where you can "
+            "invert child rotations of the parent that separates a segment of bone chains when opposing each other, "
+            "allowing for a much longer chain in an unusual hierarchy."
+            "\n\n"
+            "This feature will do 3 simple things.  First it will generate an SL safe rig, which contains all of "
+            "the available SL bones, then it will snap those bones to the rig, according to the map provided on "
+            "the rig.  The tool will then apply constraints to those mapped bones so that they stay where they are put, "
+            "which allows you to do some intricate manual retargeting that the other automated tools are otherwise not "
+            "designed for",
         default = False,
         update = blank
         )
-
     snap_distance : bpy.props.FloatProperty(
         name = "",
-        description = ""            "This is a visual for convenience but can also effect the in-world result, often to advantage.  "            "This is the distance between actor and director, basically how far back should the SL rig be?",
+        description = ""
+            "This is a visual for convenience but can also effect the in-world result, often to advantage.  "
+            "This is the distance between actor and director, basically how far back should the SL rig be?",
         default = 0.0
         )
+    snap_to_animation : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "Send details to animation tools"
+            "\n\n"
+            "This will send the range of your current animation to the (range) and (loop) settings in the "
+            "animation export tool.  The alternative is to use the (Acquire) button in the animation exporter "            "to grab the ranges.  Keep in mind that the (Loop) feature must be enabled in order for loop to work.",
+        default = False
+    )
 
 
 
@@ -32912,9 +34730,19 @@ then generate one first using one of the mappers, the Snap Mapper is fun"""
     def execute(self, context):
         
         
+        
+        
+        
+        
+        bb_quick = bpy.context.window_manager.bb_quick
+
+        
+        
         for o in bpy.context.selected_objects:
             if o.type == 'ARMATURE':
                 tarmObj = o
+
+        frame_current = bpy.context.scene.frame_current
 
         
         state = utils.get_state()
@@ -32925,6 +34753,19 @@ then generate one first using one of the mappers, the Snap Mapper is fun"""
         bb_snap_rig = bpy.context.window_manager.bb_snap_rig
 
         
+        if bb_snap_rig.snap_to_animation == True:
+            has_action = False
+            if tarmObj.animation_data != None:
+                if tarmObj.animation_data.action != None:
+                    has_action = True
+                    tarmObj.select_set(True)
+                    utils.activate(tarmObj)
+                    print("Running acquire_animation_details")
+                    bpy.ops.bentobuddy.acquire_animation_details()
+            if has_action == False:
+                print("No animation to transfer, you can still inherit motion but your time settings must be set manually")
+
+        
         
         
 
@@ -32932,15 +34773,18 @@ then generate one first using one of the mappers, the Snap Mapper is fun"""
         if tarmObj.get('bb_onemap_rename') == None:
             print("No map on the rig, nothing to snap to")
             popup("There's no map on the rig, try the snap mapper?")
+            
+            bb_quick.sim_quick_error_state = True
+            bb_quick.sim_quick_error_text = "No map on the rig"
             return {'FINISHED'}
         rename_map = tarmObj['bb_onemap_rename'].to_dict()
         if len(rename_map) == 0:
             print("The map contains empty data, there's nothing to do, try remapping?")
             popup("The map is empty, try remapping")
+            
+            bb_quick.sim_quick_error_state = True
+            bb_quick.sim_quick_error_text = "Map is empty"
             return {'FINISHED'}
-
-        
-        bpy.ops.bentobuddy.acquire_animation_details()
 
         
         
@@ -32959,7 +34803,14 @@ then generate one first using one of the mappers, the Snap Mapper is fun"""
 
         
         tarmObj.show_in_front = False
-        tarmObj.data.display_type = 'OCTAHEDRAL'
+        
+
+        bpy.context.scene.frame_set(frame_current)
+
+        
+        bb_quick.sim_quick_error_state = False
+        bb_quick.sim_quick_error_text = "Snap complete"
+        bb_quick.sim_quick_snap_rig = tarmObj.name
 
         return {'FINISHED'}
 
@@ -33033,36 +34884,58 @@ This two step process allows for you to adjust items before committing to a set"
 class BentoBuddyDeformerProperties(bpy.types.PropertyGroup):
 
     deformer_menu_enabled : bpy.props.BoolProperty(
-        description =            "Enable / Disable the deformer menu",
+        description = ""
+            "Enable / Disable the deformer menu",
         default=False
         )
 
     deformer_transform_location : bpy.props.BoolProperty(
         name = "Deformer will use position animation",
-        description =            "\n"            "The deformer is typically used with position information to correct the pose of the actual SL skeleton to comply with "            "your custom rig but you have the option to disable this.",
+        description = ""
+            "\n"
+            "The deformer is typically used with position information to correct the pose of the actual SL skeleton to comply with "
+            "your custom rig but you have the option to disable this.",
         default=True
         )
     deformer_transform_rotation : bpy.props.BoolProperty(
         name = "Deformer will use rotation animation",
-        description =            "\n"            "The deformer is a way to correct bone positions but if you are making a static transform, a morh that never animates "            "beyond the actual transform, then this option might suite you.  I don't think there's much use for this if you are "            "intending to animate your target but it's a fun thing to use if you are just transforming.",
+        description = ""
+            "\n"
+            "The deformer is a way to correct bone positions but if you are making a static transform, a morh that never animates "
+            "beyond the actual transform, then this option might suite you.  I don't think there's much use for this if you are "
+            "intending to animate your target but it's a fun thing to use if you are just transforming.",
         default=False
         )
 
     
     deformer_default : bpy.props.BoolProperty(
         name = "Deformer for default rig",
-        description =            "\n"            "Create a deformer using the default rig.  This might be useful if your next designated in-world skeleton does not match "            "the neutral rig.  You might find that others see you just slightly deformed if wearing a classic avatar after fiddling with "            "custom mesh or deformers.  This option aught to revert you back from this particular deformity.",
+        description = ""
+            "\n"
+            "Create a deformer using the default rig.  This might be useful if your next designated in-world skeleton does not match "
+            "the neutral rig.  You might find that others see you just slightly deformed if wearing a classic avatar after fiddling with "
+            "custom mesh or deformers.  This option aught to revert you back from this particular deformity.",
         default=False
         )
     deformer_acquire_animation_details : bpy.props.BoolProperty(
         name = "Auto Set Animation Details",
-        description =            "\n"            "The deformer needs only 3 frames to work and it's recommended that you start with a priority of 2, depending on your needs.  "            "In addition the start of the animation aught to be on frame 1 and the loop needs to be active from frame 2 to frame 3.  With this "            "button enabled you won't have to worry about setting those options, just click (Create Deformer) and export it.  Note that these "            "details are completely automatic when using the anim export format but with BVH you'll have to set some upload options in SL, start "            "frame should be 1, loop should start at 2 and set your priority to what you need, BVH only allows 4 but anim allows 6.",
+        description = ""
+            "\n"
+            "The deformer needs only 3 frames to work and it's recommended that you start with a priority of 2, depending on your needs.  "
+            "In addition the start of the animation aught to be on frame 1 and the loop needs to be active from frame 2 to frame 3.  With this "
+            "button enabled you won't have to worry about setting those options, just click (Create Deformer) and export it.  Note that these "
+            "details are completely automatic when using the anim export format but with BVH you'll have to set some upload options in SL, start "
+            "frame should be 1, loop should start at 2 and set your priority to what you need, BVH only allows 4 but anim allows 6.",
         default = True
         )
     
     deformer_keep_objects : bpy.props.BoolProperty(
         name = "Auto clean",
-        description =            "After the deformer is finished there are objects in the scene that were required in order to create it.  The default is to "            "remove these objects after the deformer is exported.  If you want to examine them then choose this feature before creating your "            "deformer.  The objects will stay in the scene and their names are (Glue) and (DEFORMER_ANIMATION).  You can re-export your animation "            "from the DEFORMER_ANIMATION rig if you like and if you wish to remove the objects just delete them, it's fine.",
+        description = ""
+            "After the deformer is finished there are objects in the scene that were required in order to create it.  The default is to "
+            "remove these objects after the deformer is exported.  If you want to examine them then choose this feature before creating your "
+            "deformer.  The objects will stay in the scene and their names are (Glue) and (DEFORMER_ANIMATION).  You can re-export your animation "
+            "from the DEFORMER_ANIMATION rig if you like and if you wish to remove the objects just delete them, it's fine.",
         default=False
         )
     
@@ -33070,7 +34943,10 @@ class BentoBuddyDeformerProperties(bpy.types.PropertyGroup):
     
     
     deformer_use_template : bpy.props.BoolProperty(
-        description =            "If your rig / character is mapped right now and active in the Character Tools template map or the Template Workshop "            "you can use this feature to clean up distortions in the animation which should allow you to use any animation that "            "is designed for this particular rig and map.",
+        description = ""
+            "If your rig / character is mapped right now and active in the Character Tools template map or the Template Workshop "
+            "you can use this feature to clean up distortions in the animation which should allow you to use any animation that "
+            "is designed for this particular rig and map.",
         default = False,
         )
         
@@ -33655,7 +35531,11 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
     
     
     shifter_morph_menu_enabled : bpy.props.BoolProperty(
-        description =            "Expand the Shape Shifter's character morpher features"            "\n\n"            "This set of features allows you to morph your character rig from one to another through a set of "            "animation key frames.",
+        description = ""
+            "Expand the Shape Shifter's character morpher features"
+            "\n\n"
+            "This set of features allows you to morph your character rig from one to another through a set of "
+            "animation key frames.",
         default = False,
         )
 
@@ -33726,20 +35606,25 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
         )
 
     shifter_morph_start : bpy.props.IntProperty(
-        description =            "The start frame for the morph",
+        description = ""
+            "The start frame for the morph",
         default = 1,
         )
     shifter_morph_range : bpy.props.IntProperty(
-        description =            "The frame range of the entire morph",
+        description = ""
+            "The frame range of the entire morph",
         min = 2,
         default = 3,
         )
     shifter_morph_reverse : bpy.props.BoolProperty(
-        description =            "This is a fun display, it will reverse the animation from the peak frame so that it reverts back.  "            "This can have a practical use beyond being interesting to watch.",
+        description = ""
+            "This is a fun display, it will reverse the animation from the peak frame so that it reverts back.  "
+            "This can have a practical use beyond being interesting to watch.",
         default = False,
         )
     shifter_morph_peak : bpy.props.IntProperty(
-        description =            "This is the frame where you want the peak to be, from there to the (range) will be the reverse of the morph.",
+        description = ""
+            "This is the frame where you want the peak to be, from there to the (range) will be the reverse of the morph.",
         default = 2
        )
     
@@ -33774,22 +35659,37 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
         return
 
     shifter_morph_match : bpy.props.BoolProperty(
-        description =            "This option attempts to match bones from source to target instead of using a template or random match.  "            "This can only match a single target so if you get an error rest the mapper and choose only 1 target.",
+        description = ""
+            "This option attempts to match bones from source to target instead of using a template or random match.  "
+            "This can only match a single target so if you get an error rest the mapper and choose only 1 target.",
         
         default=False,
         )
     shifter_morph_location : bpy.props.BoolProperty(
-        description =            "Morph to the location of the target bones"            "\n\n"            "This feature can actively be enabled and disabled after morph has been engaged",
+        description = ""
+            "Morph to the location of the target bones"
+            "\n\n"
+            "This feature can actively be enabled and disabled after morph has been engaged",
         default=True,
         update=update_shifter_morph_location
         )
     shifter_morph_rotation : bpy.props.BoolProperty(
-        description =            "Morph to the rotation of the target bones"            "\n\n"            "This feature can actively be enabled and disabled after morph has been engaged",
+        description = ""
+            "Morph to the rotation of the target bones"
+            "\n\n"
+            "This feature can actively be enabled and disabled after morph has been engaged",
         default=True,
         update=update_shifter_morph_rotation
         )
     shifter_morph_scale : bpy.props.BoolProperty(
-        description =            "Morph to the scale of the target bones"            "\n\n"            "This feature can actively be enabled and disabled after morph has been engaged"            "\n\n"            "WARNING: This may not work as you expect since Second Life does not support bone scale.  "            "However, this might be useful if your bones are, in fact, scaled and the result of your morph "            "is not in sync with those target bones.",
+        description = ""
+            "Morph to the scale of the target bones"
+            "\n\n"
+            "This feature can actively be enabled and disabled after morph has been engaged"
+            "\n\n"
+            "WARNING: This may not work as you expect since Second Life does not support bone scale.  "
+            "However, this might be useful if your bones are, in fact, scaled and the result of your morph "
+            "is not in sync with those target bones.",
         default=False,
         update=update_shifter_morph_scale
         )
@@ -33804,11 +35704,20 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
     
     
     shifter_freeform_menu_enabled : bpy.props.BoolProperty(
-        description =            "Expand the Shape Shifter's free-form pose features"            "\n\n"            "This is a set of tools to allow you to create a transitional pose between two states "            "moving all bones from one transformed state to a defined one.  The use of this tool is to "            "ensure that all bones recieve animation attention and for Second Life that means that the "            "bones will not be forced into another position by SL.  The use of this tool is advanced and is "            "only a portion of the process that can benefit from it.  If you are confused by this tool then it's "            "probably not for you, not yet.",
+        description = ""
+            "Expand the Shape Shifter's free-form pose features"
+            "\n\n"
+            "This is a set of tools to allow you to create a transitional pose between two states "
+            "moving all bones from one transformed state to a defined one.  The use of this tool is to "
+            "ensure that all bones recieve animation attention and for Second Life that means that the "
+            "bones will not be forced into another position by SL.  The use of this tool is advanced and is "
+            "only a portion of the process that can benefit from it.  If you are confused by this tool then it's "
+            "probably not for you, not yet.",
         default = False,
         )
     shifter_pose_to_current : bpy.props.BoolProperty(
-        description =            "Enable this if you want the generated pose to start from the current frame instead of the indicated (start)",
+        description = ""
+            "Enable this if you want the generated pose to start from the current frame instead of the indicated (start)",
         default = False,
         )
     shifter_pose_to_start : bpy.props.FloatProperty(
@@ -33816,7 +35725,8 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
         default = 1.0,
         )
     shifter_pose_to_range : bpy.props.FloatProperty(
-        description =            "The amount of frames to spread the pose across, there will be interpolation indicated by your normal Blender settings",
+        description = ""
+            "The amount of frames to spread the pose across, there will be interpolation indicated by your normal Blender settings",
         default = 4.0,
         )
     shifter_pose_to_location_x : bpy.props.FloatProperty(
@@ -33898,7 +35808,10 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
         update = update_shifter_blank
         )
     shifter_build_menu_enabled : bpy.props.BoolProperty(
-        description =            "Expand the Build menu"            "\n\n"            "Release this switch to accept the new selection as the parent",
+        description = ""
+            "Expand the Build menu"
+            "\n\n"
+            "Release this switch to accept the new selection as the parent",
         default = False,
         )
     
@@ -33907,7 +35820,11 @@ class BentoBuddyShapeShifterProperties(bpy.types.PropertyGroup):
         if bb_shifter.shifter_build_link == False:
             bpy.ops.bentobuddy.shifter_build_attach()
     shifter_build_link : bpy.props.BoolProperty(
-        description =            "Expand the Build menu"            "\n\n"            "You can build a new hierarchy using the frozen rig bones in order to have control over how "            "your rig animates.",
+        description = ""
+            "Expand the Build menu"
+            "\n\n"
+            "You can build a new hierarchy using the frozen rig bones in order to have control over how "
+            "your rig animates.",
         default = False,
         update = update_shifter_build_link
         )
@@ -35016,7 +36933,9 @@ class BentoBuddyAnimImportProperties(bpy.types.PropertyGroup):
 
     deformer_default : bpy.props.BoolProperty(
         name = "some anim import name",
-        description =            "\n"            "some property",
+        description = ""
+            "\n"
+            "some property",
         default=False
         )
 
@@ -35125,14 +37044,19 @@ class BentoBuddyJointDataProps(bpy.types.PropertyGroup):
     
 
     joint_data_enabled : bpy.props.BoolProperty(
-        description =            "WARNING:\n\n"
+        description = ""
+            "WARNING:\n\n"
             "Disable this button if you don't know what it does.  It will alter your animations in Second Life.\n\n"
-            "Alter joint properties for exported animations.  Alter the application of rotation and "            "location data for specific joints.  You can also alter properties of the offset axis.",
+            "Alter joint properties for exported animations.  Alter the application of rotation and "
+            "location data for specific joints.  You can also alter properties of the offset axis.",
         default = False
     )
 
     joint_data_enabled_override : bpy.props.BoolProperty(
-        description =            "Typically you can only alter joint settings for Bento Buddy rigs but this option allows you to "            "enable it on any rig.  Your results might be very flaky if that chosen rig is not designed for "            "Second Life.  Good luck.",
+        description = ""
+            "Typically you can only alter joint settings for Bento Buddy rigs but this option allows you to "
+            "enable it on any rig.  Your results might be very flaky if that chosen rig is not designed for "
+            "Second Life.  Good luck.",
         default = False
     )
 
@@ -35410,7 +37334,10 @@ class BentoBuddyJointDataProps(bpy.types.PropertyGroup):
 
 
     copy_joint_data_set : bpy.props.BoolProperty(
-        description =            "This allows you use another bone's data for this joint.  This does not change the internal data that is already "            "present.  Fill the text field with a bone name and click this button in order to enable it.  To remove the reference "            "just remove the name from the text field and click the (Set Copy) button again.",
+        description = ""
+            "This allows you use another bone's data for this joint.  This does not change the internal data that is already "
+            "present.  Fill the text field with a bone name and click this button in order to enable it.  To remove the reference "
+            "just remove the name from the text field and click the (Set Copy) button again.",
         default=False,
         )
 
@@ -35421,7 +37348,9 @@ class BentoBuddyJointDataProps(bpy.types.PropertyGroup):
     
     
     copy_joint_data_name : bpy.props.StringProperty(
-        description =            "Fill this with the joint name to use the data from.  Use the (Set Copy) button to enable it.  "            "The feature will complain if the joint is not present in the working armature.",
+        description = ""
+            "Fill this with the joint name to use the data from.  Use the (Set Copy) button to enable it.  "
+            "The feature will complain if the joint is not present in the working armature.",
         default="",
     )
 
@@ -35446,7 +37375,8 @@ class BentoBuddyJointDataProps(bpy.types.PropertyGroup):
         return
 
     joint_locked : bpy.props.BoolProperty(
-        description =            "Prevent additional edits to this bone while this is enabled.",
+        description = ""
+            "Prevent additional edits to this bone while this is enabled.",
         default = False,
         update = update_joint_locked
     )
@@ -35880,7 +37810,11 @@ class BentoBuddyAnimPropertiesAdvanced(bpy.types.PropertyGroup):
     
 
     matrix_converter_enabled : bpy.props.BoolProperty(
-        description =            "THIS IS A SERIOUS WARNING!\n\n"            "It's unlikely you'll find a use for this.  It's for debugging.  The animated bones will export with "            "the chosen axis conversion below. Disable this option if you don't know what it is.  It will override your "            "bone orientation on .anim exported animations if it is enabled.",
+        description = ""
+            "THIS IS A SERIOUS WARNING!\n\n"
+            "It's unlikely you'll find a use for this.  It's for debugging.  The animated bones will export with "
+            "the chosen axis conversion below. Disable this option if you don't know what it is.  It will override your "
+            "bone orientation on .anim exported animations if it is enabled.",
         default=False
         )
 
@@ -35891,12 +37825,21 @@ class BentoBuddyAnimPropertiesAdvanced(bpy.types.PropertyGroup):
 
     disable_axis_conversion : bpy.props.BoolProperty(
         description =
-            "Disable the application of axis conversion to the exported animation (.anim only).\n\n"            "From Blender to Second Life the bone orientation is wrong.  The BB axis converter fixes this.  "            "When testing, to see how things are really working in the background, disable the application of "            "this conversion process.  This will not be useful to the average user.  It will, however, give some "            "clue as to why your converted animation may not be working.",
+            "Disable the application of axis conversion to the exported animation (.anim only).\n\n"
+            "From Blender to Second Life the bone orientation is wrong.  The BB axis converter fixes this.  "
+            "When testing, to see how things are really working in the background, disable the application of "
+            "this conversion process.  This will not be useful to the average user.  It will, however, give some "
+            "clue as to why your converted animation may not be working.",
         default = False
         )
     disable_joint_offsets : bpy.props.BoolProperty(
-        description =            "This works for .anim (native animation export) only.\n\n"
-            "NOTE: This has nothing to do with the (Avastar's) reference to (joint offsets) at all!  "            "Additionally it has nothing to do with (include joint positions) for mesh upload.\n\n"            "This is for visually testing changes in your SL animation and poses.  This disables the required joint offset "            "that you probably didn't even know existed, until now.  This gives you a clean view of what's going on with your "            "poses and animations without the location of the joint being adjusted before the fact.",
+        description = ""
+            "This works for .anim (native animation export) only.\n\n"
+            "NOTE: This has nothing to do with the (Avastar's) reference to (joint offsets) at all!  "
+            "Additionally it has nothing to do with (include joint positions) for mesh upload.\n\n"
+            "This is for visually testing changes in your SL animation and poses.  This disables the required joint offset "
+            "that you probably didn't even know existed, until now.  This gives you a clean view of what's going on with your "
+            "poses and animations without the location of the joint being adjusted before the fact.",
         default = False
         )
 
@@ -36848,35 +38791,63 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
 
     anim_match_transforms : bpy.props.BoolProperty(
         name = "",
-        description =            "- Match rot/loc to other -"
-            "\n\n"            "This is a test tool.  It's probably not useful for most rigs.  It will tell the Bento Buddy animation exporter "            "to match a location transform to a rotation transform and vise versa",
+        description = ""
+            "- Match rot/loc to other -"
+            "\n\n"
+            "This is a test tool.  It's probably not useful for most rigs.  It will tell the Bento Buddy animation exporter "
+            "to match a location transform to a rotation transform and vise versa",
             default = False,
             )
     anim_path_to_pelvis : bpy.props.BoolProperty(
         name = "",
-        description =            "- Enable Path To Pelvis -"
-            "\n\n"            "The default settings for the the animation exporter keeps your file size down by detecting bones that "            "have been transformed and, as a result, has determined that they have been animated and aught to be "            "included in the animation file.  However, sometimes this is not enough and all of the bones from the "            "(detected) one to the pelvis (mPelvis) must be acknowledged as having been animated as well, even though "            "they may not have been transformed (moved).  This switch tells the exporter to generate fake keys for "            "bones from the detected one down to the pelvis (mPelvis) for better control of your custom rigs",
+        description = ""
+            "- Enable Path To Pelvis -"
+            "\n\n"
+            "The default settings for the the animation exporter keeps your file size down by detecting bones that "
+            "have been transformed and, as a result, has determined that they have been animated and aught to be "
+            "included in the animation file.  However, sometimes this is not enough and all of the bones from the "
+            "(detected) one to the pelvis (mPelvis) must be acknowledged as having been animated as well, even though "
+            "they may not have been transformed (moved).  This switch tells the exporter to generate fake keys for "
+            "bones from the detected one down to the pelvis (mPelvis) for better control of your custom rigs",
             default = False,
             )
 
     anim_misc_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable some misc options"            "\n\n"            "Interpolation / Remove animation",
+        description = ""
+            "Enable some misc options"
+            "\n\n"
+            "Interpolation / Remove animation",
         default = False,
         )
 
     bake_animation : bpy.props.BoolProperty(
-        description =            "Bake Animation on Export"            "\n\n"            "Baking an animation requires an influence that is not part of the rig, but an animated controller of sorts.  "            "This option is enabled by default when your rig is part of a retargeted set.  Your animation must be baked before "            "export if it has been retargeted to another rig, this is the best way to approach it.  There used to be another way "            "but it was inconsistent and flawed so this is what you really want, even though it takes a bit longer.  You do not need "            "this nor benefit from it if your rig is animated directly.  If you are retargeting an animation you NEED this.",
+        description = ""
+            "Bake Animation on Export"
+            "\n\n"
+            "Baking an animation requires an influence that is not part of the rig, but an animated controller of sorts.  "
+            "This option is enabled by default when your rig is part of a retargeted set.  Your animation must be baked before "
+            "export if it has been retargeted to another rig, this is the best way to approach it.  There used to be another way "
+            "but it was inconsistent and flawed so this is what you really want, even though it takes a bit longer.  You do not need "
+            "this nor benefit from it if your rig is animated directly.  If you are retargeting an animation you NEED this.",
         default = True,
         )
     keep_baked_animation : bpy.props.BoolProperty(
-        description =        "Keep the baked animation on your rig after calculating"        "\n\n"        "You should probably do this and prepare for it, which is to say ... your retarget set will be (reset) after the bake so that "        "your rig is separated from that retargeting system, for solo use.  You can then adjust keys as you see fit.",
+        description = ""
+        "Keep the baked animation on your rig after calculating"
+        "\n\n"
+        "You should probably do this and prepare for it, which is to say ... your retarget set will be (reset) after the bake so that "
+        "your rig is separated from that retargeting system, for solo use.  You can then adjust keys as you see fit.",
         default= False,
         )
 
     bake_frame_step : bpy.props.IntProperty(
         name = "Sample Frame Steps",
-        description =            "\n"            "This is effectively a sampling rate, with a full timeline of baked keys 10 seems great, and fast.  "            "The higher the number the less accurate the capture will be but there is a point where it's just right.  "            "Lower numbers will take longer to bake and there is some exponential effect on time vs sample so keep that in mind.",
+        description = ""
+            "\n"
+            "This is effectively a sampling rate, with a full timeline of baked keys 10 seems great, and fast.  "
+            "The higher the number the less accurate the capture will be but there is a point where it's just right.  "
+            "Lower numbers will take longer to bake and there is some exponential effect on time vs sample so keep that in mind.",
         min = 1,
         max = 120,
         default = 5,
@@ -36887,29 +38858,42 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
 
     anim_menu_enabled : bpy.props.BoolProperty(
         name = "Enable .anim export menu",
-        description =            "This is a fully featured animation exporter specifically for Second Life.",
+        description = ""
+            "This is a fully featured animation exporter specifically for Second Life.",
         default = False,
         )
     anim_unfold_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "There's a massive amount of options behind this menu and that's why it's hidden.  You should be "            "fine with the simple two buttons but if you need per joint priorities, emotes, interpolations, hand poses"            "animation cleanup options and some other things then here they are.",
+        description = ""
+            "There's a massive amount of options behind this menu and that's why it's hidden.  You should be "
+            "fine with the simple two buttons but if you need per joint priorities, emotes, interpolations, hand poses"
+            "animation cleanup options and some other things then here they are.",
         default = False,
         )
 
     
     
     
+    
+    
+    
+
     anim_base_priority : bpy.props.IntProperty(
-        description =            "Base priority.  This is used overall.  If you have a bone priority enabled then the priority of that "            "bone will be used instead of this.  If the bone doesn't have a priority set already then the base is used "            "as a start.  Use the (Joint priority options) to enable a bone priority and to set its priority number.",
-        min = -1,
-        max = 6,
-        default = 2,
+        description = ""
+            "Base priority.  This is used overall.  If you have a bone priority enabled then the priority of that "
+            "bone will be used instead of this.  If the bone doesn't have a priority set already then the base is used "
+            "as a start.  Use the (Joint priority options) to enable a bone priority and to set its priority number.",
+        min = globals.BASE_PRIORITY_MIN, 
+        max = globals.BASE_PRIORITY_MAX,
+        default = globals.BASE_PRIORITY_DEFAULT,
         )
     anim_joint_priority : bpy.props.IntProperty(
-        description =            "Individual joint priority, overrides the base priority.  This has the same  priority range as "            "base priority but if you enable this then it will be used instead.",
-        min = -1,
-        max = 6,
-        default = 2,
+        description = ""
+            "Individual joint priority, overrides the base priority.  This has the same  priority range as "
+            "base priority but if you enable this then it will be used instead.",
+        min = globals.JOINT_PRIORITY_MIN, 
+        max = globals.JOINT_PRIORITY_MAX,
+        default = globals.BASE_PRIORITY_DEFAULT,
         )
 
     
@@ -36918,12 +38902,18 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_joint_priority_enabled : bpy.props.BoolProperty(
         name = "joint priority enabled",
-        description =            "This will enable the joint override priority for the selected pose bones.  The original priority will "            "be preserved when disabling or enabling this.  In order to set a new priority for the selected pose bones you'll need "            "to make sure the priority number is correct for your needs and then you'll need to click (apply priority).",
+        description = ""
+            "This will enable the joint override priority for the selected pose bones.  The original priority will "
+            "be preserved when disabling or enabling this.  In order to set a new priority for the selected pose bones you'll need "
+            "to make sure the priority number is correct for your needs and then you'll need to click (apply priority).",
         default = False,
         )
     anim_joint_priority_disabled : bpy.props.BoolProperty(
         name = "joint priority disabled",
-        description =            "This will disable the joint override priority for the selected pose bones.  The original priority will "            "be preserved when disabling or enabling this.  In order to set a new priority for the selected pose bones you'll need "            "to make sure the priority number is correct for your needs and then you'll need to click (apply priority).",
+        description = ""
+            "This will disable the joint override priority for the selected pose bones.  The original priority will "
+            "be preserved when disabling or enabling this.  In order to set a new priority for the selected pose bones you'll need "
+            "to make sure the priority number is correct for your needs and then you'll need to click (apply priority).",
         default = False,
         )
     
@@ -36939,25 +38929,34 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
 
     anim_joint_priority_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Show the joint priority features",
+        description = ""
+            "Show the joint priority features",
         default = False
         )
 
     anim_joint_priority_view_enabled : bpy.props.BoolProperty(
         name = "joint priority view enabled",
-        description =            "This feature can be confusing and cluttered that's why it's hidden by default.  Enabling this will show a list of "            "all selected pose bones along with their priority and if override is enabled on that joint.  This only works with "            "the native (.anim) export format.",
+        description = ""
+            "This feature can be confusing and cluttered that's why it's hidden by default.  Enabling this will show a list of "
+            "all selected pose bones along with their priority and if override is enabled on that joint.  This only works with "
+            "the native (.anim) export format.",
         default = False,
         )
 
     anim_expression_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expression Options",
+        description = ""
+            "Expression Options",
         default = False,
         )
 
     anim_hand_pose_enabled : bpy.props.BoolProperty(
         name = "hand pose enabled",
-        description =            "This button must be pressed in for the feature to work"            "\n\n"            "A hand pose that becomes active during your animation.  This is pretty much obsoleted by Bento.  "            "This only works with the classic avatar, not mesh, because it's done with morphs, not bones.",
+        description = ""
+            "This button must be pressed in for the feature to work"
+            "\n\n"
+            "A hand pose that becomes active during your animation.  This is pretty much obsoleted by Bento.  "
+            "This only works with the classic avatar, not mesh, because it's done with morphs, not bones.",
         default = False,
         )
     anim_hand_poses_menu = [
@@ -36984,54 +38983,80 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     anim_loop : bpy.props.BoolProperty(
         name = "",
         description = 
-            "Enable looping"            "\n\n"            "This has to be enabled for loops to work.  Enable this then change start and end frame or click the cog for "            "fractional sections instead.",
+            "Enable looping"
+            "\n\n"
+            "This has to be enabled for loops to work.  Enable this then change start and end frame or click the cog for "
+            "fractional sections instead.",
         default = False,
         )
     anim_details : bpy.props.BoolProperty(
         name = "",
-        description =            "Append animation details to filename"            "\n\n"            "This gives you a convenient way to store the animation details in order to make scripting your animations  "            "a lot easier.  It's also nice to have this when you give away, or sell, your animations since the receiver "            "will know exactly how to script for it and you can add these details as part of the product value."
-            "\n\n"            "The layout is as follows, starting and ending with the delimiter # and separated by spaces.\n\n"            "Total animation time (T)\n"            "Frames per second (F)\n"            "Loop enabled (L - 0 or 1)\n"            "Loop in point, fractional seconds (I)\n"            "Loop out point, fractional seconds (O)\n"            "Ease in duration, fractional seconds (E)\n"            "Ease out duration, fraction seconds (Z)\n"
-            "\n"            "Your base filename cannot be more than 63 characters total if you need the details to survive upload, the (.anim) "            "part doesn't count.  This leaves you with 17 characters for a file identifier.  Floats are truncated to 2 decimals",
+        description = ""
+            "Append animation details to filename"
+            "\n\n"
+            "This gives you a convenient way to store the animation details in order to make scripting your animations  "
+            "a lot easier.  It's also nice to have this when you give away, or sell, your animations since the receiver "
+            "will know exactly how to script for it and you can add these details as part of the product value."
+            "\n\n"
+            "The layout is as follows, starting and ending with the delimiter # and separated by spaces.\n\n"
+            "Total animation time (T)\n"
+            "Frames per second (F)\n"
+            "Loop enabled (L - 0 or 1)\n"
+            "Loop in point, fractional seconds (I)\n"
+            "Loop out point, fractional seconds (O)\n"
+            "Ease in duration, fractional seconds (E)\n"
+            "Ease out duration, fraction seconds (Z)\n"
+            "\n"
+            "Your base filename cannot be more than 63 characters total if you need the details to survive upload, the (.anim) "
+            "part doesn't count.  This leaves you with 17 characters for a file identifier.  Floats are truncated to 2 decimals",
         default = False,
         )
     anim_details_time : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Total Time, indicated by a T",
+        description = ""
+            "Optional detail - Total Time, indicated by a T",
         default = True,
         )
     anim_details_fps : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Frames Per Second, indicated by an F",
+        description = ""
+            "Optional detail - Frames Per Second, indicated by an F",
         default = True,
         )
     anim_details_loop_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Loop Enabled (0/1), indicated by an L",
+        description = ""
+            "Optional detail - Loop Enabled (0/1), indicated by an L",
         default = True,
         )
     anim_details_loop_in : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Loop In (fractional seconds), indicated by an I",
+        description = ""
+            "Optional detail - Loop In (fractional seconds), indicated by an I",
         default = True,
         )
     anim_details_loop_out : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Loop Out (fractional seconds), indicated by an O",
+        description = ""
+            "Optional detail - Loop Out (fractional seconds), indicated by an O",
         default = True,
         )
     anim_details_ease_in : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Ease In (fractional seconds), indicated by an E",
+        description = ""
+            "Optional detail - Ease In (fractional seconds), indicated by an E",
         default = True,
         )
     anim_details_ease_out : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Ease Out (fractional seconds), indicated by a Z",
+        description = ""
+            "Optional detail - Ease Out (fractional seconds), indicated by a Z",
         default = True,
         )
     anim_details_priority : bpy.props.BoolProperty(
         name = "",
-        description =            "Optional detail - Base Priority (0 to 6), indicated by a P",
+        description = ""
+            "Optional detail - Base Priority (0 to 6), indicated by a P",
         default = False,
         )
 
@@ -37165,12 +39190,25 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
         default = "bb_animation",
         )
     anim_emote_menu_enabled : bpy.props.BoolProperty (
-        description =            "This will expose a list of emotes that are available for use with your animation.  The list is pretty extensive "            "so it's hidden behind this menu.  Expand the menu, click one of the emotes or (Clear) and you can close the menu "            "if you want and it'll still export with your anim"            "\n\n"            "WARNING: Second Life internal animations, when played this way, are seriously broken.  If you include a looped "            "animation you'll need to stop it in order for it to stop, it will not stop from the play interface you initiated "            "from inventory.  If you really want to use an internal animation it's best to do so directly from script rather "            "than upload it through this interface.  This feature is provided to you because it is an available option provided "            "by Second Life",
+        description = ""
+            "This will expose a list of emotes that are available for use with your animation.  The list is pretty extensive "
+            "so it's hidden behind this menu.  Expand the menu, click one of the emotes or (Clear) and you can close the menu "
+            "if you want and it'll still export with your anim"
+            "\n\n"
+            "WARNING: Second Life internal animations, when played this way, are seriously broken.  If you include a looped "
+            "animation you'll need to stop it in order for it to stop, it will not stop from the play interface you initiated "
+            "from inventory.  If you really want to use an internal animation it's best to do so directly from script rather "
+            "than upload it through this interface.  This feature is provided to you because it is an available option provided "
+            "by Second Life",
         default = False,
         )
     anim_emote_name : bpy.props.StringProperty(
         name = "in-world animation name",
-        description =            "This is a (named) second life emote you can play when your animation plays.  Often times you won't want to embed this "            "into your animation but there are some uses for it.  For instance, you can type (clap), without the parentheses, into the "            "text field provided and, when this exported animation plays, so will the (clap) emote.  It's good for combined gestures "            "when space is limited.  But mostly I put it here because it's an available feature in the .anim file format for SL",
+        description = ""
+            "This is a (named) second life emote you can play when your animation plays.  Often times you won't want to embed this "
+            "into your animation but there are some uses for it.  For instance, you can type (clap), without the parentheses, into the "
+            "text field provided and, when this exported animation plays, so will the (clap) emote.  It's good for combined gestures "
+            "when space is limited.  But mostly I put it here because it's an available feature in the .anim file format for SL",
         default = "",
         )
     
@@ -37179,17 +39217,40 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_inherit : bpy.props.BoolProperty(
         name = "anim inherit",
-        description =            "This will inherit the motion produced by constraints, drivers and IK chains.  Essentially the rig has no animation "            "on it but the items that the bones are attached to are animated and this feature will grab that motion and export it "            "just as you see when the non-animated rig is moving.",
+        description = ""
+            "This will inherit the motion produced by constraints, drivers and IK chains.  Essentially the rig has no animation "
+            "on it but the items that the bones are attached to are animated and this feature will grab that motion and export it "
+            "just as you see when the non-animated rig is moving.",
         default = False,
         )
     anim_preserve_interpolation : bpy.props.BoolProperty(
         name = "",
-        description =            "Preserve Interpolations"            "\n\n"            "This will attempt to preserve the interpolation method provided by the key modes in Blender.  For the average "            "animation explorer, doing simple tasks, you probably won't care about this and Bento Buddy provides what is "            "expected.  But honestly the Bento Buddy interpolation method is not accurate, just typical.  If you need more "            "control over your motion, for instance bones snapping from one pose to another instantly by frame, you'll want "            "to enable this feature.  This will increase your file size significantly.  If you want a similar effect you can turn "            "this off and key start and stop frames for motion control but this feature can be used for quick prototyping.",
+        description = ""
+            "Preserve Interpolations"
+            "\n\n"
+            "This will attempt to preserve the interpolation method provided by the key modes in Blender.  For the average "
+            "animation explorer, doing simple tasks, you probably won't care about this and Bento Buddy provides what is "
+            "expected.  But honestly the Bento Buddy interpolation method is not accurate, just typical.  If you need more "
+            "control over your motion, for instance bones snapping from one pose to another instantly by frame, you'll want "
+            "to enable this feature.  This will increase your file size significantly.  If you want a similar effect you can turn "
+            "this off and key start and stop frames for motion control but this feature can be used for quick prototyping.",
         default = False,
         )
     anim_record_motion : bpy.props.BoolProperty(
         name = "",
-        description =            "Record Motion"            "\n\n"            "Yes, we want to record motion, but Bento Buddy's old way of doing that is to detect if a bone moved, per frame, and flag "            "that as a key to save.  The new way is to only flag actual keys.  If you're using the old way and want to preserve zero "            "motion keys then enable the feature (Preserve Interpolations).  If you are using the new method then expand the "            "(Native Extended Features), open the menu (Key Cleanup Options) and assign flags to bones or keys from there."            "\n\n"            "This is the usual old default for Bento Buddy exported anim type animations.  It has been switched to a secondary option "            "because of a feature request, the result of which will reduce your animation file size significantly.  However, if you "            "need Bento Buddy's old, and highly accurate, behavior then enable this.  Franky your animations may not look different "            "to you at all but if you are using a small number of frames, low frames per second or attempting to implement Bento Buddy's "            "fine interpolation features then you may want this old behavior enabled.",
+        description = ""
+            "Record Motion"
+            "\n\n"
+            "Yes, we want to record motion, but Bento Buddy's old way of doing that is to detect if a bone moved, per frame, and flag "
+            "that as a key to save.  The new way is to only flag actual keys.  If you're using the old way and want to preserve zero "
+            "motion keys then enable the feature (Preserve Interpolations).  If you are using the new method then expand the "
+            "(Native Extended Features), open the menu (Key Cleanup Options) and assign flags to bones or keys from there."
+            "\n\n"
+            "This is the usual old default for Bento Buddy exported anim type animations.  It has been switched to a secondary option "
+            "because of a feature request, the result of which will reduce your animation file size significantly.  However, if you "
+            "need Bento Buddy's old, and highly accurate, behavior then enable this.  Franky your animations may not look different "
+            "to you at all but if you are using a small number of frames, low frames per second or attempting to implement Bento Buddy's "
+            "fine interpolation features then you may want this old behavior enabled.",
         default = False,
         )
     
@@ -37212,19 +39273,30 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
 
     anim_create_reference : bpy.props.BoolProperty(
         name = "Export Reference Frame",
-        description =            "This makes sure that your first frame is part of your animation in Second Life."            "\n\n"            "Second Life reads the first frame as your animation reset pose, where no bones are transform, even if they are. "            "This would commonly be referred to as the T-Pose but it doesn't have to be.  The safest thing to do is to leave this "            "feature on (enabled).  One reason to disable this is if you have a custom pose that is not in a typical T-Pose but you "            "want Second Life to think it is anyway.  There is a unique condition where this can also be used as a contributing part "            "in generating a deformer or even a special deformation mesh.  You can disable this and make your own reference frame.  Just "            "slide everything over by one key, duplicate the first key frame in your animation and place that as a start frame.",
+        description = ""
+            "This makes sure that your first frame is part of your animation in Second Life."
+            "\n\n"
+            "Second Life reads the first frame as your animation reset pose, where no bones are transform, even if they are. "
+            "This would commonly be referred to as the T-Pose but it doesn't have to be.  The safest thing to do is to leave this "
+            "feature on (enabled).  One reason to disable this is if you have a custom pose that is not in a typical T-Pose but you "
+            "want Second Life to think it is anyway.  There is a unique condition where this can also be used as a contributing part "
+            "in generating a deformer or even a special deformation mesh.  You can disable this and make your own reference frame.  Just "
+            "slide everything over by one key, duplicate the first key frame in your animation and place that as a start frame.",
         default = True,
         )
 
     
     anim_interpolation_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "View interpolation options",
+        description = ""
+            "View interpolation options",
         default = False
         )
     anim_interpolate_bone : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable this if you want the entire frame range on the selected bone\n"            "to be set to the chosen interpolation method",
+        description = ""
+            "Enable this if you want the entire frame range on the selected bone\n"
+            "to be set to the chosen interpolation method",
         default = False
         )
 
@@ -37232,19 +39304,22 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_interpolation_x : bpy.props.BoolProperty(
         name = "",
-        description =            "Interpolation methods can be changed on a per axis basis.  This is how\n"
+        description = ""
+            "Interpolation methods can be changed on a per axis basis.  This is how\n"
             "you do it.  Choose 1 or more axis and then click a method.",
         default = False
         )
     anim_interpolation_y : bpy.props.BoolProperty(
         name = "",
-        description =            "Interpolation methods can be changed on a per axis basis.  This is how\n"
+        description = ""
+            "Interpolation methods can be changed on a per axis basis.  This is how\n"
             "you do it.  Choose 1 or more axis and then click a method.",
         default = False
         )
     anim_interpolation_z : bpy.props.BoolProperty(
         name = "",
-        description =            "Interpolation methods can be changed on a per axis basis.  This is how\n"
+        description = ""
+            "Interpolation methods can be changed on a per axis basis.  This is how\n"
             "you do it.  Choose 1 or more axis and then click a method.",
         default = False
         )
@@ -37275,7 +39350,8 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     export_sl_anim : bpy.props.BoolProperty(
         name = "Export .anim format",
-        description =            "This is the internal animation format Second Life uses.  This is the recommended export.",
+        description = ""
+            "This is the internal animation format Second Life uses.  This is the recommended export.",
         default = False,
         update = update_export_sl_anim
         )
@@ -37418,21 +39494,46 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_linear : bpy.props.BoolProperty(
         name = "",
-        description =            "Linear Motion Only"            "\n\n"            "The linear method is a base method that is really not an interpolation but a static rate of motion without a curve.  "            "This feature is provided for convenience, if you are making that type of motion, which is great for robotic types."            "\n\n"            "Second Life does not support true interpolation data.  The best we get is ease in/out of an animation.  However, "            "the calculations done by Bento Buddy allow you to have a similar motion from Blender to Second Life, or an exact one "            "if you use a baking mechanism like (High Fidelity).  With this option enabled no interpolation, or smooth transitions, "            "are calculated, though you can place these keys yourself if you so desire.  This type of motion can be artsy but also is "            "an option for expert animators that want to have complete control over the animation.",
+        description = ""
+            "Linear Motion Only"
+            "\n\n"
+            "The linear method is a base method that is really not an interpolation but a static rate of motion without a curve.  "
+            "This feature is provided for convenience, if you are making that type of motion, which is great for robotic types."
+            "\n\n"
+            "Second Life does not support true interpolation data.  The best we get is ease in/out of an animation.  However, "
+            "the calculations done by Bento Buddy allow you to have a similar motion from Blender to Second Life, or an exact one "
+            "if you use a baking mechanism like (High Fidelity).  With this option enabled no interpolation, or smooth transitions, "
+            "are calculated, though you can place these keys yourself if you so desire.  This type of motion can be artsy but also is "
+            "an option for expert animators that want to have complete control over the animation.",
         default = False,
         update = update_anim_linear
         )
 
     export_mapped_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "WARNING: This is not expected to work yet : Export Mapped Animation"            "\n\n"            "This is similar to the (Export Mapped Mesh) in that it converts bone names to their corresponding targets on export, allowing "            "you to you to export incompatible animations for use with Second Life.  If your rig is an Avastar rig then this feature "            "may be overridden by any Avastar switches you enable.  This feature is enabled by default because, when there is a mapped "            "rig, there's a map available for that rig and can be utilized to convert the names for use with the target",
+        description = ""
+            "WARNING: This is not expected to work yet : Export Mapped Animation"
+            "\n\n"
+            "This is similar to the (Export Mapped Mesh) in that it converts bone names to their corresponding targets on export, allowing "
+            "you to you to export incompatible animations for use with Second Life.  If your rig is an Avastar rig then this feature "
+            "may be overridden by any Avastar switches you enable.  This feature is enabled by default because, when there is a mapped "
+            "rig, there's a map available for that rig and can be utilized to convert the names for use with the target",
         default = False
         )
     
     
     export_retargeted_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "Bulk export retargeted rig animation"            "\n\n"            "-- INTERNAL: This particular property should not show up in the UI, it is used as a directive only since retargeted singluarl "            "animations are already a thing and this property group section is for controlling how the base animaiton data is processed. "            "\n\n"            "If bulk exporting a custom incompatible rig that needs to be retargeted keep your set engaged in the retargeter and try this "            "feature out.  This should work smoothly.  This is enabled by default because a reatarget set can be detected.  However, if "            "you've left old retarget sets in the scene, that is to say you forgot to reset the stage, then this state may be falsly "            "detected and ruine your day.  You can disable this in that case but you really should clean up your scene",
+        description = ""
+            "Bulk export retargeted rig animation"
+            "\n\n"
+            "-- INTERNAL: This particular property should not show up in the UI, it is used as a directive only since retargeted singluarl "
+            "animations are already a thing and this property group section is for controlling how the base animaiton data is processed. "
+            "\n\n"
+            "If bulk exporting a custom incompatible rig that needs to be retargeted keep your set engaged in the retargeter and try this "
+            "feature out.  This should work smoothly.  This is enabled by default because a reatarget set can be detected.  However, if "
+            "you've left old retarget sets in the scene, that is to say you forgot to reset the stage, then this state may be falsly "
+            "detected and ruine your day.  You can disable this in that case but you really should clean up your scene",
         default = True,
         )
 
@@ -37442,7 +39543,18 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_high_fidelity : bpy.props.BoolProperty(
         name = "",
-        description =            "High Fidelity"            "\n\n"            "This is an animation bake.  Any and all motion, including IK, constraints and drivers, will be captured frame by frame."            "\n\n"            "Animation exports to Second Life are extrapolated from intent and not actually interpolated.  If the exporter knew exactly "            "what you wanted then the file size could be much smaller.  With that in mind there are some additional features you may "            "like to try when using (High Fidelity).  There's the option of grabbing just key data from controllers in order to use "            "for linear motion and this can also be smooth baked.  There's a proxy bake option that's helpful for debugging which, "            "when bake is set to linear, will capture just the key data from the source, the targets or both, and with the indicated "            "transforms only.  When using this type of animation export you can reduce the file size by resampling the keys using "            "(Resample) feature under the cleanup options",
+        description = ""
+            "High Fidelity"
+            "\n\n"
+            "This is an animation bake.  Any and all motion, including IK, constraints and drivers, will be captured frame by frame."
+            "\n\n"
+            "Animation exports to Second Life are extrapolated from intent and not actually interpolated.  If the exporter knew exactly "
+            "what you wanted then the file size could be much smaller.  With that in mind there are some additional features you may "
+            "like to try when using (High Fidelity).  There's the option of grabbing just key data from controllers in order to use "
+            "for linear motion and this can also be smooth baked.  There's a proxy bake option that's helpful for debugging which, "
+            "when bake is set to linear, will capture just the key data from the source, the targets or both, and with the indicated "
+            "transforms only.  When using this type of animation export you can reduce the file size by resampling the keys using "
+            "(Resample) feature under the cleanup options",
        default = True,
         update = update_anim_high_fidelity
         )
@@ -37471,13 +39583,23 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
 
     anim_use_keys_smooth : bpy.props.BoolProperty(
         name = "",
-        description =            "NOTE: This option is for (High Fidelity) and only works if you enable one or both (Use Source Keys / Use Target Keys)."            "\n\n"            "Smooth motion is what most will want, your bones will ease in and out of their motion.  Robotic type motion can be "            "achieved using (Linear) instead and the file size for linear is much smallter.",
+        description = ""
+            "NOTE: This option is for (High Fidelity) and only works if you enable one or both (Use Source Keys / Use Target Keys)."
+            "\n\n"
+            "Smooth motion is what most will want, your bones will ease in and out of their motion.  Robotic type motion can be "
+            "achieved using (Linear) instead and the file size for linear is much smallter.",
         default = True,
         update = update_anim_use_keys_smooth
         )
     anim_use_keys_linear : bpy.props.BoolProperty(
         name = "",
-        description =            "NOTE: This option is for (High Fidelity) and only works if you enable one or both (Use Source Keys / Use Target Keys)."            "\n\n"            "Linear motion is great for machines and robots, you can achieve a mix of both smooth and linear as long as your "            "animation sources move in that way, regarrdless of the type of export.  However, Bento Buddy does not add data to "            "your animation, it only determines where to place a key and if you choose (Linear) it will only place keys where "            "YOU have placed keys, from source or targets or both, depending on your choices.",
+        description = ""
+            "NOTE: This option is for (High Fidelity) and only works if you enable one or both (Use Source Keys / Use Target Keys)."
+            "\n\n"
+            "Linear motion is great for machines and robots, you can achieve a mix of both smooth and linear as long as your "
+            "animation sources move in that way, regarrdless of the type of export.  However, Bento Buddy does not add data to "
+            "your animation, it only determines where to place a key and if you choose (Linear) it will only place keys where "
+            "YOU have placed keys, from source or targets or both, depending on your choices.",
         default = False,
         update = update_anim_use_keys_linear
         )
@@ -37492,32 +39614,45 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_use_source_keys : bpy.props.BoolProperty(
         name = "",
-        description =            "Use keys from the source to determine animated bones and their transforms.  This can allow you to (freeze) bones even when "            "they are not animated and was the original reason for this feature.  Additionally you can export linear motion while "            "preserving the keys that you intended to export.  You can use the source rig for all of your keys, the target rigs for "            "all of your keys or both.",
+        description = ""
+            "Use keys from the source to determine animated bones and their transforms.  This can allow you to (freeze) bones even when "
+            "they are not animated and was the original reason for this feature.  Additionally you can export linear motion while "
+            "preserving the keys that you intended to export.  You can use the source rig for all of your keys, the target rigs for "
+            "all of your keys or both.",
         default = False,
         )
     anim_use_source_keys_rotation : bpy.props.BoolProperty(
         name = "",
-        description =            "You have the option to use only rotation or location data, or both.",
+        description = ""
+            "You have the option to use only rotation or location data, or both.",
         default = True,
         )
     anim_use_source_keys_location : bpy.props.BoolProperty(
         name = "",
-        description =            "You have the option to bake use rotation or location data, or both.",
-        default = True,
+        description = ""
+            "You have the option to bake use rotation or location data, or both.",
+        default = False,
         )
     anim_use_target_keys : bpy.props.BoolProperty(
         name = "",
-        description =            "Use keys from the target to determine animated bones and their transforms.  As with the source option you have the ability "            "to export motion based on the keys of your target rigs/controllers that are responsible for making your animation export "            "rig bones move and rotate.  This allows you to freeze bones even when they don't move.  While this is not exactly retargeting "            "it does have similar features where your animation rig (BB Rig) is being influenced by another object and that object's keys "            "can be written to the animation using this option.",
+        description = ""
+            "Use keys from the target to determine animated bones and their transforms.  As with the source option you have the ability "
+            "to export motion based on the keys of your target rigs/controllers that are responsible for making your animation export "
+            "rig bones move and rotate.  This allows you to freeze bones even when they don't move.  While this is not exactly retargeting "
+            "it does have similar features where your animation rig (BB Rig) is being influenced by another object and that object's keys "
+            "can be written to the animation using this option.",
         default = False,
         )
     anim_use_target_keys_rotation : bpy.props.BoolProperty(
         name = "",
-        description =            "You have the option to use only rotation or location data, or both.",
+        description = ""
+            "You have the option to use only rotation or location data, or both.",
         default = True,
         )
     anim_use_target_keys_location : bpy.props.BoolProperty(
         name = "",
-        description =            "You have the option to use only rotation or location data, or both.",
+        description = ""
+            "You have the option to use only rotation or location data, or both.",
         default = False,
         )
     
@@ -37550,7 +39685,17 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_deviation_detection : bpy.props.BoolProperty(
         name = "",
-        description =            "This used to be Deviation, the term (Smooth Motion) makes more sense."            "\n\n"            "The intent of the deviation detection was to reduce file size and the trouble maintaining it wasn't worth the small "            "savings.  The current process is typical and uses your key framed animation to produce the desired, visually accurate, "            "result in Second Life.  Second Life doesn't have an interpolation method, only an ease factor for start and stop of "            "an animation, so we have to add some data to represent your animation accurately in Second Life.  To get an idea of how "            "your animation actually would look, without this extra data, change your animated bones to (linear interpolation) and turn "            "on (Linear) for the animation export option.  In Second Life your animation will contain only those keys that you set "            "here in Blender, and nothing else.  Without the additional data provided by the (Smooth Motion) export method your animation "            "would look exactly like that.",
+        description = ""
+            "This used to be Deviation, the term (Smooth Motion) makes more sense."
+            "\n\n"
+            "The intent of the deviation detection was to reduce file size and the trouble maintaining it wasn't worth the small "
+            "savings.  The current process is typical and uses your key framed animation to produce the desired, visually accurate, "
+            "result in Second Life.  Second Life doesn't have an interpolation method, only an ease factor for start and stop of "
+            "an animation, so we have to add some data to represent your animation accurately in Second Life.  To get an idea of how "
+            "your animation actually would look, without this extra data, change your animated bones to (linear interpolation) and turn "
+            "on (Linear) for the animation export option.  In Second Life your animation will contain only those keys that you set "
+            "here in Blender, and nothing else.  Without the additional data provided by the (Smooth Motion) export method your animation "
+            "would look exactly like that.",
         default = False, 
 
         )
@@ -37559,7 +39704,8 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_deviation_rotation : bpy.props.FloatProperty(
         name = "",
-        description =            "Rotation Deviation Tolerance in radians",
+        description = ""
+            "Rotation Deviation Tolerance in radians",
         min = 0.0,
         max = 10.0,
         precision = 4,
@@ -37567,7 +39713,8 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
         )
     anim_deviation_location : bpy.props.FloatProperty(
         name = "",
-        description =            "Location Deviation in fractional meters",
+        description = ""
+            "Location Deviation in fractional meters",
         min = 0.0,
         max = 0.1,
         precision = 4,
@@ -37575,7 +39722,18 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
         )
     anim_exclude_from_cleaning : bpy.props.BoolProperty(
         name = "",
-        description =            "Exclude From Cleaning"            "\n\n"            "During the process of generating keys, removing useless keys, determining interpolation methods and keys, many of the "            "existing keys in the time line will be removed and also some keys will simply never be placed into the time line since "            "the algorithm deemed it unnecessary.  However, with this feature enabled, and the flagging of various items such as "            "bones and/or keys, those flagged items will not be cleaned/removed and, if they simply don't exist, there will be a key "            "placed on the frame indicated or all keys on a bone will be preserved if a bone is flagged.  This is a complicated and "            "advanced topic that expert animators will appreciate.  The reason we need these features is because SL does not process "            "animations as you would expect and the controls that Bento Buddy gives you are designed to transfer expected behavior "            "into Second Life.  If you're using the (Hold) transform keys in the auto-key tools then those keys are flagged "            "automatically and will honor the setting of this feature, or dismiss it if it's not enabled.",
+        description = ""
+            "Exclude From Cleaning"
+            "\n\n"
+            "During the process of generating keys, removing useless keys, determining interpolation methods and keys, many of the "
+            "existing keys in the time line will be removed and also some keys will simply never be placed into the time line since "
+            "the algorithm deemed it unnecessary.  However, with this feature enabled, and the flagging of various items such as "
+            "bones and/or keys, those flagged items will not be cleaned/removed and, if they simply don't exist, there will be a key "
+            "placed on the frame indicated or all keys on a bone will be preserved if a bone is flagged.  This is a complicated and "
+            "advanced topic that expert animators will appreciate.  The reason we need these features is because SL does not process "
+            "animations as you would expect and the controls that Bento Buddy gives you are designed to transfer expected behavior "
+            "into Second Life.  If you're using the (Hold) transform keys in the auto-key tools then those keys are flagged "
+            "automatically and will honor the setting of this feature, or dismiss it if it's not enabled.",
         default = True,
         )
 
@@ -37584,12 +39742,22 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     mark_tol_options : bpy.props.BoolProperty(
         name = "Expand key discard options",
-        description =            "Expand these advanced options to test animation transport processing",
+        description = ""
+            "Expand these advanced options to test animation transport processing",
         default = False,
         )
     mark_tol : bpy.props.BoolProperty(
         name = "Clean keys by tolerance",
-        description =            "From key to key there is a certain amount of jiggle, or wiggle room, that you typically won't see in your animation, "            "or maybe just isn't important.  You can choose the wiggle room using these fractional numbers, one for angles of rotation "            "and the other in fractional meters for location / translation.  Increasing these numbers discards more keys in order to make "            "room for longer animations, although you're better off using the animation splitter than reducing accuracy here."            "\n\n"            "Disabling this won't be useful to most people but can be helpful when testing the transfer process from export to "            "import in SL.  Keys are flagged as unusable by this tolerance feature and are not saved into the .anim file.  It's "            "useful to have this turned on by default because even the shortest animation may be too large for Second Life to accept, "            "a max of 250kb per file.",
+        description = ""
+            "From key to key there is a certain amount of jiggle, or wiggle room, that you typically won't see in your animation, "
+            "or maybe just isn't important.  You can choose the wiggle room using these fractional numbers, one for angles of rotation "
+            "and the other in fractional meters for location / translation.  Increasing these numbers discards more keys in order to make "
+            "room for longer animations, although you're better off using the animation splitter than reducing accuracy here."
+            "\n\n"
+            "Disabling this won't be useful to most people but can be helpful when testing the transfer process from export to "
+            "import in SL.  Keys are flagged as unusable by this tolerance feature and are not saved into the .anim file.  It's "
+            "useful to have this turned on by default because even the shortest animation may be too large for Second Life to accept, "
+            "a max of 250kb per file.",
         default = True,
         )
     
@@ -37612,7 +39780,10 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
     
     anim_resample : bpy.props.BoolProperty(
         name = "",
-        description =            "Resample to reduce keys"            "\n\n"            "The number indicates the amount of frames to skip before removing a key.  Setting it to 2 should cut your file size in half.",
+        description = ""
+            "Resample to reduce keys"
+            "\n\n"
+            "The number indicates the amount of frames to skip before removing a key.  Setting it to 2 should cut your file size in half.",
         default = False,
         )
     
@@ -37635,21 +39806,28 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
 
     anim_resample_auto : bpy.props.BoolProperty(
         name = "",
-        description =            "Auto resample"            "\n\n"            "You will have to click this button new, guessed, sample.  The only thing this does is give you a sane number to work with."            "\n\n"            "This guesses from the frame range, it's about 0.2 percent of the total, this is usually sufficient",
+        description = ""
+            "Auto resample"
+            "\n\n"
+            "You will have to click this button new, guessed, sample.  The only thing this does is give you a sane number to work with."
+            "\n\n"
+            "This guesses from the frame range, it's about 0.2 percent of the total, this is usually sufficient",
         default = False,
         update = update_anim_resample_auto
         )
 
     anim_resample_rate_rotation : bpy.props.IntProperty(
         name = "",
-        description =            "This is an integer, it can be no less than 2, since 1 is as if you turned it off.",
+        description = ""
+            "This is an integer, it can be no less than 2, since 1 is as if you turned it off.",
         min = 2,
         default = 3,
         update = update_anim_resample_auto
         )
     anim_resample_rate_location : bpy.props.IntProperty(
         name = "",
-        description =            "This is an integer, it can be no less than 2, since 1 is as if you turned it off.",
+        description = ""
+            "This is an integer, it can be no less than 2, since 1 is as if you turned it off.",
         min = 2,
         default = 3,
         update = update_anim_resample_auto
@@ -37685,13 +39863,16 @@ class BentoBuddyAnimProperties(bpy.types.PropertyGroup):
         )
     bvh_type_sl_os : bpy.props.BoolProperty(
         name = "Type of BVH - SL specific",
-        description =            "This type of BVH is specific for SL/OS, although it may still work on other platforms and you can probably re-import it "            "into Blender.  However, if you save your work as an SL BVH you cannot revert back to the original so make a backup.",
+        description = ""
+            "This type of BVH is specific for SL/OS, although it may still work on other platforms and you can probably re-import it "
+            "into Blender.  However, if you save your work as an SL BVH you cannot revert back to the original so make a backup.",
         default = True,
         update = bvh_type_sl_os_update,
         )
     bvh_type_other : bpy.props.BoolProperty(
         name = "Type of BVH - ordinary",
-        description =            "This type of BVH is transportable, it's the best way to store your animation for later use.",
+        description = ""
+            "This type of BVH is transportable, it's the best way to store your animation for later use.",
         default = False,
         update = bvh_type_other_update,
         )
@@ -37994,25 +40175,30 @@ class BentoBuddySplitAnimProperties(bpy.types.PropertyGroup):
             self["split_blank"] = False
             return
     split_blank : bpy.props.BoolProperty(
-        description =            "Enable animation bulk export splitter",
+        description = ""
+            "Enable animation bulk export splitter",
         default = False,
         update=update_split_blank
         )
 
     split_enabled : bpy.props.BoolProperty(
-        description =            "Enable animation bulk export splitter",
+        description = ""
+            "Enable animation bulk export splitter",
         default = False,
         )
 
     split_time : bpy.props.FloatProperty(
-        description =            "Adjust the time of each segment",
+        description = ""
+            "Adjust the time of each segment",
         min = 0.1,
         max = 60.0,
         default = 60,
         )
 
     split_overlap : bpy.props.FloatProperty(
-        description =            "This can help smooth between segments if needed.  This can be particularly useful when using the resulting composed animaton as "            "an avatar",
+        description = ""
+            "This can help smooth between segments if needed.  This can be particularly useful when using the resulting composed animaton as "
+            "an avatar",
         min = 0.0,
         max = 2.0,
         default = 0.0,
@@ -38020,12 +40206,17 @@ class BentoBuddySplitAnimProperties(bpy.types.PropertyGroup):
 
     split_kill : bpy.props.BoolProperty(
         name="",
-        description = ""            "Stop Previous"            "\n\n"            "Sometimes you want an animation to stop just after playing a new one, enable this for that effect.  You may want to add delay as well",
+        description = ""
+            "Stop Previous"
+            "\n\n"
+            "Sometimes you want an animation to stop just after playing a new one, enable this for that effect.  You may want to add delay as well",
         default=False,
         )
     split_delay : bpy.props.FloatProperty(
             name = "",
-            description =                "This is sort of the reverse of (overlap) but not quite, the two can be used together but the results are unclear.  This puts a "                "delay between the end of your animation segment time and the start of the new one, by simply adding this to the segment total time",
+            description = ""
+                "This is sort of the reverse of (overlap) but not quite, the two can be used together but the results are unclear.  This puts a "
+                "delay between the end of your animation segment time and the start of the new one, by simply adding this to the segment total time",
         min = 0.0,
         max = 60.0,
         default = 0.0,
@@ -38033,45 +40224,69 @@ class BentoBuddySplitAnimProperties(bpy.types.PropertyGroup):
 
 
     split_ease_in : bpy.props.FloatProperty(
-        description =            "animation ease in segment",
+        description = ""
+            "animation ease in segment",
         min = 0.0,
         max = 1.0,
         default = 0.82,
         )
     split_ease_out : bpy.props.FloatProperty(
-        description =            "animation ease out segment",
+        description = ""
+            "animation ease out segment",
         min = 0.0,
         max = 1.0,
         default = 0.82,
         )
     split_debug : bpy.props.BoolProperty(
         name="",
-        description = ""            "Debug Messages"            "\n\n"            "With this enabled you'll see extensive messages while the animation is running, when it's rezed "            "and, if it's for an Avatar, when it's attached",
+        description = ""
+            "Debug Messages"
+            "\n\n"
+            "With this enabled you'll see extensive messages while the animation is running, when it's rezed "
+            "and, if it's for an Avatar, when it's attached",
         default=False,
         )
     split_owner : bpy.props.BoolProperty(
         name="",
-        description = ""            "Owner Only"            "\n\n"            "With this enabled nobody else can manipulate the object that activates and deactivates the sequence",
+        description = ""
+            "Owner Only"
+            "\n\n"
+            "With this enabled nobody else can manipulate the object that activates and deactivates the sequence",
         default=True,
         )
     split_loop : bpy.props.BoolProperty(
         name="",
-        description = ""            "Loop Sequence"            "\n\n"            "With this enabled your sequence will continue playing in a loop, this is not the same as single looped "            "but has the same visual effect since the sequenced animation is virtually seamless",
+        description = ""
+            "Loop Sequence"
+            "\n\n"
+            "With this enabled your sequence will continue playing in a loop, this is not the same as single looped "
+            "but has the same visual effect since the sequenced animation is virtually seamless",
         default=True,
         )
     split_touch : bpy.props.BoolProperty(
         name="",
-        description = ""            "On Touch"            "\n\n"            "If enabled then when the object that contains the script is touched the animation will toggle between "            "start and stop states",
+        description = ""
+            "On Touch"
+            "\n\n"
+            "If enabled then when the object that contains the script is touched the animation will toggle between "
+            "start and stop states",
         default=True,
         )
     split_on_start : bpy.props.BoolProperty(
         name="",
-        description = ""            "On Start"            "\n\n"            "If enabled, and if using the avatar type animation script, the animation sequence will start automatically "            "when the proper conditios are met, (attached and permission granted)",
+        description = ""
+            "On Start"
+            "\n\n"
+            "If enabled, and if using the avatar type animation script, the animation sequence will start automatically "
+            "when the proper conditios are met, (attached and permission granted)",
         default=True,
         )
     split_listen : bpy.props.BoolProperty(
         name="",
-        description = ""            "On Listen"            "\n\n"            "If enabled then when the proper command is given then the animation will start or stop depending on the command",
+        description = ""
+            "On Listen"
+            "\n\n"
+            "If enabled then when the proper command is given then the animation will start or stop depending on the command",
         default=True,
         )
     
@@ -38083,7 +40298,9 @@ class BentoBuddySplitAnimProperties(bpy.types.PropertyGroup):
             sign = channel[:1]
             channel = channel[1:]
         if channel.isdecimal() == False:
-            txt = "The IntProperty in Blender cannot represent the numeric value appropriate for this content so "            + "a string value is used and converted, unfortunately your string value contains something other than numbers and the (-) sign.  "            + "Your input was as follows: " + self.split_channel
+            txt = "The IntProperty in Blender cannot represent the numeric value appropriate for this content so "
+            + "a string value is used and converted, unfortunately your string value contains something other than numbers and the (-) sign.  "
+            + "Your input was as follows: " + self.split_channel
             print(txt)
             popup("Input can only consist of an integer of range -2147483648 to 2147483647", "Error", "ERROR")
             self["split_script_channel"] = "5"
@@ -38097,18 +40314,34 @@ class BentoBuddySplitAnimProperties(bpy.types.PropertyGroup):
 
     split_channel : bpy.props.StringProperty(
         name="",
-        description = ""            "Channel"            "\n\n"            "This is the channel you want to use for the start/stop commands.  It's suggested to use a negative channel when "            "using object to object communications but the default is 5 for easy testing, /5 start .  The channel range you can "            "use is between  -2147483648 and 2147483647, where 2147483647 is actually the debug channel so you probably don't "            "want to use that one, 0 is public so it's often not used for control listeners",
+        description = ""
+            "Channel"
+            "\n\n"
+            "This is the channel you want to use for the start/stop commands.  It's suggested to use a negative channel when "
+            "using object to object communications but the default is 5 for easy testing, /5 start .  The channel range you can "
+            "use is between  -2147483648 and 2147483647, where 2147483647 is actually the debug channel so you probably don't "
+            "want to use that one, 0 is public so it's often not used for control listeners",
         default="5",
         update=split_channel
         )
     split_start : bpy.props.StringProperty(
         name="",
-        description = ""            "Start Command"            "\n\n"            "This is the command you'll use in order to start your animation, it can be anything you like but the default is (start) "            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "            "with other people utilizing this feature of Bento Buddy that may be near by you",
+        description = ""
+            "Start Command"
+            "\n\n"
+            "This is the command you'll use in order to start your animation, it can be anything you like but the default is (start) "
+            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "
+            "with other people utilizing this feature of Bento Buddy that may be near by you",
         default="start",
         )
     split_stop : bpy.props.StringProperty(
         name="",
-        description = ""            "Stop Command"            "\n\n"            "This is the command you'll use in order to stop your animation, it can be anything you like but the default is (stop) "            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "            "with other people utilizing this feature of Bento Buddy that may be near by you",
+        description = ""
+            "Stop Command"
+            "\n\n"
+            "This is the command you'll use in order to stop your animation, it can be anything you like but the default is (stop) "
+            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "
+            "with other people utilizing this feature of Bento Buddy that may be near by you",
         default="stop",
         )
 
@@ -43520,17 +45753,31 @@ class BentoBuddyAutoKeyProperties(bpy.types.PropertyGroup):
     
     autokey_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand the Auto Key options"            "\n\n"            "Pose your character without having to remember which bones you moved.  Click the (Auto Key) button and you're ready "            "for the next pose to create your keys between motion, for seamless and worry free animation."            "\n\n"            "For fine tuning, capturing, and manual key reduction for retargeting just record your reference, move the time slider "            "a little bit and hit that (Auto Key) button.  Continue on down that line until you're finished then export your animation.",
+        description = ""
+            "Expand the Auto Key options"
+            "\n\n"
+            "Pose your character without having to remember which bones you moved.  Click the (Auto Key) button and you're ready "
+            "for the next pose to create your keys between motion, for seamless and worry free animation."
+            "\n\n"
+            "For fine tuning, capturing, and manual key reduction for retargeting just record your reference, move the time slider "
+            "a little bit and hit that (Auto Key) button.  Continue on down that line until you're finished then export your animation.",
         default = False,
         )
     autokey_steps : bpy.props.IntProperty(
         name = "",
-        description =            "Auto Step to frame after keying"            "\n\n"            "A convenience tool that will automatically move the time slider ahead by the number of frames indicated "            "so that you can concentrate on motion instead of Blender details.  Later you can move your keys where you "            "like but using steps is not a bad idea and if you have too many steps you can reduce them using Bento Buddy's "            "(Resample) tool.  Note, you can set this to negative to key backwards, if you're feeling backwards today.",
+        description = ""
+            "Auto Step to frame after keying"
+            "\n\n"
+            "A convenience tool that will automatically move the time slider ahead by the number of frames indicated "
+            "so that you can concentrate on motion instead of Blender details.  Later you can move your keys where you "
+            "like but using steps is not a bad idea and if you have too many steps you can reduce them using Bento Buddy's "
+            "(Resample) tool.  Note, you can set this to negative to key backwards, if you're feeling backwards today.",
         default = 10,
         )
     autokey_steps_disabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable Auto Step",
+        description = ""
+            "Disable Auto Step",
         default = False,
         )
     autokey_bake_progress : bpy.props.StringProperty(
@@ -43540,34 +45787,66 @@ class BentoBuddyAutoKeyProperties(bpy.types.PropertyGroup):
         )
     autokey_bake_progress_show : bpy.props.BoolProperty(
         name = "",
-        description =            "Show Bake Progress"            "\n\n"            "This is very slow!  Enable this to see the progress of the bake.  It will update the scene on every frame write.  "            "This is against Blender policy O.o, but for prototyping it can be useful.  Choose a small bake frame-range for your "            "progress view, enable this button, and hit the bake key.  Turn it off for production work",
+        description = ""
+            "Show Bake Progress"
+            "\n\n"
+            "This is very slow!  Enable this to see the progress of the bake.  It will update the scene on every frame write.  "
+            "This is against Blender policy O.o, but for prototyping it can be useful.  Choose a small bake frame-range for your "
+            "progress view, enable this button, and hit the bake key.  Turn it off for production work",
         default = False,
         )
     autokey_bake_rotation_disabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable Rotation Baking"            "\n\n"            "The data will still be stored for later use but it just won't be baked when you hit one of "            "the bake keys.  This is usually not what you want but for custom characters or when using Animesh in a "            "unique way you can turn this off to be sure that those values don't get in the way and it's good for debugging your "            "prosses",
+        description = ""
+            "Disable Rotation Baking"
+            "\n\n"
+            "The data will still be stored for later use but it just won't be baked when you hit one of "
+            "the bake keys.  This is usually not what you want but for custom characters or when using Animesh in a "
+            "unique way you can turn this off to be sure that those values don't get in the way and it's good for debugging your "
+            "prosses",
         default = False,
         )
     autokey_bake_location_disabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable Location Baking"            "\n\n"            "The data will still be stored but it won't be baked when you use one of the baking methods.  This is often times what "            "you want, to disable location data from baking, it's less confusing where the problem is "            "when you find strange distortions in your finished product.  It shouldn't really cause a problem, to allow location "            "baking but it also saves on data if those keys aren't being used.",
+        description = ""
+            "Disable Location Baking"
+            "\n\n"
+            "The data will still be stored but it won't be baked when you use one of the baking methods.  This is often times what "
+            "you want, to disable location data from baking, it's less confusing where the problem is "
+            "when you find strange distortions in your finished product.  It shouldn't really cause a problem, to allow location "
+            "baking but it also saves on data if those keys aren't being used.",
         default = False,
         )
 
     autokey_bake_start : bpy.props.IntProperty(
         name = "",
-        description =            "Bake Start Frame"            "\n\n"            "What frame to start baking from.  The (Bake Stored Keys) baker will not bake more keys than are in the buffer "            "so you can range this quite wide for safety.  You can set this wide and the baker will just take the keys inside "            "but the (Bake Range) feature will bake all keys inside the range, which is good for automatically baking for "            "retargeted animations",
+        description = ""
+            "Bake Start Frame"
+            "\n\n"
+            "What frame to start baking from.  The (Bake Stored Keys) baker will not bake more keys than are in the buffer "
+            "so you can range this quite wide for safety.  You can set this wide and the baker will just take the keys inside "
+            "but the (Bake Range) feature will bake all keys inside the range, which is good for automatically baking for "
+            "retargeted animations",
         default = 1,
         )
     autokey_bake_end : bpy.props.IntProperty(
         name = "",
-        description =            "Bake End Frame"            "\n\n"            "What frame to end baking at.  The (Bake Stored Keys) baker will not bake more keys than are in the buffer "            "so you can range this quite wide for safety.  You can set this wide and the baker will just take the keys inside "            "but the (Bake Range) feature will bake all keys inside the range, which is good for automatically baking for "            "retargeted animations",
+        description = ""
+            "Bake End Frame"
+            "\n\n"
+            "What frame to end baking at.  The (Bake Stored Keys) baker will not bake more keys than are in the buffer "
+            "so you can range this quite wide for safety.  You can set this wide and the baker will just take the keys inside "
+            "but the (Bake Range) feature will bake all keys inside the range, which is good for automatically baking for "
+            "retargeted animations",
         default = 100,
         )
 
     autokey_tol_rot : bpy.props.FloatProperty(
         name = "",
-        description =            "Rotation Tolerance"            "\n\n"            "Rotation motion that has not changed from frame to frame by at least this amount are not recorded.  This is in degrees.",
+        description = ""
+            "Rotation Tolerance"
+            "\n\n"
+            "Rotation motion that has not changed from frame to frame by at least this amount are not recorded.  This is in degrees.",
         min = -180,
         max = 180,
         precision = 4,
@@ -43575,7 +45854,10 @@ class BentoBuddyAutoKeyProperties(bpy.types.PropertyGroup):
         )
     autokey_tol_loc : bpy.props.FloatProperty(
         name = "",
-        description =            "Location Tolerance"            "\n\n"            "Position motion that has not changed from frame to frame by at least this amount are not recorded.  This is in meters.",
+        description = ""
+            "Location Tolerance"
+            "\n\n"
+            "Position motion that has not changed from frame to frame by at least this amount are not recorded.  This is in meters.",
         min = -10,
         max = 10,
         precision = 4,
@@ -43583,7 +45865,13 @@ class BentoBuddyAutoKeyProperties(bpy.types.PropertyGroup):
         )
     autokey_paste_to_selected : bpy.props.BoolProperty(
         name = "",
-        description =            "Paste to selected bones only"            "\n\n"            "You can paste to multiple rigs the same pose and, on those rigs, you can choose only certain bones, they don't have "            "have to match each other, and enable this feature.  The bones that are currently selected on the target rigs are the "            "only bones that will receive the stored pose.  To achieve this you'll need to be in pose mode on the entire rig selection  "            "and then choose the bones on those rigs that will receive the pose.",
+        description = ""
+            "Paste to selected bones only"
+            "\n\n"
+            "You can paste to multiple rigs the same pose and, on those rigs, you can choose only certain bones, they don't have "
+            "have to match each other, and enable this feature.  The bones that are currently selected on the target rigs are the "
+            "only bones that will receive the stored pose.  To achieve this you'll need to be in pose mode on the entire rig selection  "
+            "and then choose the bones on those rigs that will receive the pose.",
         default = False,
         )
 
@@ -44815,14 +47103,19 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     alib_motion_processing_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Motion processing contains bulk exporters,"        "\n"        "animation and pose library along with bulk"
-        "\n"        "action and pose exporters",
+        description = ""
+        "Motion processing contains bulk exporters,"
+        "\n"
+        "animation and pose library along with bulk"
+        "\n"
+        "action and pose exporters",
         default = False
         )
 
     alib_anim_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Expand / contract the animation library",
+        description = ""
+        "Expand / contract the animation library",
         default = False
         )
 
@@ -44839,7 +47132,8 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     alib_anim_name : bpy.props.StringProperty(
         name = "",
-        description =            "Set a name here or Bento Buddy will create one automatically which you can rename after",
+        description = ""
+            "Set a name here or Bento Buddy will create one automatically which you can rename after",
         default = "",
         )
     
@@ -44854,17 +47148,29 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     alib_action_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Expand / contract the action library",
+        description = ""
+        "Expand / contract the action library",
         default = False
         )
     alib_action_overwrite : bpy.props.BoolProperty(
         name = "",
-        description =        "Overwrite Existing Files"        "\n\n"        "Enable this if you know you want to overwrite any files that collide with the names what will be generated.  "        "The name that's in the target field is used as a prefix, to which a suffix will be added (.001) etc.  If you are "        "beta testing then it makes sense to turn this on and also to choose a unique name prefix, the generator can help with "        "that.  This will destroy all of your previous saves with the same settings.",
+        description = ""
+        "Overwrite Existing Files"
+        "\n\n"
+        "Enable this if you know you want to overwrite any files that collide with the names what will be generated.  "
+        "The name that's in the target field is used as a prefix, to which a suffix will be added (.001) etc.  If you are "
+        "beta testing then it makes sense to turn this on and also to choose a unique name prefix, the generator can help with "
+        "that.  This will destroy all of your previous saves with the same settings.",
         default = False
         )
     alib_action_use_selected_rig : bpy.props.BoolProperty(
         name = "",
-        description =        "Use rig selection"        "\n\n"        "The bulk action/animation exporter generates a rig in order to accomplish the task.  This is ok for standard bipedal "        "characters but if you have a custom rig, especially with altered joint positions, this will not work.  Enabling this "        "option is safe, even with standard bipeds, if you have the proper rig chosen.  For bipeds it's the Bento Buddy Safe rig.",
+        description = ""
+        "Use rig selection"
+        "\n\n"
+        "The bulk action/animation exporter generates a rig in order to accomplish the task.  This is ok for standard bipedal "
+        "characters but if you have a custom rig, especially with altered joint positions, this will not work.  Enabling this "
+        "option is safe, even with standard bipeds, if you have the proper rig chosen.  For bipeds it's the Bento Buddy Safe rig.",
         default = True
         )
 
@@ -44872,17 +47178,31 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
     
     alib_action_use_source_keys : bpy.props.BoolProperty(
         name = "",
-        description =        "Use Real Keys"        "\n\n"        "The common exporter is build for a huge variety of tasks and the most common way to process animations is through motion "        "detection.  However, when exporting bulk animations we're not expecting a proxy rig for this purpose and a key cleanup "        "process could damage the stops that you've included in your animation, for instance a single pose and key, so enabling this will "        "process your rig with actual keys only and no other data checking will be enabled.",
+        description = ""
+        "Use Real Keys"
+        "\n\n"
+        "The common exporter is build for a huge variety of tasks and the most common way to process animations is through motion "
+        "detection.  However, when exporting bulk animations we're not expecting a proxy rig for this purpose and a key cleanup "
+        "process could damage the stops that you've included in your animation, for instance a single pose and key, so enabling this will "
+        "process your rig with actual keys only and no other data checking will be enabled.",
         default = False
         )
     alib_action_use_source_keys_rotation : bpy.props.BoolProperty(
         name = "",
-        description =        "Use Rotations"        "\n\n"        "Along with (Use Keys) you can chose to include both rotation and location or one or the other, but if you disable both "        "with the (Use Keys) option on then you'll get nothing",
+        description = ""
+        "Use Rotations"
+        "\n\n"
+        "Along with (Use Keys) you can chose to include both rotation and location or one or the other, but if you disable both "
+        "with the (Use Keys) option on then you'll get nothing",
         default = True
         )
     alib_action_use_source_keys_location : bpy.props.BoolProperty(
         name = "",
-        description =        "Use Locations"        "\n\n"        "Along with (Use Keys) you can chose to include both rotation and location or one or the other, but if you disable both "        "with the (Use Keys) option on then you'll get nothing",
+        description = ""
+        "Use Locations"
+        "\n\n"
+        "Along with (Use Keys) you can chose to include both rotation and location or one or the other, but if you disable both "
+        "with the (Use Keys) option on then you'll get nothing",
         default = True
         )
 
@@ -44895,32 +47215,53 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
             self["alib_action_export_mapped_animation"] = False
     alib_action_export_mapped_animation : bpy.props.BoolProperty(
         name = "",
-        description =        "Export Mapped Animation"        "\n\n"            "This is similar to the (Export Mapped Mesh) in that it converts bone names to their corresponding targets on export, allowing "            "you to you to export bulk incompatible animations for use with Second Life.  If your rig is an Avastar rig then this feature "            "may be overridden by any Avastar switches you enable.  This feature is enabled by default because, when there is a mapped "            "rig, there's a map available for that rig and can be utilized to convert the names for use with the target",
+        description = ""
+        "Export Mapped Animation"
+        "\n\n"
+            "This is similar to the (Export Mapped Mesh) in that it converts bone names to their corresponding targets on export, allowing "
+            "you to you to export bulk incompatible animations for use with Second Life.  If your rig is an Avastar rig then this feature "
+            "may be overridden by any Avastar switches you enable.  This feature is enabled by default because, when there is a mapped "
+            "rig, there's a map available for that rig and can be utilized to convert the names for use with the target",
         default = False,
         update=update_export_mapped_animation
         )
     alib_action_export_retargeted_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "Bulk export retargeted rig animation"            "\n\n"            "If bulk exporting a custom incompatible rig that needs to be retargeted keep your set engaged in the retargeter and try this "            "feature out.  This should work smoothly.  This is enabled by default because a reatarget set can be detected.  However, if "            "you've left old retarget sets in the scene, that is to say you forgot to reset the stage, then this state may be falsly "            "detected and ruine your day.  You can disable this in that case but you really should clean up your scene",
+        description = ""
+            "Bulk export retargeted rig animation"
+            "\n\n"
+            "If bulk exporting a custom incompatible rig that needs to be retargeted keep your set engaged in the retargeter and try this "
+            "feature out.  This should work smoothly.  This is enabled by default because a reatarget set can be detected.  However, if "
+            "you've left old retarget sets in the scene, that is to say you forgot to reset the stage, then this state may be falsly "
+            "detected and ruine your day.  You can disable this in that case but you really should clean up your scene",
         default = True,
         update=update_export_retargeted_animation
         )
 
     alib_action_name : bpy.props.StringProperty(
         name = "",
-        description =            "Empty this field if you want to export action names.  This is a base name for bulk export.  If this "            "is defined then all bulk exported actions will have as its prefix the defined text",
+        description = ""
+            "Empty this field if you want to export action names.  This is a base name for bulk export.  If this "
+            "is defined then all bulk exported actions will have as its prefix the defined text",
         default = "",
         )
 
     alib_action_rotation_fix : bpy.props.BoolProperty(
         name = "",
-        description =        "Try fixing incompatible rotation modes"        "\n\n"        "This may not work but if you need it your setup is broken and it needs fixing.  The expected rotation mode for Bento Buddy "        "rig bones is Quaternion but if the animation is primarily Euler then there's a problem that cannot be fixed automatically.  "        "However, there is a chance that this feature can get you back in the game but the source issue is not fixed.  Your options "        "are to change bone modes manually, Bento Buddy has a tool for that in (Rig Tools), or retarget the animation.",
+        description = ""
+        "Try fixing incompatible rotation modes"
+        "\n\n"
+        "This may not work but if you need it your setup is broken and it needs fixing.  The expected rotation mode for Bento Buddy "
+        "rig bones is Quaternion but if the animation is primarily Euler then there's a problem that cannot be fixed automatically.  "
+        "However, there is a chance that this feature can get you back in the game but the source issue is not fixed.  Your options "
+        "are to change bone modes manually, Bento Buddy has a tool for that in (Rig Tools), or retarget the animation.",
         default = False
         )
 
     alib_ranges_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Expand / contract the loops and ranges area.  This is for exports only and does not effect anything at all in Blender itself.",
+        description = ""
+            "Expand / contract the loops and ranges area.  This is for exports only and does not effect anything at all in Blender itself.",
         default = False
         )
     def update_alib_ranges_all_enabled(self, context):
@@ -44940,13 +47281,15 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     alib_ranges_all_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Force all custom frame ranges to toggle active or inactive",
+        description = ""
+        "Force all custom frame ranges to toggle active or inactive",
         default = False,
         update = update_alib_ranges_all_enabled
         )
     alib_loops_all_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Force all custom loops ranges to toggle active or inactive",
+        description = ""
+        "Force all custom loops ranges to toggle active or inactive",
         default = False,
         update = update_alib_loops_all_enabled
         )
@@ -44960,7 +47303,8 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
                 actionObj['ease'] = False
     alib_ease_all_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Force all custom easeing to active or inactive",
+        description = ""
+        "Force all custom easeing to active or inactive",
         default = False,
         update = update_alib_ease_all_enabled
         )
@@ -45015,32 +47359,37 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     alib_action_frame_start : bpy.props.IntProperty(
         name = "",
-        description =            "Frame start for this action.",
+        description = ""
+            "Frame start for this action.",
         default = 0,
         update = update_alib_action_frame_start
         )
     alib_action_frame_end : bpy.props.IntProperty(
         name = "",
-        description =            "Frame end for this action.",
+        description = ""
+            "Frame end for this action.",
         default = 0,
         update = update_alib_action_frame_end
         )
     alib_action_loop_start : bpy.props.IntProperty(
         name = "",
-        description =            "Loop start for this action.",
+        description = ""
+            "Loop start for this action.",
         default = 0,
         update = update_alib_action_loop_start
         )
     alib_action_loop_end : bpy.props.IntProperty(
         name = "",
-        description =            "Loop end for this action.",
+        description = ""
+            "Loop end for this action.",
         default = 0,
         update = update_alib_action_loop_end
         )
     
     alib_action_priority : bpy.props.IntProperty(
         name = "",
-        description =            "Set base priority for this action.  If you want (per bone priorities) enable them in (Joint Priority Options)",
+        description = ""
+            "Set base priority for this action.  If you want (per bone priorities) enable them in (Joint Priority Options)",
         min = -1,
         max = 6,
         default = 1,
@@ -45049,14 +47398,16 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     alib_action_ease_in : bpy.props.FloatProperty(
         name = "",
-        description =            "Ease in",
+        description = ""
+            "Ease in",
         max = 1.0,
         default = 0.0,
         update = update_alib_action_ease_in
         )
     alib_action_ease_out : bpy.props.FloatProperty(
         name = "",
-        description =            "Ease out",
+        description = ""
+            "Ease out",
         max = 1.0,
         default = 0.0,
         update = update_alib_action_ease_out
@@ -45141,52 +47492,93 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
         print("would have processed time to refresh fill")
     action_fill_fps : bpy.props.FloatProperty(
         name="",
-        description = ""            "This version of FPS is not the same as in the main animation UI.  This one is for the "            "bulk exporter only and works with the (fill) tool as well.",
+        description = ""
+            "This version of FPS is not the same as in the main animation UI.  This one is for the "
+            "bulk exporter only and works with the (fill) tool as well.",
         default=24,
         min=1,
         
         )
     action_fill_time : bpy.props.FloatProperty(
         name="",
-        description = ""            "This version of (Time) is not a calculated value, it is for you to set in order to restrict "            "each fill slice to that total time.  When you use fill a number of frames will be calculated "            "per slice which will be equal to or less than (Time).  Enabling (Embed Anim Details) and the "            "(T) option will embed the time data into the filename for ease of use and parsing.  Be careful "            "with your base filename since import into SL will truncate the entire prefix to 63 characters",
+        description = ""
+            "This version of (Time) is not a calculated value, it is for you to set in order to restrict "
+            "each fill slice to that total time.  When you use fill a number of frames will be calculated "
+            "per slice which will be equal to or less than (Time).  Enabling (Embed Anim Details) and the "
+            "(T) option will embed the time data into the filename for ease of use and parsing.  Be careful "
+            "with your base filename since import into SL will truncate the entire prefix to 63 characters",
         default=60,
         min=1,
         
         )
     action_fill_ease_in : bpy.props.FloatProperty(
         name="",
-        description = ""            "Ease In"            "\n\n"            "Like the ease in/out in the main UI this will replace that feature for the animations exporting "            "using this bulk tool.  If using the (Fill) option you only really need to care about the first and "            "last segments since these will transition from an already playing animation.  But, because each "            "segment takes over for the previous, the following animation segment will obfuscate the view of "            "this easing until there's no more segments to play, which will be for the last one.  If you don't "            "want this easing effect simply set it to 0",
+        description = ""
+            "Ease In"
+            "\n\n"
+            "Like the ease in/out in the main UI this will replace that feature for the animations exporting "
+            "using this bulk tool.  If using the (Fill) option you only really need to care about the first and "
+            "last segments since these will transition from an already playing animation.  But, because each "
+            "segment takes over for the previous, the following animation segment will obfuscate the view of "
+            "this easing until there's no more segments to play, which will be for the last one.  If you don't "
+            "want this easing effect simply set it to 0",
         default=0.82,
         )
     action_fill_ease_out : bpy.props.FloatProperty(
         name="",
-        description = ""            "Ease Out"            "\n\n"            "Like the ease in/out in the main UI this will replace that feature for the animations exporting "            "using this bulk tool.  If using the (Fill) option you only really need to care about the first and "            "last segments since these will transition from an already playing animation.  But, because each "            "segment takes over for the previous, the following animation segment will obfuscate the view of "            "this easing until there's no more segments to play, which will be for the last one.  If you don't "            "want this easing effect simply set it to 0",
+        description = ""
+            "Ease Out"
+            "\n\n"
+            "Like the ease in/out in the main UI this will replace that feature for the animations exporting "
+            "using this bulk tool.  If using the (Fill) option you only really need to care about the first and "
+            "last segments since these will transition from an already playing animation.  But, because each "
+            "segment takes over for the previous, the following animation segment will obfuscate the view of "
+            "this easing until there's no more segments to play, which will be for the last one.  If you don't "
+            "want this easing effect simply set it to 0",
         default=0.82,
         )
     
     action_script_debug : bpy.props.BoolProperty(
         name="",
-        description = ""            "Debug Messages"            "\n\n"            "With this enabled you'll see extensive messages while the animation is running, when it's rezed "            "and, if it's for an Avatar, when it's attached",
+        description = ""
+            "Debug Messages"
+            "\n\n"
+            "With this enabled you'll see extensive messages while the animation is running, when it's rezed "
+            "and, if it's for an Avatar, when it's attached",
         default=False,
         )
     action_script_owner : bpy.props.BoolProperty(
         name="",
-        description = ""            "Owner Only"            "\n\n"            "With this enabled nobody else can manipulate the object that activates and deactivates the sequence",
+        description = ""
+            "Owner Only"
+            "\n\n"
+            "With this enabled nobody else can manipulate the object that activates and deactivates the sequence",
         default=True,
         )
     action_script_loop : bpy.props.BoolProperty(
         name="",
-        description = ""            "Loop Sequence"            "\n\n"            "With this enabled your sequence will continue playing in a loop, this is not the same as single looped "            "but has the same visual effect since the sequenced animation is virtually seamless",
+        description = ""
+            "Loop Sequence"
+            "\n\n"
+            "With this enabled your sequence will continue playing in a loop, this is not the same as single looped "
+            "but has the same visual effect since the sequenced animation is virtually seamless",
         default=True,
         )
     action_script_touch : bpy.props.BoolProperty(
         name="",
-        description = ""            "On Touch"            "\n\n"            "If enabled then when the object that contains the script is touched the animation will toggle between "            "start and stop states",
+        description = ""
+            "On Touch"
+            "\n\n"
+            "If enabled then when the object that contains the script is touched the animation will toggle between "
+            "start and stop states",
         default=True,
         )
     action_script_listen : bpy.props.BoolProperty(
         name="",
-        description = ""            "On Listen"            "\n\n"            "If enabled then when the proper command is given then the animation will start or stop depending on the command",
+        description = ""
+            "On Listen"
+            "\n\n"
+            "If enabled then when the proper command is given then the animation will start or stop depending on the command",
         default=True,
         )
     
@@ -45198,7 +47590,9 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
             sign = channel[:1]
             channel = channel[1:]
         if channel.isdecimal() == False:
-            txt = "The IntProperty in Blender cannot represent the numeric value appropriate for this content so "            + "a string value is used and converted, unfortunately your string value contains something other than numbers and the (-) sign.  "            + "Your input was as follows: " + self.action_script_channel
+            txt = "The IntProperty in Blender cannot represent the numeric value appropriate for this content so "
+            + "a string value is used and converted, unfortunately your string value contains something other than numbers and the (-) sign.  "
+            + "Your input was as follows: " + self.action_script_channel
             print(txt)
             popup("Input can only consist of an integer of range -2147483648 to 2147483647", "Error", "ERROR")
             self["action_script_channel"] = "5"
@@ -45212,18 +47606,34 @@ class BentoBuddyAnimationLibraryProperties(bpy.types.PropertyGroup):
 
     action_script_channel : bpy.props.StringProperty(
         name="",
-        description = ""            "Channel"            "\n\n"            "This is the channel you want to use for the start/stop commands.  It's suggested to use a negative channel when "            "using object to object communications but the default is 5 for easy testing, /5 start .  The channel range you can "            "use is between  -2147483648 and 2147483647, where 2147483647 is actually the debug channel so you probably don't "            "want to use that one, 0 is public so it's often not used for control listeners",
+        description = ""
+            "Channel"
+            "\n\n"
+            "This is the channel you want to use for the start/stop commands.  It's suggested to use a negative channel when "
+            "using object to object communications but the default is 5 for easy testing, /5 start .  The channel range you can "
+            "use is between  -2147483648 and 2147483647, where 2147483647 is actually the debug channel so you probably don't "
+            "want to use that one, 0 is public so it's often not used for control listeners",
         default="5",
         update=action_script_channel
         )
     action_script_start : bpy.props.StringProperty(
         name="",
-        description = ""            "Start Command"            "\n\n"            "This is the command you'll use in order to start your animation, it can be anything you like but the default is (start) "            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "            "with other people utilizing this feature of Bento Buddy that may be near by you",
+        description = ""
+            "Start Command"
+            "\n\n"
+            "This is the command you'll use in order to start your animation, it can be anything you like but the default is (start) "
+            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "
+            "with other people utilizing this feature of Bento Buddy that may be near by you",
         default="start",
         )
     action_script_stop : bpy.props.StringProperty(
         name="",
-        description = ""            "Stop Command"            "\n\n"            "This is the command you'll use in order to stop your animation, it can be anything you like but the default is (stop) "            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "            "with other people utilizing this feature of Bento Buddy that may be near by you",
+        description = ""
+            "Stop Command"
+            "\n\n"
+            "This is the command you'll use in order to stop your animation, it can be anything you like but the default is (stop) "
+            "for clarity.  You'll want to at least change this if you haven't changed the channel number so you don't get confused "
+            "with other people utilizing this feature of Bento Buddy that may be near by you",
         default="stop",
         )
 
@@ -47152,7 +49562,8 @@ class BentoBuddyPoseLibraryProperties(bpy.types.PropertyGroup):
 
     pose_library_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =        "Expand / contract the pose library",
+        description = ""
+        "Expand / contract the pose library",
         default = False
         )
     pose_library_name : bpy.props.StringProperty(
@@ -47186,7 +49597,10 @@ class BentoBuddyPoseLibraryProperties(bpy.types.PropertyGroup):
         )
     pose_library_overwrite : bpy.props.BoolProperty(
         name = "",
-        description =        "Disable overwrite checking and just overwrite any existing files if they match the exports.  "        "If you know what you're doing this is a quick prototype tool.  The suggestion is that you have "        "a special folder for your exports instead of flooding some other folder with misc items.",
+        description = ""
+        "Disable overwrite checking and just overwrite any existing files if they match the exports.  "
+        "If you know what you're doing this is a quick prototype tool.  The suggestion is that you have "
+        "a special folder for your exports instead of flooding some other folder with misc items.",
         default = False
         )
 
@@ -48146,7 +50560,8 @@ class BentoBuddyMotionMixerProperties(bpy.types.PropertyGroup):
         )
     mixer_target_locked : bpy.props.BoolProperty(
         name = "",
-        description =        "This shows that your target is enabled and you're now ready to choose sources",
+        description = ""
+        "This shows that your target is enabled and you're now ready to choose sources",
         default = False,
         update = update_mixer_target_locked
         )
@@ -48170,24 +50585,35 @@ class BentoBuddyMotionMixerProperties(bpy.types.PropertyGroup):
         return
     mixer_transform_info : bpy.props.BoolProperty(
         name = "",
-        description =            "This button is informative only"            "\n\n"            "Location, Rotation and Scale are initial settings when you add bones to the mixer.  Scale data cannot be used in SL, yet, "            "and we're not aware of any plans that will allow for that but the feature is here for future growth.  Rotation and Location "            "are the focus for Second Life with (Location) being the least used so the default here is (Rotation) only.  However, the "            "versatile utility of Bento Buddy does allow for location data to be used in animations with your BVH and anim exports and "            "is usually required when you auto-map a custom character.  You can tick the feature off per bone for testing it out and "            "watching the viewport.",
+        description = ""
+            "This button is informative only"
+            "\n\n"
+            "Location, Rotation and Scale are initial settings when you add bones to the mixer.  Scale data cannot be used in SL, yet, "
+            "and we're not aware of any plans that will allow for that but the feature is here for future growth.  Rotation and Location "
+            "are the focus for Second Life with (Location) being the least used so the default here is (Rotation) only.  However, the "
+            "versatile utility of Bento Buddy does allow for location data to be used in animations with your BVH and anim exports and "
+            "is usually required when you auto-map a custom character.  You can tick the feature off per bone for testing it out and "
+            "watching the viewport.",
         default = False,
         update = update_mixer_transform_info
         )
 
     mixer_location : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable location transform influence as a default for new bone additions",
+        description = ""
+            "Enable location transform influence as a default for new bone additions",
         default = False,
         )
     mixer_rotation : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable rotation transform influence as a default for new bone additions",
+        description = ""
+            "Enable rotation transform influence as a default for new bone additions",
         default = True,
         )
     mixer_scale : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable scale transform influence as a default for new bone additions (no recommended)",
+        description = ""
+            "Enable scale transform influence as a default for new bone additions (no recommended)",
         default = False,
         )
 
@@ -48213,13 +50639,15 @@ class BentoBuddyMotionMixerProperties(bpy.types.PropertyGroup):
 
     mixer_anchor : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable this anchor",
+        description = ""
+            "Disable this anchor",
         default = True,
         update = update_mixer_anchor
         )
     mixer_anchor_name : bpy.props.StringProperty(
         name = "",
-        description =            "--internal name for the anchor",
+        description = ""
+            "--internal name for the anchor",
         default = "",
         )
 
@@ -48230,13 +50658,15 @@ class BentoBuddyMotionMixerProperties(bpy.types.PropertyGroup):
         return
     mixer_active_rig : bpy.props.BoolProperty(
         name = "",
-        description =            "Click to close the list or click another rig name to swap views.",
+        description = ""
+            "Click to close the list or click another rig name to swap views.",
         default = False,
         update = update_mixer_active_rig
         )
     mixer_active_rig_name : bpy.props.StringProperty(
         name = "",
-        description =            "--internal, holds the name of the active rig showing a list of associated bones that influence the target",
+        description = ""
+            "--internal, holds the name of the active rig showing a list of associated bones that influence the target",
         default = "",
         )
 
@@ -48259,7 +50689,8 @@ class BentoBuddyMotionMixerProperties(bpy.types.PropertyGroup):
     
     mixer_ready : bpy.props.BoolProperty(
         name = "",
-        description =            "Click to suspend (ready) mode if you need to choose more rigs or remove existing ones.",
+        description = ""
+            "Click to suspend (ready) mode if you need to choose more rigs or remove existing ones.",
         default = False,
         update = update_mixer_ready
         )
@@ -48314,25 +50745,29 @@ class BentoBuddyMotionMixerProperties(bpy.types.PropertyGroup):
     
     mixer_location_set : bpy.props.BoolProperty(
         name = "",
-        description =            "Click this to disable the position influence for this bone",
+        description = ""
+            "Click this to disable the position influence for this bone",
         default = True,
         update = update_mixer_location_set
         )
     mixer_rotation_set : bpy.props.BoolProperty(
         name = "",
-        description =            "Click this to disable the rotation influence for this bone",
+        description = ""
+            "Click this to disable the rotation influence for this bone",
         default = True,
         update = update_mixer_rotation_set
         )
     mixer_scale_set : bpy.props.BoolProperty(
         name = "",
-        description =            "Click this to disable the scale influence for this bone",
+        description = ""
+            "Click this to disable the scale influence for this bone",
         default = True,
         update = update_mixer_scale_set
         )
     mixer_active_bone_name : bpy.props.StringProperty(
         name = "",
-        description =            "-internal",
+        description = ""
+            "-internal",
         default = "",
         )
     
@@ -49343,7 +51778,12 @@ class BentoBuddyMotionSpliceProperties(bpy.types.PropertyGroup):
 
     splice_target_locked : bpy.props.BoolProperty(
         name = "",
-        description =            "Click this to lock the target.  The target is where your animations will end up.  If your target already "            "has an animation then the new source will be appended, which is essentially the function of this tool.  "            "After you enable this you'll pick a source rig, one that contains an animation you want to append to the "            "existing one on this rig and then disable this button to perform tha action.  Use the (Gap) property to "            "tell the splicer how many frames to skip before adding the next action/animation.",
+        description = ""
+            "Click this to lock the target.  The target is where your animations will end up.  If your target already "
+            "has an animation then the new source will be appended, which is essentially the function of this tool.  "
+            "After you enable this you'll pick a source rig, one that contains an animation you want to append to the "
+            "existing one on this rig and then disable this button to perform tha action.  Use the (Gap) property to "
+            "tell the splicer how many frames to skip before adding the next action/animation.",
         default = False,
         update = update_splice_target_locked
         )
@@ -49358,29 +51798,48 @@ class BentoBuddyMotionSpliceProperties(bpy.types.PropertyGroup):
             self["splice_motion"] = True
     splice_keys : bpy.props.BoolProperty(
         name = "",
-        description =            "You  must have (keys) and/or (motion) enabled"            "\n\n"            "If there are animation keys on the source you may want to capture those.  You can capture those as well as "            "motion.  Capturing keys allows for keys to be generated for joints that do not move but are still keyed, which "            "can be beneficial if you are attempting to prevent a joint from moving at some point.",
+        description = ""
+            "You  must have (keys) and/or (motion) enabled"
+            "\n\n"
+            "If there are animation keys on the source you may want to capture those.  You can capture those as well as "
+            "motion.  Capturing keys allows for keys to be generated for joints that do not move but are still keyed, which "
+            "can be beneficial if you are attempting to prevent a joint from moving at some point.",
         default = False,
         update = update_splice_type
         )
     splice_motion : bpy.props.BoolProperty(
         name = "",
-        description =            "You  must have (keys) and/or (motion) enabled"            "\n\n"            "This detects motion from the source and keys those transforms onto the target rig.",
+        description = ""
+            "You  must have (keys) and/or (motion) enabled"
+            "\n\n"
+            "This detects motion from the source and keys those transforms onto the target rig.",
         default = True,
         update = update_splice_type
         )
     splice_gap_insert : bpy.props.BoolProperty(
         name = "",
-        description =            "If you enable this then the new, source, animation will be inserted into the timeline where your animation "            "cursor currently is.  The gaps will be used to tell the splicer how to place this source animation.",
+        description = ""
+            "If you enable this then the new, source, animation will be inserted into the timeline where your animation "
+            "cursor currently is.  The gaps will be used to tell the splicer how to place this source animation.",
         default = False
         )
     splice_gap_start : bpy.props.IntProperty(
         name = "",
-        description =            "This is how far away from your existing animation, in frames, you will like to place the new clip.  If (Gap Insert) "            "is enabled then this is how far away from the animation cursor that you want to insert the new clip.  Using "            "negative numbers will have some interesting effects but a value of 1 for both, Gap Start and Gap End, will leave no "            "space and does not overwrite any keys.",
+        description = ""
+            "This is how far away from your existing animation, in frames, you will like to place the new clip.  If (Gap Insert) "
+            "is enabled then this is how far away from the animation cursor that you want to insert the new clip.  Using "
+            "negative numbers will have some interesting effects but a value of 1 for both, Gap Start and Gap End, will leave no "
+            "space and does not overwrite any keys.",
         default = 1
         )
     splice_gap_end : bpy.props.IntProperty(
         name = "",
-        description =            "This has no use unless (Insert) is enabled"            "\n\n"            "Place your animation cursor somewhere, enable (Gap Insert).  Your animation will be inserted into the existing one on "            "the target and there will be empty space on either side of the new clip, unless you had a different purpose.  Setting the "            "values to gap 1 is no space, using any other values you can achieve interesting results.",
+        description = ""
+            "This has no use unless (Insert) is enabled"
+            "\n\n"
+            "Place your animation cursor somewhere, enable (Gap Insert).  Your animation will be inserted into the existing one on "
+            "the target and there will be empty space on either side of the new clip, unless you had a different purpose.  Setting the "
+            "values to gap 1 is no space, using any other values you can achieve interesting results.",
         default = 1
         )
     splice_spread_enabled : bpy.props.BoolProperty(
@@ -49390,17 +51849,23 @@ class BentoBuddyMotionSpliceProperties(bpy.types.PropertyGroup):
         )
     splice_spread_start : bpy.props.IntProperty(
         name = "",
-        description =            "The start and stop frames allow you to choose a portion of your source animation for appending rather than "            "the entire thing.  Enable the feature and then adjust these values.",
+        description = ""
+            "The start and stop frames allow you to choose a portion of your source animation for appending rather than "
+            "the entire thing.  Enable the feature and then adjust these values.",
         default = 1
         )
     splice_spread_end : bpy.props.IntProperty(
         name = "",
-        description =            "The start and stop frames allow you to choose a portion of your source animation for appending rather than "            "the entire thing.  Enable the feature and then adjust these values.",
+        description = ""
+            "The start and stop frames allow you to choose a portion of your source animation for appending rather than "
+            "the entire thing.  Enable the feature and then adjust these values.",
         default = 1
         )
     splice_disable_bentobuddy_check : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable this to work with foreign rigs, it should work fine, but this is enabled by default to to keep the "            "the head scratching low when animations don't do anything in SL.",
+        description = ""
+            "Disable this to work with foreign rigs, it should work fine, but this is enabled by default to to keep the "
+            "the head scratching low when animations don't do anything in SL.",
         default = False
         )
 
@@ -50587,30 +53052,56 @@ animation before upload, unlike .anim but anim is a prefered choice"""
         if context.mode != 'OBJECT':
             bpy.ops.object.mode_set(mode='OBJECT')
 
+        
+        
+        
+        
+        
+        
+        print("Creating a rig copy to alter attachment bone names...")
+        state = utils.get_state()
+        armObj.select_set(True)
+        utils.activate(armObj)
+        old_rig = armObj
+        bpy.ops.object.duplicate()
+        
+        
+        for boneObj in armObj.data.bones:
+            boneObj['bb_name'] = boneObj.name
+        armObj = bpy.context.object
+        rename_these = []
+        for boneObj in armObj.data.bones:
+            bone = boneObj.name
+            if " " in bone:
+                rename_these.append(boneObj)
+        for boneObj in rename_these:
+            bone = boneObj.name
+            boneObj.name = bone.replace(" ",  "_")
 
         
         
         
         
         
-        print("Kludge started for BVH export without attachment bones")
-        
-        state = utils.get_state()
-        armObj.select_set(True)
-        utils.activate(armObj)
-        old_rig = armObj
-        bpy.ops.object.duplicate()
-        bpy.ops.object.mode_set(mode='EDIT')
-        armObj = bpy.context.object
-        delete_these = []
-        for boneObj in armObj.data.edit_bones:
-            bone = boneObj.name
-            if bone in skel.avatar_skeleton:
-                if skel.avatar_skeleton[bone]['type'] == "attachment":
-                    delete_these.append(boneObj)
-        for boneObj in delete_these:
-            armObj.data.edit_bones.remove(boneObj)
-        bpy.ops.object.mode_set(mode='OBJECT')
+        if 1 == 0:
+            print("Kludge started for BVH export without attachment bones")
+            
+            state = utils.get_state()
+            armObj.select_set(True)
+            utils.activate(armObj)
+            old_rig = armObj
+            bpy.ops.object.duplicate()
+            bpy.ops.object.mode_set(mode='EDIT')
+            armObj = bpy.context.object
+            delete_these = []
+            for boneObj in armObj.data.edit_bones:
+                bone = boneObj.name
+                if bone in skel.avatar_skeleton:
+                    if skel.avatar_skeleton[bone]['type'] == "attachment":
+                        delete_these.append(boneObj)
+            for boneObj in delete_these:
+                armObj.data.edit_bones.remove(boneObj)
+            bpy.ops.object.mode_set(mode='OBJECT')
         
         
         
@@ -50727,7 +53218,8 @@ animation before upload, unlike .anim but anim is a prefered choice"""
         print("Examining deformable joint names...")
         for boneObj in armObj.data.bones:
             if boneObj.use_deform == True:
-                if boneObj.name not in skel.avatar_skeleton:
+                bone = boneObj['bb_name']
+                if bone not in skel.avatar_skeleton:
                     bad_bones.append(boneObj.name)
         if len(bad_bones) > 0:
             print("There are", str(len(bad_bones)), "joints that cannot be exported to SL.  This function cannot continue.")
@@ -50737,7 +53229,6 @@ animation before upload, unlike .anim but anim is a prefered choice"""
             
             bad_bones.clear()
             return {'FINISHED'}
-
 
         print("Exporting animation for", bpy.context.active_object.name)
         animation_scale = 39.3701
@@ -52150,7 +54641,7 @@ It will create the good groups or combine those that exist with the unusable con
         for mesh in mesh_group_names:
             for gname in mesh_group_names[mesh]:
                 
-                if gname not in skel.avatar_skeleton and                    "m" + gname not in skel.avatar_skeleton: 
+                if gname not in skel.avatar_skeleton and "m" + gname not in skel.avatar_skeleton: 
 
                     
                     
@@ -53449,12 +55940,14 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
 
     skin_pose_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Enable skin pose tool, this has very little use since the (Pose) feature of this tool-set has been included in the (Quick Skinning) tool",
+        description = ""
+            "Enable skin pose tool, this has very little use since the (Pose) feature of this tool-set has been included in the (Quick Skinning) tool",
         default = False,
         )
     skin_weight_tools_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "A set of tools for adjusting weights, their influences and associated joints",
+        description = ""
+            "A set of tools for adjusting weights, their influences and associated joints",
         default = False,
         )
 
@@ -53477,7 +55970,12 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
 
     skin_smooth_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "This feature allows you to test your new values on the unchanged weight data.  It's quite a bit like Blenders (redo) panel but you "            "have to be careful, any changes you make to your weights will be lost while in this mode because the old data is reinstated before "            "implementing your changes.  Disable this if you are actively skinning your mesh.  You'll also want to disable this when you're done "            "testing and then the changes will stay.  There is a single level undo if you goof it up after you disable.  That undo level will vanish "            "when you enable this again so make sure to (Undo) first, if you need it.",
+        description = ""
+            "This feature allows you to test your new values on the unchanged weight data.  It's quite a bit like Blenders (redo) panel but you "
+            "have to be careful, any changes you make to your weights will be lost while in this mode because the old data is reinstated before "
+            "implementing your changes.  Disable this if you are actively skinning your mesh.  You'll also want to disable this when you're done "
+            "testing and then the changes will stay.  There is a single level undo if you goof it up after you disable.  That undo level will vanish "
+            "when you enable this again so make sure to (Undo) first, if you need it.",
         default = True,
         update = update_skin_smooth
         )
@@ -53509,7 +56007,8 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
         )
     skin_smooth_area : bpy.props.FloatProperty(
         name = "",
-        description =            "Adjust the area that a vertices groups can effect",
+        description = ""
+            "Adjust the area that a vertices groups can effect",
             
             
             
@@ -53674,7 +56173,10 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
     skin_correction_source : bpy.props.BoolProperty(
         name = "",
         description =
-            "Click to disable"            "\n\n"            "The name of the mesh that you chose for a skin source has been saved as indicated by this property being enabled.  "            "You can disable this operator and start over by clicking it.",
+            "Click to disable"
+            "\n\n"
+            "The name of the mesh that you chose for a skin source has been saved as indicated by this property being enabled.  "
+            "You can disable this operator and start over by clicking it.",
         default = False,
         update = update_skin_correction_source
         )
@@ -53699,20 +56201,25 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
 
     skin_pose_lock_sources : bpy.props.BoolProperty(
         name = "",
-        description =            "Click this button to release the skin weight product.  The proxy will be removed from the scene and the pose ui reset.",
+        description = ""
+            "Click this button to release the skin weight product.  The proxy will be removed from the scene and the pose ui reset.",
         default = False,
         update = update_skin_pose_lock_sources
         )
     skin_pose_lock_targets : bpy.props.BoolProperty(
         name = "",
-        description =            "Click this button to release the skin pose products.  The proxy will be removed from the scene and the pose ui reset.",
+        description = ""
+            "Click this button to release the skin pose products.  The proxy will be removed from the scene and the pose ui reset.",
         default = False,
         update = update_skin_pose_lock_targets
         )
 
     skin_pose_clean_proxy : bpy.props.BoolProperty(
         name = "",
-        description =            "This will clean up common problems that prevent this type of binding.  This only effects the duplicate/proxy skin "            "sources and will not effect your source material or garments.  However, this can actually damage the weight transfer "            "if there are complicated surfaces or unknown edge cases or a very dense mesh.",
+        description = ""
+            "This will clean up common problems that prevent this type of binding.  This only effects the duplicate/proxy skin "
+            "sources and will not effect your source material or garments.  However, this can actually damage the weight transfer "
+            "if there are complicated surfaces or unknown edge cases or a very dense mesh.",
         default = False,
         )
 
@@ -54024,12 +56531,21 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
         default = 0,
         )
     skin_lock_garment : bpy.props.BoolProperty(
-        description =            "Choose one or more garments or characters (mesh) to skin, then click this button.  For convenience you are allowed "            "to select even your weight source and sort it out with the (lock avatar) button, then that object will be removed "            "from your weight targets so pretty much you can select the entire mass of your character and Lock, then the next "            "feature will sift your weight sources out of your mesh.",
+        description = ""
+            "Choose one or more garments or characters (mesh) to skin, then click this button.  For convenience you are allowed "
+            "to select even your weight source and sort it out with the (lock avatar) button, then that object will be removed "
+            "from your weight targets so pretty much you can select the entire mass of your character and Lock, then the next "
+            "feature will sift your weight sources out of your mesh.",
         default = False,
         update = update_skin_lock_garment
         )
     skin_lock_avatar : bpy.props.BoolProperty(
-        description =            "This tool has been updated to accept a rig as a skin source when starting from scratch"            "\n\n"            "Choose the source mesh for weights (Avatar) then click this button.  You can select multiple sources.  The source mesh "            "will be tested to make sure they hold a single armature, a single armature modifier, have weight groups and are not listed "            "in the garments/targets.  Bento Buddy will silently avoid issues but if there's no rig or no weights there's nothing to do",
+        description = ""
+            "This tool has been updated to accept a rig as a skin source when starting from scratch"
+            "\n\n"
+            "Choose the source mesh for weights (Avatar) then click this button.  You can select multiple sources.  The source mesh "
+            "will be tested to make sure they hold a single armature, a single armature modifier, have weight groups and are not listed "
+            "in the garments/targets.  Bento Buddy will silently avoid issues but if there's no rig or no weights there's nothing to do",
         default = False,
         update = update_skin_lock_avatar
         )
@@ -54042,23 +56558,54 @@ class BentoBuddySkinProperties(bpy.types.PropertyGroup):
         default = "",
         )
     skin_remove_empty_groups : bpy.props.BoolProperty(
-        name = "",        description = ""            "Remove Empty Weight Groups"            "\n\n"            "Removing empty groups is almost always what you want but if you're expert at this then you may "            "want to do it manually, or use the (Remove empty vertex groups) button.  In any case, the main reason "            "that this is an option and not automatic is because Blender gets it wrong sometimes",
+        name = "",
+        description = ""
+            "Remove Empty Weight Groups"
+            "\n\n"
+            "Removing empty groups is almost always what you want but if you're expert at this then you may "
+            "want to do it manually, or use the (Remove empty vertex groups) button.  In any case, the main reason "
+            "that this is an option and not automatic is because Blender gets it wrong sometimes",
         default = False,
         )
     skin_reskin : bpy.props.BoolProperty(
-        name = "",        description = ""            "Remove All Skinning Data"            "\n\n"            "With this enabled all skinning data will be destroyed before applying new weights",
+        name = "",
+        description = ""
+            "Remove All Skinning Data"
+            "\n\n"
+            "With this enabled all skinning data will be destroyed before applying new weights",
         default = False,
         )
     skin_pose_mode : bpy.props.BoolProperty(
-        name = "",        description = ""            "Assume Pose Mode After Skinning"            "\n\n"            "Convenience option.  Assume pose mode on the armature after "            "transferring weights so you can test right away.",
+        name = "",
+        description = ""
+            "Assume Pose Mode After Skinning"
+            "\n\n"
+            "Convenience option.  Assume pose mode on the armature after "
+            "transferring weights so you can test right away.",
         default = True,
         )
     skin_keep_proxy : bpy.props.BoolProperty(
-        name = "",        description = ""            "Keep the skin proxy duplicate"            "\n\n"            "Your skin source objects are copied and then combined in order to give you a smooth weight transition without a lot of fuss.  "            "This object is reusable for skinning and is a single mesh.  If you want to keep this object in the scene after skinning just "            "enable this feature.  Please note that keeping this feature enabled while continuing to skin will generate a new proxy for each "            "occurrence.  You can always keep this disabled, see how the skinning goes, and if you like the results you can skin one more time "            "keeping the proxy for later use.  The proxy object will be named (weight_proxy_) with a unique suffix.",
+        name = "",
+        description = ""
+            "Keep the skin proxy duplicate"
+            "\n\n"
+            "Your skin source objects are copied and then combined in order to give you a smooth weight transition without a lot of fuss.  "
+            "This object is reusable for skinning and is a single mesh.  If you want to keep this object in the scene after skinning just "
+            "enable this feature.  Please note that keeping this feature enabled while continuing to skin will generate a new proxy for each "
+            "occurrence.  You can always keep this disabled, see how the skinning goes, and if you like the results you can skin one more time "
+            "keeping the proxy for later use.  The proxy object will be named (weight_proxy_) with a unique suffix.",
         default = False,
         )
     skin_use_skin_pose : bpy.props.BoolProperty(
-        name = "",        description = ""            "Assume existing pose is the rest pose"            "\n\n"            "This performs a similar function as the (Skin Pose) tool but after maybe a year of feed back it seems as though this is the "            "less confusing method to offer this option.  The existing pose will be used as the skinning shape, giving most people what "            "they expect.  Just like with the skin pose tool you'll need to do some cleanup work after, maybe even more so when using "            "this feature instead of the skin pose tool, but it's less confusing, quick, and I believe it's what most creators are "            "expecting",
+        name = "",
+        description = ""
+            "Assume existing pose is the rest pose"
+            "\n\n"
+            "This performs a similar function as the (Skin Pose) tool but after maybe a year of feed back it seems as though this is the "
+            "less confusing method to offer this option.  The existing pose will be used as the skinning shape, giving most people what "
+            "they expect.  Just like with the skin pose tool you'll need to do some cleanup work after, maybe even more so when using "
+            "this feature instead of the skin pose tool, but it's less confusing, quick, and I believe it's what most creators are "
+            "expecting",
         default = False,
         )
 
@@ -58768,11 +61315,18 @@ class BentoBuddyPanelMeshTools(bpy.types.Panel):
         col = box.column(align = True)
         row = col.row(align=True)
         row.operator(
+            "bentobuddy.mesh_select_half",
+            text="Select half your mesh",
+            icon_value = ico.custom_icons["half"].icon_id
+            )
+
+        col = box.column(align = True)
+        row = col.row(align=True)
+        row.operator(
             "bentobuddy.mesh_integrity_check",
             text="Mesh Integrity Check",
             icon_value = ico.custom_icons["mesh"].icon_id
             )
-
 
         
         
@@ -59436,6 +61990,29 @@ class BentoBuddySkinningPanel(bpy.types.Panel):
                     "bentobuddy.skin_correction_finish",
                     text="Finish",
                    )
+
+            
+            
+            
+            layout = self.layout
+            box = layout.box()
+            col = box.column(align = True)
+
+            row = col.row(align=True)
+            row.label(
+                text = "Mirror Weights:",
+                )
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.weights_mirror",
+                text="Mirror -X to +X",
+                icon_value = ico.custom_icons["minus_to_plus"].icon_id
+               ).axis = "+x"
+            row.operator(
+                "bentobuddy.weights_mirror",
+                text="Mirror +X to -X",
+                icon_value = ico.custom_icons["plus_to_minus"].icon_id
+               ).axis = "-x"
 
             
             
@@ -61752,9 +64329,14 @@ build custom characters, animations and Animesh quickly"""
                 text = "Snap To Map",
 
                 )
-
             row = col.row(align=True)
-
+            row.prop(
+                bb_snap_rig,
+                "snap_to_animation",
+                text = "Send To Animation",
+                icon_value = ico.custom_icons["arrow_up"].icon_id
+                )
+            row = col.row(align=True)
             row.operator(
                 "bentobuddy.bb_snap_rig",
                 text="Snap Bones",
@@ -62439,6 +65021,111 @@ build custom characters, animations and Animesh quickly"""
         
         
 
+        
+        
+        
+        
+        
+        
+        
+
+        ccp = bpy.context.window_manager.cc_props
+        bbm = bpy.context.window_manager.bb_misc
+        brp = bpy.context.window_manager.bb_rigprops
+        bbh = bpy.context.window_manager.bb_head
+        bb_head = bbh
+
+        layout = self.layout
+        row = self.layout.row(align=True)
+
+        bento_head_menu_enabled_icon = "menu_closed"
+        if bb_head.bento_head_menu_enabled == True:
+            bento_head_menu_enabled_icon = "menu_opened"
+        row.prop(
+            bbh,
+            "bento_head_menu_enabled",
+            text="Bento Head",
+            icon_value = ico.custom_icons[bento_head_menu_enabled_icon].icon_id
+            )
+
+        if bb_head.bento_head_menu_enabled == True:
+
+            layout = self.layout
+            box = layout.box()
+            col = box.column(align = True)
+            row = col.row(align=True)
+
+            row = col.row(align=True)
+            row.prop(
+                bbh,
+                "bento_head_lock",
+                text="Lock Mesh",
+                icon_value = ico.custom_icons["head"].icon_id
+                )
+            row.prop(
+                bbh,
+                "bento_head_mesh_name",
+                text="",
+                icon_value = ico.custom_icons["info"].icon_id
+                )
+            row = col.row(align=True)
+
+            row.label(
+                text = bbh.bento_head_message
+                )
+            row = col.row(align=True)
+
+            
+            
+            if bbh.bento_head_enabled == True:
+                row.label(
+                    text = "Cut Length:",
+                    )
+                row.scale_x = 0.4
+                row.prop(
+                    bbh,
+                    "bento_head_length",
+                    text="",
+                    )
+                row = col.row(align=True)
+                row.prop(
+                    bbh,
+                    "bento_head_fix_seam",
+                    text="Fix Seam",
+                    toggle = True
+                    )
+                row.prop(
+                    bbh,
+                    "bento_head_keep_body",
+                    text="Keep Body",
+                    toggle = True
+                    )
+                row = col.row(align=True)
+                row.prop(
+                    bbh,
+                    "bento_head_keep_original",
+                    text="Keep Original",
+                    toggle = True
+                    )
+
+        
+                row = col.row(align=True)
+                row.operator(
+                    "bentobuddy.bento_head",
+                    text="Generate Bento Head",
+        
+                    )
+        
+            if bbh.bento_head_tools_enabled == True:
+                row = col.row(align=True)
+                row.prop(
+                    bbh,
+                    "bento_head_object_outline",
+                    text="Object Outline",
+                    toggle = True
+                    )
+
+
 
 
 
@@ -62456,14 +65143,29 @@ class BentoBuddyInheritProperties(bpy.types.PropertyGroup):
         )
     inherit_prefix : bpy.props.BoolProperty(
         name = "",
-        description =            "This armature contains a bone name prefix, this can often times cause issues with your conversion or "            "make it completely incompatible with the provided map.  A prefix from a CC3 rig is usually already mapped "            "in so it should be ok.  Anything else aught to be removed."            "\n\n"            "To remove the prefix go over to the (Rig Tools) panel and look at (Bone Prefix) group.  If you see any text "            "of note beside it then clicking the provided button will remove it.  You can replace the prefix with another, "            "or partial, to repair a prefix for further processing, which is an advanced concept and not explained here and "            "usually not needed",
+        description = ""
+            "This armature contains a bone name prefix, this can often times cause issues with your conversion or "
+            "make it completely incompatible with the provided map.  A prefix from a CC3 rig is usually already mapped "
+            "in so it should be ok.  Anything else aught to be removed."
+            "\n\n"
+            "To remove the prefix go over to the (Rig Tools) panel and look at (Bone Prefix) group.  If you see any text "
+            "of note beside it then clicking the provided button will remove it.  You can replace the prefix with another, "
+            "or partial, to repair a prefix for further processing, which is an advanced concept and not explained here and "
+            "usually not needed",
         default=False,
         update = update_inherit_blank
         )
 
     inherit_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Inherit Animation"            "\n\n"            "NOTE: This does not inherit motion, it is for actual keyed animations only.  Constraints and Drivers will be ignored."            "\n\n"            "Copy animated keys from a source armature to your target.  Choose your target armature first and lock it with the "            "(Lock Target) button.  Choose the animated rig and click (Inherit Animation).  The animated keys will land onto your "            "target rig.",
+        description = ""
+            "Inherit Animation"
+            "\n\n"
+            "NOTE: This does not inherit motion, it is for actual keyed animations only.  Constraints and Drivers will be ignored."
+            "\n\n"
+            "Copy animated keys from a source armature to your target.  Choose your target armature first and lock it with the "
+            "(Lock Target) button.  Choose the animated rig and click (Inherit Animation).  The animated keys will land onto your "
+            "target rig.",
         default=False,
         )
 
@@ -62486,21 +65188,26 @@ class BentoBuddyInheritProperties(bpy.types.PropertyGroup):
 
     inherit_target_lock : bpy.props.BoolProperty(
         name = "",
-        description =            "Inherit Target"            "\n\n"            "This is your rig, your character, where you want the animation to land.  Select your character rig and enable this.",
+        description = ""
+            "Inherit Target"
+            "\n\n"
+            "This is your rig, your character, where you want the animation to land.  Select your character rig and enable this.",
         default=False,
         update = update_inherit_target_lock
         )
     
     inherit_target_name : bpy.props.StringProperty(
         name = "",
-        description =            "Inherit Target Name -- internal",
+        description = ""
+            "Inherit Target Name -- internal",
         default=""
         )
     
 
     inherit_view_map : bpy.props.BoolProperty(
         name = "",
-        description =            "Click to view the map, useful to see when the map is flipped",
+        description = ""
+            "Click to view the map, useful to see when the map is flipped",
         default=False,
         )
 
@@ -62725,33 +65432,59 @@ class BentoBuddyMotionProperties(bpy.types.PropertyGroup):
 
     motion_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Retarget Motion"            "\n\n"            "This is where you retarget animations if any kind.  There are other retargeting tools included with Bento Buddy "            "that also do this but this one is a replacement for all of them except if you want to retarget multiple avatars at "            "once but that feature is going away for a more simpler approach.",
+        description = ""
+            "Retarget Motion"
+            "\n\n"
+            "This is where you retarget animations if any kind.  There are other retargeting tools included with Bento Buddy "
+            "that also do this but this one is a replacement for all of them except if you want to retarget multiple avatars at "
+            "once but that feature is going away for a more simpler approach.",
         default=False,
         )
     motion_distance : bpy.props.FloatProperty(
         name = "",
-        description =            "The distance that the generated rig will be from origin on its Y axis.  This is a visual convenience but it "            "could cause location issues where your multiple mesh objects will be out of sync.  Leaving this at 0 is safe "            "if you have a streamlined workfow or set it to around 0.6 for a good visual distance when remapping.",
+        description = ""
+            "The distance that the generated rig will be from origin on its Y axis.  This is a visual convenience but it "
+            "could cause location issues where your multiple mesh objects will be out of sync.  Leaving this at 0 is safe "
+            "if you have a streamlined workfow or set it to around 0.6 for a good visual distance when remapping.",
             default = 0.0
             )
     motion_stabilize : bpy.props.BoolProperty(
         name = "",
-        description =            "Bone Stabilizer"            "\n\n"            "This will almost certainly break your avatar in Second Life if you are not using a custom rig setup.  This pins "            "the unused bones down to help prevent wobble when using an unusual hierarchy.  This is what you want if you used "            "an arbitrary bone set in the Visual Snap Mapper.  It also works for well configured bone chains as long as your "            "avatar is using all of the bones present that are glued.",
+        description = ""
+            "Bone Stabilizer"
+            "\n\n"
+            "This will almost certainly break your avatar in Second Life if you are not using a custom rig setup.  This pins "
+            "the unused bones down to help prevent wobble when using an unusual hierarchy.  This is what you want if you used "
+            "an arbitrary bone set in the Visual Snap Mapper.  It also works for well configured bone chains as long as your "
+            "avatar is using all of the bones present that are glued.",
         default=False,
         )
     motion_glue : bpy.props.BoolProperty(
         name = "",
-        description =            "Hard Re-Target"            "\n\n"
-            "This glues the mapped target bones onto your animation source bones.  This is a brute force retargeting that can "            "work with very odd rigs or if you are retargeting a non-bipedal entity or using joint location animations on a custom rig.",
+        description = ""
+            "Hard Re-Target"
+            "\n\n"
+
+            "This glues the mapped target bones onto your animation source bones.  This is a brute force retargeting that can "
+            "work with very odd rigs or if you are retargeting a non-bipedal entity or using joint location animations on a custom rig.",
         default=False,
         )
     motion_to_animation : bpy.props.BoolProperty(
         name = "",
-        description =            "Send details to animation tools"            "\n\n"            "This will send the range of your current animation to the (range) and (loop) settings in the "            "animation export tool.  The alternative is to use the (Acquire) button in the animation exporter "            "to grab the ranges.  Keep in mind that the (Loop) feature must be enabled in order for loop to work.",
+        description = ""
+            "Send details to animation tools"
+            "\n\n"
+            "This will send the range of your current animation to the (range) and (loop) settings in the "
+            "animation export tool.  The alternative is to use the (Acquire) button in the animation exporter "            "to grab the ranges.  Keep in mind that the (Loop) feature must be enabled in order for loop to work.",
         default = True,
         )
     motion_prepare_actor : bpy.props.BoolProperty(
         name = "",
-        description =            "The Actor is the rig that mimics your animation.  This mimic rig is responsible for exporting your animation "            "so it must be in a somewhat clean condition.  If the tool is generating a copy of your rig for use then you "            "probably want to enable this to get a sort of mannequin skeleton without transforms or animations.  This "            "setting has no meaning when using (Glue)",
+        description = ""
+            "The Actor is the rig that mimics your animation.  This mimic rig is responsible for exporting your animation "
+            "so it must be in a somewhat clean condition.  If the tool is generating a copy of your rig for use then you "
+            "probably want to enable this to get a sort of mannequin skeleton without transforms or animations.  This "
+            "setting has no meaning when using (Glue)",
         default = False,
         )
     
@@ -62761,7 +65494,9 @@ class BentoBuddyMotionProperties(bpy.types.PropertyGroup):
         self["motion_match_map"] = True
     motion_match_map : bpy.props.BoolProperty(
         name = "",
-        description =            "A map was generated using the existing rig's bone names.  To use an alternate method use (Clean Maps).  "            "To automatically generate a Second Life rig make sure (Custom Target) is disabled.",
+        description = ""
+            "A map was generated using the existing rig's bone names.  To use an alternate method use (Clean Maps).  "
+            "To automatically generate a Second Life rig make sure (Custom Target) is disabled.",
         default = True,
         update = update_motion_match_map
         )
@@ -62813,14 +65548,17 @@ class BentoBuddyMotionProperties(bpy.types.PropertyGroup):
 
     motion_interactive_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "This enables an interactive mapper so that you can map your retarget bones right here in the retargeter for "            "a visual of how the Actor will respond with your animaton.",
+        description = ""
+            "This enables an interactive mapper so that you can map your retarget bones right here in the retargeter for "
+            "a visual of how the Actor will respond with your animaton.",
         default = False,
         update = update_motion_interactive_menu_enabled
         )
 
     motion_view_map_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "View the mapped bones",
+        description = ""
+            "View the mapped bones",
         default = False,
         )
 
@@ -62866,7 +65604,13 @@ class BentoBuddyMotionProperties(bpy.types.PropertyGroup):
         motion.update_map(inRig=inRig)
     motion_constrain_location : bpy.props.BoolProperty(
         name = "",
-        description =            "This takes a moment to engage so be patient.  Also, it only works when (Interactive Retargeting) is enabled."            "\n\n"            "Location constraints can be tricky.  It allows relative location motion which is usually not useful "            "when retargeting.  The hip / pelvis usually the only target that can benefit from this when using "            "Second Life but this works as expected so it's here but if you need this and you have a custom rig "            "then you probably want to reset the stage and use (Glue) instead.",
+        description = ""
+            "This takes a moment to engage so be patient.  Also, it only works when (Interactive Retargeting) is enabled."
+            "\n\n"
+            "Location constraints can be tricky.  It allows relative location motion which is usually not useful "
+            "when retargeting.  The hip / pelvis usually the only target that can benefit from this when using "
+            "Second Life but this works as expected so it's here but if you need this and you have a custom rig "
+            "then you probably want to reset the stage and use (Glue) instead.",
         default = False,
         update = update_constrain_location
         )
@@ -62881,17 +65625,24 @@ class BentoBuddyMotionProperties(bpy.types.PropertyGroup):
     
     clean_motion_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Clean Motion"            "\n\n"            " * Fix armature <-> animation transforms (you can fix the scale problem here)"            " * Fix hip height, location"            "\n\n",
+        description = ""
+            "Clean Motion"
+            "\n\n"
+            " * Fix armature <-> animation transforms (you can fix the scale problem here)"
+            " * Fix hip height, location"
+            "\n\n",
         default=False,
         )
     clean_motion_hip_start : bpy.props.BoolProperty(
         name = "",
-        description =            "start",
+        description = ""
+            "start",
         default=False,
         )
     clean_motion_hip_end : bpy.props.BoolProperty(
         name = "",
-        description =            "end",
+        description = ""
+            "end",
         default=True,
         )
     def update_motion_use_shapes(self, context):
@@ -62908,7 +65659,11 @@ class BentoBuddyMotionProperties(bpy.types.PropertyGroup):
 
     motion_use_shapes : bpy.props.BoolProperty(
         name = "",
-        description =            "The is a visual only.  It's provided in order to clean up the view when using the lock features while you're not "            "using the Glue feature.  If you're snapping your bones to the source animation rig then you will see some strange "            "configuration that cannot be easily rectified but does not affect the animation outcome.  The purpose of this switch "            "is to just be a more visually readable appearance for your work",
+        description = ""
+            "The is a visual only.  It's provided in order to clean up the view when using the lock features while you're not "
+            "using the Glue feature.  If you're snapping your bones to the source animation rig then you will see some strange "
+            "configuration that cannot be easily rectified but does not affect the animation outcome.  The purpose of this switch "
+            "is to just be a more visually readable appearance for your work",
         default=False,
         update = update_motion_use_shapes
         )
@@ -65081,10 +67836,11 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
             row.prop(
                 anim,
                 "anim_unfold_menu_enabled",
-                text = "Expand lots of options",
+                text = "Advanced Features",
                 toggle = True,
                 icon_value = ico.custom_icons[anim_unfold_menu_enabled_icon].icon_id
                 )
+
             
             if anim.anim_unfold_menu_enabled == True:
 
@@ -65139,19 +67895,20 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                 if anim.native_features_menu_enabled == True:
                     native_features_menu_enabled_icon = "menu_opened"
 
-                col = box.column(align = True)
-                row = col.row(align=True)
+                
+                
+                
+                no_extra_menu = True
+                if no_extra_menu == False:
+                    row.prop(
+                        anim,
+                        "native_features_menu_enabled",
+                        text = "Anim Extended Features",
+                        icon_value = ico.custom_icons[native_features_menu_enabled_icon].icon_id
+                        )
 
-                row.prop(
-                    anim,
-                    "native_features_menu_enabled",
-                    text = "Anim Extended Features",
-                    icon_value = ico.custom_icons[native_features_menu_enabled_icon].icon_id
-                    )
-
-                if anim.native_features_menu_enabled == True:
-    
-                    row = col.row(align = True)
+                
+                if no_extra_menu == True:
 
                     
                     if anim.mark_tol_options == True:
@@ -65159,7 +67916,6 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                     else:
                         mark_tol_options_icon = "menu_closed"
 
-                    col = box.column(align = True)
                     row = col.row(align = True)
 
                     
@@ -65197,7 +67953,6 @@ class BentoBuddyAnimationPanel(bpy.types.Panel):
                         text = "Key Cleanup Options",
                         icon_value = ico.custom_icons[mark_tol_options_icon].icon_id
                         )
-    
                     row = col.row(align=True)
                     if anim.mark_tol_options == True:
                         col = box.column(align = True)
@@ -69464,6 +72219,14 @@ class BentoBuddyHeadProperties(bpy.types.PropertyGroup):
 
 
     
+    bento_head_menu_enabled : bpy.props.BoolProperty(
+        description = ""
+            "Enable Bento head tools, this uses Makehuman as a source",
+        default = False,
+        )
+
+
+    
     
     
     
@@ -69474,11 +72237,14 @@ class BentoBuddyHeadProperties(bpy.types.PropertyGroup):
 
     
     bento_head_enabled : bpy.props.BoolProperty(
-        description =            "Enable the head tools, this will put the mesh into edit mode so that you can see "            "what your selection is.  The tools below will give you the ability to slice at certain places.",
+        description = ""
+            "Enable the head tools, this will put the mesh into edit mode so that you can see "
+            "what your selection is.  The tools below will give you the ability to slice at certain places.",
         default = False,
         )
     bento_head_lock : bpy.props.BoolProperty(
-        description =            "Select a Makehuman standard mesh and click this button to start.",
+        description = ""
+            "Select a Makehuman standard mesh and click this button to start.",
         default = False,
         update = update_bento_head_lock
         )
@@ -69488,15 +72254,24 @@ class BentoBuddyHeadProperties(bpy.types.PropertyGroup):
     
     
     bento_head_fix_seam : bpy.props.BoolProperty(
-        description =            "After the cut there will be a seam between the body and the head, if you choose to keep the body.  "            "This button will apply a data transfer modifier to correct the (normals) and apply it.  Unfortunately Blender "            "will keep reminding you that they are separate objects by visibly displaying a line between them.  In SL, however, "            "this partition is reduced dramatically and, with an applied texture, very difficult to see.",
+        description = ""
+            "After the cut there will be a seam between the body and the head, if you choose to keep the body.  "
+            "This button will apply a data transfer modifier to correct the (normals) and apply it.  Unfortunately Blender "
+            "will keep reminding you that they are separate objects by visibly displaying a line between them.  In SL, however, "
+            "this partition is reduced dramatically and, with an applied texture, very difficult to see.",
         default = True,
         )
     bento_head_keep_body : bpy.props.BoolProperty(
-        description =            "The Bento head is detached from the body and the body is removed.  If you want to keep the body for futher work you can "            "enable this option.  The default is to keep it since it's a bit more congruent visually and, if you are going to use the "            "Makehuman body as well, then you will want to keep this enabled.",
+        description = ""
+            "The Bento head is detached from the body and the body is removed.  If you want to keep the body for futher work you can "
+            "enable this option.  The default is to keep it since it's a bit more congruent visually and, if you are going to use the "
+            "Makehuman body as well, then you will want to keep this enabled.",
         default = True,
         )
     bento_head_keep_original : bpy.props.BoolProperty(
-        description =            "The process makes copies of the original mesh, in order to create the separate parts, head and body.  It leaves the "            "original untouched.  If you want the original body to be removed then enable this feature.",
+        description = ""
+            "The process makes copies of the original mesh, in order to create the separate parts, head and body.  It leaves the "
+            "original untouched.  If you want the original body to be removed then enable this feature.",
         default = True,
         )
 
@@ -69526,7 +72301,9 @@ class BentoBuddyHeadProperties(bpy.types.PropertyGroup):
     
     
     bento_head_object_outline : bpy.props.BoolProperty(
-        description =            "If you're using the (fix seam) feature you may not realize that it's working because of a "            "Blender feature that draws an outline around every object.  This button allows you to toggle that on and off.",
+        description = ""
+            "If you're using the (fix seam) feature you may not realize that it's working because of a "
+            "Blender feature that draws an outline around every object.  This button allows you to toggle that on and off.",
         default=True,
         update = update_object_outline
         )
@@ -69731,98 +72508,6 @@ class BentoBuddyHeadOperator(bpy.types.Operator):
 
 
 
-
-
-class BentoBuddyHeadPanel(bpy.types.Panel):
-    """Bento Heads"""
-    bl_idname = "OBJECT_PT_bento_buddy_head"
-    bl_label = "Bento Head Tool"
-    bl_space_type = "VIEW_3D"
-    bl_category = "Bento Buddy"
-    bl_region_type = "UI"
-    bl_options = {'DEFAULT_CLOSED'}
-
-    def draw(self, context):
-        ccp = bpy.context.window_manager.cc_props
-        bbm = bpy.context.window_manager.bb_misc
-        brp = bpy.context.window_manager.bb_rigprops
-        bbh = bpy.context.window_manager.bb_head
-
-        row = self.layout.row(align=True)
-        row.prop(
-            bbh,
-            "bento_head_lock",
-            text="Lock Mesh",
-            icon_value = ico.custom_icons["head"].icon_id
-            )
-        row.prop(
-            bbh,
-            "bento_head_mesh_name",
-            text="",
-            icon_value = ico.custom_icons["info"].icon_id
-            )
-
-        row = self.layout.row(align=True)
-
-        row.label(
-            text = bbh.bento_head_message
-            )
-        row = self.layout.row(align=True)
-
-        
-        
-        if bbh.bento_head_enabled == True:
-            row.label(
-                text = "Cut Length:",
-                )
-            row.scale_x = 0.4
-            row.prop(
-                bbh,
-                "bento_head_length",
-                text="",
-                )
-            row = self.layout.row(align=True)
-            row.prop(
-                bbh,
-                "bento_head_fix_seam",
-                text="Fix Seam",
-                toggle = True
-                )
-            row.prop(
-                bbh,
-                "bento_head_keep_body",
-                text="Keep Body",
-                toggle = True
-                )
-            row = self.layout.row(align=True)
-            row.prop(
-                bbh,
-                "bento_head_keep_original",
-                text="Keep Original",
-                toggle = True
-                )
-
-    
-            row = self.layout.row(align=True)
-            row.operator(
-                "bentobuddy.bento_head",
-                text="Generate Bento Head",
-    
-                )
-    
-        if bbh.bento_head_tools_enabled == True:
-            row = self.layout.row(align=True)
-            row.prop(
-                bbh,
-                "bento_head_object_outline",
-                text="Object Outline",
-                toggle = True
-                )
-
-
-
-
-
 class BentoBuddyTestOperatorEnable(bpy.types.Operator):
     bl_idname = "test.enable"
     bl_label = "Test Operator Enabler"
@@ -69929,7 +72614,8 @@ class BentoBuddyServerProperties(bpy.types.PropertyGroup):
     
     daemon: bpy.props.BoolProperty(
         name = "Dictionary of Daemons",
-        description =            "-- internal, sounds like a magical spell O.o",
+        description = ""
+            "-- internal, sounds like a magical spell O.o",
         default = False,
         )
 
@@ -69944,7 +72630,8 @@ class BentoBuddyTestProperties(bpy.types.PropertyGroup):
     
     test_panel_enabled : bpy.props.BoolProperty(
         name = "test property bool",
-        description =            "Description of test property bool",
+        description = ""
+            "Description of test property bool",
         default = False,
         )
     test_property_string : bpy.props.StringProperty(
@@ -70074,6 +72761,612 @@ class BentoBuddyTestPanel(bpy.types.Panel):
                     row.label(
                         text = "LOCG: " + str(locg)
                     )
+
+
+
+
+
+
+
+class BentoBuddySimulatorPanel(bpy.types.Panel):
+    """Simulator"""
+    bl_idname = "OBJECT_PT_bento_buddy_simulator"
+    bl_label = "Simulator"
+    bl_space_type = "VIEW_3D"
+    bl_category = "Bento Buddy"
+    bl_region_type = "UI"
+    bl_options = {'DEFAULT_CLOSED'}
+
+
+
+    def draw(self, context):
+        layout = self.layout
+
+        
+        
+        
+        bb_sim = bpy.context.window_manager.bb_sim
+        row = self.layout.row(align=True)
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        layout = self.layout
+        box = layout.box()
+        col = box.column(align = True)
+        row = col.row(align=True)
+        if 1 == 1:
+
+            
+
+            row.prop(
+                bb_sim,
+                "sim_blank",
+                text="Controllers and Animation",
+                toggle = True,
+                icon_value = ico.custom_icons["controller"].icon_id
+                )
+            row = col.row(align=True)
+
+            row.operator(
+                "bentobuddy.sim_stretch_add",
+                text="Add Stretch",
+                icon_value = ico.custom_icons["range"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_stretch_remove",
+                text="Remove Stretch",
+                icon_value = ico.custom_icons["x_black"].icon_id
+                )
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_curl_add",
+                text="Add Curl",
+                icon_value = ico.custom_icons["rotate"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_curl_remove",
+                text="Remove Curl",
+                icon_value = ico.custom_icons["x_black"].icon_id
+                )
+
+            row = col.row(align=True)
+            row.prop(
+                bb_sim,
+                "sim_anchor",
+                text="Include Anchor",
+                toggle = True,
+                icon_value = ico.custom_icons["anchor"].icon_id
+                )
+            row.prop(
+                bb_sim,
+                "sim_deformable",
+                text="Deformable Only",
+                toggle = True,
+                icon_value = ico.custom_icons["bone_bent"].icon_id
+                )
+
+            col = box.column(align = True)
+            row = col.row(align=True)
+
+            row.operator(
+                "bentobuddy.sim_key",
+                text="Set Key",
+                icon_value = ico.custom_icons["key_black"].icon_id
+                )
+            row = col.row(align=True)
+            row.prop(
+                bb_sim,
+                "sim_key_rotation",
+                text="Rotation",
+                toggle = True,
+                icon_value = ico.custom_icons["rotate"].icon_id
+                )
+            row.prop(
+                bb_sim,
+                "sim_key_location",
+                text="Location",
+                toggle = True,
+                icon_value = ico.custom_icons["location"].icon_id
+                )
+            row.prop(
+                bb_sim,
+                "sim_key_scale",
+                text="Scale",
+                toggle = True,
+                icon_value = ico.custom_icons["scale"].icon_id
+                )
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_ik",
+                text="Set IK",
+                icon_value = ico.custom_icons["ik"].icon_id
+                )
+            sim_controller_text = sim.props['controller']
+            sim_controller_icon = "locked_black"
+            if sim.props['controller'] == "":
+                sim_controller_text = "Lock IK+"
+                sim_controller_icon = "unlocked_black"
+            row.prop(
+                bb_sim,
+                "sim_controller",
+                text = sim_controller_text,
+                toggle = True,
+                icon_value = ico.custom_icons[sim_controller_icon].icon_id
+                )
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_ik_nuke",
+                text="Nuke IK",
+                icon_value = ico.custom_icons["nuke"].icon_id
+                )
+            
+            row.prop(
+                bb_sim,
+                "sim_controller_length",
+                text = "IK Chain Length",
+                )
+
+            
+            box = layout.box()
+            col = box.column(align = True)
+            row = col.row(align=True)
+
+            row.prop(
+                bb_sim,
+                "sim_inverse_motion_info",
+                text="Inverse Motion",
+                toggle = True,
+                icon_value = ico.custom_icons["inverse_motion"].icon_id
+                )
+            col = box.column(align = True)
+            row = col.row(align=True)
+
+            row.prop(
+                bb_sim,
+                "sim_blank",
+                text="Automatic",
+                toggle = True,
+                icon_value = ico.custom_icons["blank"].icon_id
+                )
+            row = col.row(align=True)
+
+            
+            
+            
+            sim_motion_row_enabled = False
+            if sim.props['bmesh'] == "":
+                sim_motion_row_enabled = True
+
+            row.enabled = sim_motion_row_enabled
+            row.prop(
+                bb_sim,
+                "sim_motion_dynamic",
+                text="Dynamics",
+                toggle = True,
+                icon_value = ico.custom_icons["dynamic"].icon_id
+                )
+            row.prop(
+                bb_sim,
+                "sim_motion_object",
+                text="Objects",
+                toggle = True,
+                icon_value = ico.custom_icons["object"].icon_id
+                )
+            row = col.row(align=True)
+            if bb_sim.sim_motion_dynamic == True:
+                row.operator(
+                    "bentobuddy.sim_action_dynamic",
+                    text="Action!",
+                    icon_value = ico.custom_icons["action"].icon_id
+                    )
+            else:
+                row.operator(
+                    "bentobuddy.sim_action_object",
+                    text="Action!",
+                    icon_value = ico.custom_icons["action"].icon_id
+                    )
+            
+            row.prop(
+                bb_sim,
+                "sim_marker_size",
+                text="Size:",
+                )
+
+            row = col.row(align=True)
+            sim_rigid_copy_enabled = False
+            if bb_sim.sim_motion_object == True:
+                sim_rigid_copy_enabled = True
+            row.operator(
+                "bentobuddy.sim_copy_rigid",
+                text="Copy Rigid",
+                icon_value = ico.custom_icons["freeze"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_remove_all",
+                text="Remove Sim",
+                icon_value = ico.custom_icons["x_red"].icon_id
+                )
+
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_add_bone",
+                text="Add Bones",
+                icon_value = ico.custom_icons["add"].icon_id
+                )
+            sim_edit_bones_icon = "edit"
+            if bpy.context.mode == 'EDIT_ARMATURE':
+                sim_edit_bones_icon = "edit_red"
+            row.operator(
+                "bentobuddy.sim_edit_bones",
+                text="Edit Bones",
+                icon_value = ico.custom_icons[sim_edit_bones_icon].icon_id
+                )
+
+
+            row = col.row(align=True)
+            sim_path_text = "Enable Path"
+            sim_path_icon = "dot_red"
+            sim_path_enabled = bb_sim.sim_motion_dynamic
+            if bb_sim.sim_path == True:
+                sim_path_text = "Disble Path"
+                sim_path_icon = "dot_green"
+            row.enabled = sim_path_enabled
+            row.prop(
+                bb_sim,
+                "sim_path",
+                text=sim_path_text,
+                icon_value = ico.custom_icons[sim_path_icon].icon_id
+                )
+
+            
+            row = col.row(align=True)
+            row.enabled = bb_sim.sim_path
+            row.prop(
+                bb_sim,
+                "sim_path_radius",
+                text="Radius:",
+                )
+            row.prop(
+                bb_sim,
+                "sim_path_count",
+                text="Count:",
+                )
+            row = col.row(align=True)
+            row.enabled = bb_sim.sim_path
+            row.prop(
+                bb_sim,
+                "sim_path_limit",
+                text="Limit:",
+                )
+            row.prop(
+                bb_sim,
+                "sim_path_extend",
+                text="Extend",
+                icon_value = ico.custom_icons["more"].icon_id
+                )
+            row = col.row(align=True)
+            row.prop(
+                bb_sim,
+                "sim_path_parent",
+                text="Parent",
+                icon_value = ico.custom_icons["link"].icon_id
+                )
+
+            
+            
+            
+            col = box.column(align = True)
+            row = col.row(align=True)
+
+            row.prop(
+                bb_sim,
+                "sim_blank",
+                text="Manual",
+                toggle = True,
+                icon_value = ico.custom_icons["blank"].icon_id
+                )
+
+            sim_custom_bones_icon = "bone_black"
+            sim_custom_mesh_icon = "object_black"
+            if sim.props.get('custom_bones') != None:
+                sim_custom_bones_icon = "bone_red"
+            if sim.props.get('custom_mesh') != None:
+                sim_custom_mesh_icon = "object_red"
+
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_custom_bones",
+                text="Select Bones",
+                icon_value = ico.custom_icons[sim_custom_bones_icon].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_custom_mesh",
+                text="Select Mesh",
+                icon_value = ico.custom_icons[sim_custom_mesh_icon].icon_id
+                )
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_custom_action",
+                text="Action!",
+                icon_value = ico.custom_icons["action"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_custom_detach",
+                text="Detach Parent",
+                icon_value = ico.custom_icons["detach"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_custom_attach",
+                text="Retach Parent",
+                icon_value = ico.custom_icons["sync"].icon_id
+                )
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_custom_constraints",
+                text="Disa. Constr.",
+                icon_value = ico.custom_icons["x_black"].icon_id
+                ).action = "disable"
+            row.operator(
+                "bentobuddy.sim_custom_constraints",
+                text="Ena. Constr.",
+                icon_value = ico.custom_icons["x_green"].icon_id
+                ).action = "enable"
+            row.operator(
+                "bentobuddy.sim_custom_constraints",
+                text="Rem. Constr.",
+                icon_value = ico.custom_icons["x_red"].icon_id
+                ).action="remove"
+
+            row = col.row(align=True)
+            row.prop(
+                bb_sim,
+                "sim_custom_preserve",
+                text="Preserve",
+                icon_value = ico.custom_icons["dot_blue"].icon_id
+                )
+            row.prop(
+                bb_sim,
+                "sim_custom_radius",
+                text="Radius",
+                icon_value = ico.custom_icons["dot_blue"].icon_id
+                )
+            row = col.row(align=True)
+            row.prop(
+                bb_sim,
+                "sim_custom_disable_armatures",
+                text="Disable Arm Mods",
+                icon_value = ico.custom_icons["dot_blue"].icon_id
+                )
+            row.prop(
+                bb_sim,
+                "sim_custom_influence",
+                text="Influence",
+                icon_value = ico.custom_icons["dot_blue"].icon_id
+                )
+            row = col.row(align=True)
+
+            row.operator(
+                "bentobuddy.sim_remove_props",
+                text="Remove Props",
+                icon_value = ico.custom_icons["x_red"].icon_id
+                )
+            row = col.row(align=True)
+
+            row.prop(
+                bb_sim,
+                "sim_bone_length_auto",
+                text="Auto Bone Length",
+                icon_value = ico.custom_icons["blank"].icon_id,
+                toggle=True,
+                )
+            if bb_sim.sim_bone_length_manual == True:
+                row.prop(
+                    bb_sim,
+                    "sim_bone_length_factor",
+                    text="",
+                    slider=True,
+                    )
+            else:
+                row.prop(
+                    bb_sim,
+                    "sim_bone_length_manual",
+                    text="Manual Bone Length",
+                    icon_value = ico.custom_icons["blank"].icon_id,
+                    toggle=True,
+                    )
+            row = col.row(align=True)
+
+            row.prop(
+                bb_sim,
+                "sim_time_scale",
+                text="Time Scale",
+                
+                slider=True,
+                )
+            row = col.row(align=True)
+
+            
+            sim_transforms_row_enabled = False
+            if sim.props.get('custom_mesh') != None and sim.props.get('custom_rig') != None:
+                sim_transforms_row_enabled = True
+            if 1 == 1:
+                row = col.row(align=True)
+                row.enabled = sim_transforms_row_enabled
+                row.prop(
+                    bb_sim,
+                    "sim_custom_location",
+                    text="Location",
+                    icon_value = ico.custom_icons["dot_green"].icon_id
+                    )
+                row.prop(
+                    bb_sim,
+                    "sim_custom_rotation",
+                    text="Rotation",
+                    icon_value = ico.custom_icons["dot_yellow"].icon_id
+                    )
+                row.prop(
+                    bb_sim,
+                    "sim_custom_scale",
+                    text="Scale",
+                    icon_value = ico.custom_icons["dot_red"].icon_id
+                    )
+            
+
+            col = box.column(align = True)
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_reset",
+                text="Reset",
+                icon_value = ico.custom_icons["reset"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_done",
+                text="Done!",
+                icon_value = ico.custom_icons["thumb_up"].icon_id
+                )
+            if 1 == 0:
+                sim_skin_enabled_icon = "paint_disabled"
+                if bb_sim.sim_skin_enabled == True:
+                    sim_skin_enabled_icon = "paint_enabled"
+                row.prop(
+                    bb_sim,
+                    "sim_skin_enabled",
+                    text="",
+                    toggle = True,
+                    icon_value = ico.custom_icons[sim_skin_enabled_icon].icon_id
+                    )
+
+            
+            col = box.column(align = True)
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_bake",
+                text="Bake Sim",
+                icon_value = ico.custom_icons["bake"].icon_id
+                )
+
+            row.prop(
+                bb_sim,
+                "sim_auto_parent",
+                text="Auto Parent",
+                icon_value = ico.custom_icons["joint"].icon_id,
+                toggle=True,
+                )
+
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.sim_join",
+                text="Join Objects",
+                icon_value = ico.custom_icons["sync"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_parent",
+                text="Parent Objects",
+                icon_value = ico.custom_icons["merge"].icon_id
+                )
+            
+            
+            col = box.column(align = True)
+            row = col.row(align=True)
+
+            bb_quick = bpy.context.window_manager.bb_quick
+
+            bb_sim_quick_icon = "x_black"
+            sim_title_length = "?"
+            sim_title_remain = "?"
+            sim_title_icon = "thumb_down"
+            selected_objects = bpy.context.selected_objects
+            if len(selected_objects) != 0:
+                
+                checkObj = bpy.context.selected_objects[0]
+                dObj = sim.get_director(checkObj)
+                if dObj != False:
+                    if isinstance(dObj, list):
+                        directors = dObj
+                    else:
+                        directors = [dObj] 
+                    aObj = directors[0]['bb_sim_actor']
+                    if utils.is_valid(aObj) != False:
+                        if 'bb_onemap_rename' in aObj:
+                            bb_sim_quick_icon = "x_red"
+                            sim_title_length = len(aObj['bb_onemap_rename'])
+                            sim_title_remain = len(aObj.data.bones)
+                            for boneObj in aObj.data.bones:
+                                if boneObj.use_deform == False:
+                                    sim_title_remaine -= 1
+
+            if sim_title_length == "?":
+                sim_title_icon = "blank"
+            elif sim_title_length == 0:
+                if sim_title_length == sim_title_remain:
+                    sim_title_icon = "thumb_down"
+            elif sim_title_length != 0:
+                if sim_title_length == sim_title_remain:
+                    sim_title_icon = "thumb_up"
+
+            sim_quick_title = "Quick Map and Exports [" + str(sim_title_length) + "/" + str(sim_title_remain) + "]"
+            row.prop(
+                bb_quick,
+                "sim_quick_title",
+                text=sim_quick_title,
+                icon_value = ico.custom_icons[sim_title_icon].icon_id,
+                toggle=True,
+                )
+            row = col.row(align=True)
+
+            row.operator(
+                "bentobuddy.sim_quick_mapping",
+                text="Safe",
+                icon_value = ico.custom_icons["select_ends"].icon_id
+                ).action = "map_safe"
+            row.operator(
+                "bentobuddy.sim_quick_mapping",
+                text="Volume",
+                icon_value = ico.custom_icons["select_volumes"].icon_id
+                ).action = "map_volume"
+            row.operator(
+                "bentobuddy.sim_quick_mapping",
+                text="Attach",
+                icon_value = ico.custom_icons["select_attach"].icon_id
+                ).action = "map_attach"
+
+            row = col.row(align=True)
+            row.operator(
+                "bentobuddy.snap_export_mesh",
+                text="Export Mesh",
+                icon_value = ico.custom_icons["export_mesh"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_quick_anim",
+                text="Export Anim",
+                icon_value = ico.custom_icons["walking_green"].icon_id
+                )
+            row.operator(
+                "bentobuddy.sim_quick_mapping",
+                text="Maps",
+                icon_value = ico.custom_icons[bb_sim_quick_icon].icon_id
+                ).action = "remove"
+
+        
+        
+        
+
+
+
 
 
 
@@ -70571,7 +73864,7 @@ class BentoBuddyShapeShifterPanel(bpy.types.Panel):
                     icon_value = ico.custom_icons["load"].icon_id
                     )
                 row.operator(
-                    "bentobuddy.snap_clean",
+                    "bentobuddy.snap_remove",
                     text="Remove Map",
                     icon_value = ico.custom_icons["reset"].icon_id
                     )
@@ -70648,458 +73941,6 @@ class BentoBuddyShapeShifterPanel(bpy.types.Panel):
                     
                     
                     
-
-        
-        
-        
-
-        
-        
-        
-        
-        
-        
-        
-        
-        if 1 == 1:
-            bb_sim = bpy.context.window_manager.bb_sim
-            row = self.layout.row(align=True)
-            sim_menu_enabled_icon = "menu_closed"
-            if bb_sim.sim_menu_enabled == True:
-                sim_menu_enabled_icon = "menu_opened"
-            row.prop(
-                bb_sim,
-                "sim_menu_enabled",
-                text="Simulation",
-                toggle = True,
-                icon_value = ico.custom_icons[sim_menu_enabled_icon].icon_id
-                )
-            if bb_sim.sim_menu_enabled == True:
-                layout = self.layout
-                box = layout.box()
-                col = box.column(align = True)
-                row = col.row(align=True)
-
-                
-
-                row.prop(
-                    bb_sim,
-                    "sim_blank",
-                    text="Controllers and Animation",
-                    toggle = True,
-                    
-                    )
-                row = col.row(align=True)
-
-                row.operator(
-                    "bentobuddy.sim_stretch_add",
-                    text="Add Stretch",
-                    icon_value = ico.custom_icons["range"].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_stretch_remove",
-                    text="Remove Stretch",
-                    icon_value = ico.custom_icons["x_black"].icon_id
-                    )
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_curl_add",
-                    text="Add Curl",
-                    icon_value = ico.custom_icons["rotate"].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_curl_remove",
-                    text="Remove Curl",
-                    icon_value = ico.custom_icons["x_black"].icon_id
-                    )
-
-                row = col.row(align=True)
-                row.prop(
-                    bb_sim,
-                    "sim_anchor",
-                    text="Include Anchor",
-                    toggle = True,
-                    icon_value = ico.custom_icons["anchor"].icon_id
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_deformable",
-                    text="Deformable Only",
-                    toggle = True,
-                    icon_value = ico.custom_icons["bone_bent"].icon_id
-                    )
-
-                col = box.column(align = True)
-                row = col.row(align=True)
-
-                row.operator(
-                    "bentobuddy.sim_key",
-                    text="Set Key",
-                    icon_value = ico.custom_icons["key_black"].icon_id
-                    )
-                row = col.row(align=True)
-                row.prop(
-                    bb_sim,
-                    "sim_key_rotation",
-                    text="Rotation",
-                    toggle = True,
-                    icon_value = ico.custom_icons["rotate"].icon_id
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_key_location",
-                    text="Location",
-                    toggle = True,
-                    icon_value = ico.custom_icons["location"].icon_id
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_key_scale",
-                    text="Scale",
-                    toggle = True,
-                    icon_value = ico.custom_icons["scale"].icon_id
-                    )
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_ik",
-                    text="Set IK",
-                    icon_value = ico.custom_icons["ik"].icon_id
-                    )
-                sim_controller_text = sim.props['controller']
-                sim_controller_icon = "locked_black"
-                if sim.props['controller'] == "":
-                    sim_controller_text = "Lock IK+"
-                    sim_controller_icon = "unlocked_black"
-                row.prop(
-                    bb_sim,
-                    "sim_controller",
-                    text = sim_controller_text,
-                    toggle = True,
-                    icon_value = ico.custom_icons[sim_controller_icon].icon_id
-                    )
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_ik_nuke",
-                    text="Nuke IK",
-                    icon_value = ico.custom_icons["nuke"].icon_id
-                    )
-                
-                row.prop(
-                    bb_sim,
-                    "sim_controller_length",
-                    text = "IK Chain Length",
-                    )
-
-                
-                box = layout.box()
-                col = box.column(align = True)
-                row = col.row(align=True)
-
-                row.prop(
-                    bb_sim,
-                    "sim_inverse_motion_info",
-                    text="Inverse Motion",
-                    toggle = True,
-                    icon_value = ico.custom_icons["inverse_motion"].icon_id
-                    )
-                col = box.column(align = True)
-                row = col.row(align=True)
-
-                row.prop(
-                    bb_sim,
-                    "sim_blank",
-                    text="Automatic",
-                    toggle = True,
-                    icon_value = ico.custom_icons["blank"].icon_id
-                    )
-                row = col.row(align=True)
-
-                
-                
-                
-                sim_motion_row_enabled = False
-                if sim.props['bmesh'] == "":
-                    sim_motion_row_enabled = True
-
-                row.enabled = sim_motion_row_enabled
-                row.prop(
-                    bb_sim,
-                    "sim_motion_dynamic",
-                    text="Dynamics",
-                    toggle = True,
-                    icon_value = ico.custom_icons["dynamic"].icon_id
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_motion_object",
-                    text="Objects",
-                    toggle = True,
-                    icon_value = ico.custom_icons["object"].icon_id
-                    )
-                row = col.row(align=True)
-                if bb_sim.sim_motion_dynamic == True:
-                    row.operator(
-                        "bentobuddy.sim_action_dynamic",
-                        text="Action!",
-                        icon_value = ico.custom_icons["action"].icon_id
-                        )
-                else:
-                    row.operator(
-                        "bentobuddy.sim_action_object",
-                        text="Action!",
-                        icon_value = ico.custom_icons["action"].icon_id
-                        )
-                
-                row.prop(
-                    bb_sim,
-                    "sim_marker_size",
-                    text="Size:",
-                    )
-
-                row = col.row(align=True)
-                sim_rigid_copy_enabled = False
-                if bb_sim.sim_motion_object == True:
-                    sim_rigid_copy_enabled = True
-                row.operator(
-                    "bentobuddy.sim_copy_rigid",
-                    text="Copy Rigid",
-                    icon_value = ico.custom_icons["freeze"].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_remove_all",
-                    text="Remove Sim",
-                    icon_value = ico.custom_icons["x_red"].icon_id
-                    )
-
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_add_bone",
-                    text="Add Bones",
-                    icon_value = ico.custom_icons["add"].icon_id
-                    )
-                sim_edit_bones_icon = "edit"
-                if bpy.context.mode == 'EDIT_ARMATURE':
-                    sim_edit_bones_icon = "edit_red"
-                row.operator(
-                    "bentobuddy.sim_edit_bones",
-                    text="Edit Bones",
-                    icon_value = ico.custom_icons[sim_edit_bones_icon].icon_id
-                    )
-
-
-                row = col.row(align=True)
-                sim_path_text = "Enable Path"
-                sim_path_icon = "dot_red"
-                sim_path_enabled = bb_sim.sim_motion_dynamic
-                if bb_sim.sim_path == True:
-                    sim_path_text = "Disble Path"
-                    sim_path_icon = "dot_green"
-                row.enabled = sim_path_enabled
-                row.prop(
-                    bb_sim,
-                    "sim_path",
-                    text=sim_path_text,
-                    icon_value = ico.custom_icons[sim_path_icon].icon_id
-                    )
-
-                
-                row = col.row(align=True)
-                row.enabled = bb_sim.sim_path
-                row.prop(
-                    bb_sim,
-                    "sim_path_radius",
-                    text="Radius:",
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_path_count",
-                    text="Count:",
-                    )
-                row = col.row(align=True)
-                row.enabled = bb_sim.sim_path
-                row.prop(
-                    bb_sim,
-                    "sim_path_limit",
-                    text="Limit:",
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_path_extend",
-                    text="Extend",
-                    icon_value = ico.custom_icons["more"].icon_id
-                    )
-                row = col.row(align=True)
-                row.prop(
-                    bb_sim,
-                    "sim_path_parent",
-                    text="Parent",
-                    icon_value = ico.custom_icons["link"].icon_id
-                    )
-
-                
-                
-                
-                col = box.column(align = True)
-                row = col.row(align=True)
-
-                row.prop(
-                    bb_sim,
-                    "sim_blank",
-                    text="Manual",
-                    toggle = True,
-                    icon_value = ico.custom_icons["blank"].icon_id
-                    )
-
-                sim_custom_bones_icon = "bone_black"
-                sim_custom_mesh_icon = "object_black"
-                if sim.props.get('custom_bones') != None:
-                    sim_custom_bones_icon = "bone_red"
-                if sim.props.get('custom_mesh') != None:
-                    sim_custom_mesh_icon = "object_red"
-
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_custom_bones",
-                    text="Select Bones",
-                    icon_value = ico.custom_icons[sim_custom_bones_icon].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_custom_mesh",
-                    text="Select Mesh",
-                    icon_value = ico.custom_icons[sim_custom_mesh_icon].icon_id
-                    )
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_custom_action",
-                    text="Action!",
-                    icon_value = ico.custom_icons["action"].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_custom_detach",
-                    text="Detach Parent",
-                    icon_value = ico.custom_icons["detach"].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_custom_attach",
-                    text="Retach Parent",
-                    icon_value = ico.custom_icons["sync"].icon_id
-                    )
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_custom_constraints",
-                    text="Disa. Constr.",
-                    icon_value = ico.custom_icons["x_black"].icon_id
-                    ).action = "disable"
-                row.operator(
-                    "bentobuddy.sim_custom_constraints",
-                    text="Ena. Constr.",
-                    icon_value = ico.custom_icons["x_green"].icon_id
-                    ).action = "enable"
-                row.operator(
-                    "bentobuddy.sim_custom_constraints",
-                    text="Rem. Constr.",
-                    icon_value = ico.custom_icons["x_red"].icon_id
-                    ).action="remove"
-
-                row = col.row(align=True)
-                row.prop(
-                    bb_sim,
-                    "sim_custom_preserve",
-                    text="Preserve",
-                    icon_value = ico.custom_icons["dot_blue"].icon_id
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_custom_radius",
-                    text="Radius",
-                    icon_value = ico.custom_icons["dot_blue"].icon_id
-                    )
-                row = col.row(align=True)
-                row.prop(
-                    bb_sim,
-                    "sim_custom_disable_armatures",
-                    text="Disable Arm Mods",
-                    icon_value = ico.custom_icons["dot_blue"].icon_id
-                    )
-                row.prop(
-                    bb_sim,
-                    "sim_custom_influence",
-                    text="Influence",
-                    icon_value = ico.custom_icons["dot_blue"].icon_id
-                    )
-                row = col.row(align=True)
-
-                
-                sim_transforms_row_enabled = False
-                if sim.props.get('custom_mesh') != None and sim.props.get('custom_rig') != None:
-                    sim_transforms_row_enabled = True
-                if 1 == 1:
-                    row = col.row(align=True)
-                    row.enabled = sim_transforms_row_enabled
-                    row.prop(
-                        bb_sim,
-                        "sim_custom_location",
-                        text="Location",
-                        icon_value = ico.custom_icons["dot_green"].icon_id
-                        )
-                    row.prop(
-                        bb_sim,
-                        "sim_custom_rotation",
-                        text="Rotation",
-                        icon_value = ico.custom_icons["dot_yellow"].icon_id
-                        )
-                    row.prop(
-                        bb_sim,
-                        "sim_custom_scale",
-                        text="Scale",
-                        icon_value = ico.custom_icons["dot_red"].icon_id
-                        )
-                
-
-                col = box.column(align = True)
-                row = col.row(align=True)
-                row.operator(
-                    "bentobuddy.sim_reset",
-                    text="Reset",
-                    icon_value = ico.custom_icons["reset"].icon_id
-                    )
-                row.operator(
-                    "bentobuddy.sim_done",
-                    text="Done!",
-                    icon_value = ico.custom_icons["thumb_up"].icon_id
-                    )
-                if 1 == 0:
-                    sim_skin_enabled_icon = "paint_disabled"
-                    if bb_sim.sim_skin_enabled == True:
-                        sim_skin_enabled_icon = "paint_enabled"
-                    row.prop(
-                        bb_sim,
-                        "sim_skin_enabled",
-                        text="",
-                        toggle = True,
-                        icon_value = ico.custom_icons[sim_skin_enabled_icon].icon_id
-                        )
-
-                
-                if 1 == 1:
-                    col = box.column(align = True)
-                    row = col.row(align=True)
-                    row.operator(
-                        "bentobuddy.sim_bake",
-                        text="Bake Sim",
-                        icon_value = ico.custom_icons["bake"].icon_id
-                        )
-                    row.operator(
-                        "bentobuddy.sim_join",
-                        text="Join Objects",
-                        icon_value = ico.custom_icons["sync"].icon_id
-                        )
-                    row.operator(
-                        "bentobuddy.sim_parent",
-                        text="Parent Objects",
-                        icon_value = ico.custom_icons["merge"].icon_id
-                        )
-
 
         
         
@@ -71254,7 +74095,16 @@ class BentoBuddyPuppetProperties(bpy.types.PropertyGroup):
         )
     puppet_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Puppeteer allows you to combine rigs in order to use a single Second Life skeleton to animate them, potentially"            "saving you land impact and allowing you to fake multiple worn Animesh using a single rig.  Often we're not using all "            "of the bones in the SL skeleton for a single character and if there are enough left over, with a compatible hierarchy "            "they can be used to generate another character, maybe even a full duplicate."            "\n\n"            "This is a preparatory feature I added for use in conjunction with (Reactor) but it works independently and replaces the old "            "multiple rig target retargeter and the old mapped mesh export.  Note that the new mapped mesh exporter is found under "            "(Mesh Export) and this is NOT the old one, the old one is under (Character Tools - Character Mapper / Retargeter) which "            "will become obsolete along with its companion tool (Template Workshop), shortly after this tool emerges.",
+        description = ""
+            "Puppeteer allows you to combine rigs in order to use a single Second Life skeleton to animate them, potentially"
+            "saving you land impact and allowing you to fake multiple worn Animesh using a single rig.  Often we're not using all "
+            "of the bones in the SL skeleton for a single character and if there are enough left over, with a compatible hierarchy "
+            "they can be used to generate another character, maybe even a full duplicate."
+            "\n\n"
+            "This is a preparatory feature I added for use in conjunction with (Reactor) but it works independently and replaces the old "
+            "multiple rig target retargeter and the old mapped mesh export.  Note that the new mapped mesh exporter is found under "
+            "(Mesh Export) and this is NOT the old one, the old one is under (Character Tools - Character Mapper / Retargeter) which "
+            "will become obsolete along with its companion tool (Template Workshop), shortly after this tool emerges.",
         default = False
         )
     def puppet_help(self, context):
@@ -71262,7 +74112,16 @@ class BentoBuddyPuppetProperties(bpy.types.PropertyGroup):
         bpy.ops.wm.url_open(url=puppet.props['help'])
     puppet_help : bpy.props.BoolProperty(
         name = "",
-        description =            "Puppeteer Info - Clicking this will open a web page:"            "\n\n"            "This is a mapping preparation tool.  It does not support reskin maps!  Convert your characters before using this."            "Puppeteer allows you to map multiple target character rigs together so that a single Second Life rig can be used "            "to control them all at the same time.  The (Compose) button will combine selected rigs together so that they can "            "be mapped as one, for easier mapping.  The (Decompose) tool will take this composed rig and distribute the resulting "            "map between the original rigs.  The original rigs are not altered, they are copied and joined then hidden.  You must "            "have a compatible map on them, which means they will not collide, or NO maps at all.  This is the final tool that "            "replaces the (Template Workshop) used in conjunction with the new retargeter.",
+        description = ""
+            "Puppeteer Info - Clicking this will open a web page:"
+            "\n\n"
+            "This is a mapping preparation tool.  It does not support reskin maps!  Convert your characters before using this."
+            "Puppeteer allows you to map multiple target character rigs together so that a single Second Life rig can be used "
+            "to control them all at the same time.  The (Compose) button will combine selected rigs together so that they can "
+            "be mapped as one, for easier mapping.  The (Decompose) tool will take this composed rig and distribute the resulting "
+            "map between the original rigs.  The original rigs are not altered, they are copied and joined then hidden.  You must "
+            "have a compatible map on them, which means they will not collide, or NO maps at all.  This is the final tool that "
+            "replaces the (Template Workshop) used in conjunction with the new retargeter.",
         default = False,
         update = puppet_help
         )
@@ -71277,23 +74136,31 @@ class BentoBuddyPuppetProperties(bpy.types.PropertyGroup):
         self["puppet_master_enabled"] = True
     puppet_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "This indicates that you've chosen a Master for your puppet crew.  Disable this "            "to unregister.",
+        description = ""
+            "This indicates that you've chosen a Master for your puppet crew.  Disable this "
+            "to unregister.",
         default = True,
         update = update_puppet_master_enabled
         )
     puppet_merge_animations : bpy.props.BoolProperty(
         name = "",
-        description =            "With this enabled the animations will be combined along with the combined rigs, allowing "            "them to be used in this matter as a finished product or just for better reference in the mapper",
+        description = ""
+            "With this enabled the animations will be combined along with the combined rigs, allowing "
+            "them to be used in this matter as a finished product or just for better reference in the mapper",
         default = True,
         )
     puppet_apply_transforms : bpy.props.BoolProperty(
         name = "",
-        description =            "This can ruin your animation so it's an option if you're not merging the animations themselves",
+        description = ""
+            "This can ruin your animation so it's an option if you're not merging the animations themselves",
         default = False,
         )
     puppet_rebind : bpy.props.BoolProperty(
         name = "",
-        description =            "Rebind the mesh during the merge process.  This is a destructive process but the original data "            "is preserved for recovery so (Decompose Rigs) should not show any deformations even with repeated "            "cycles",
+        description = ""
+            "Rebind the mesh during the merge process.  This is a destructive process but the original data "
+            "is preserved for recovery so (Decompose Rigs) should not show any deformations even with repeated "
+            "cycles",
         default = False,
         )
 
@@ -72266,7 +75133,11 @@ class BentoBuddyReactorProperties(bpy.types.PropertyGroup):
         bpy.ops.wm.url_open(url=reactor.props['help'])
     reactor_help : bpy.props.BoolProperty(
         name = "",
-        description =            "Reactor is a server to server feature that bi-laterally controls your character in and out of Second Life.  "            "This character is built using prims in SL and then generated in Blender for a visual.  This visual can then be "            "constructed automatically into an Avatar or even Animesh completely.  Also note that using Blender is not "            "a requirement and the conversion feature can be automatically initiated from in-world.",
+        description = ""
+            "Reactor is a server to server feature that bi-laterally controls your character in and out of Second Life.  "
+            "This character is built using prims in SL and then generated in Blender for a visual.  This visual can then be "
+            "constructed automatically into an Avatar or even Animesh completely.  Also note that using Blender is not "
+            "a requirement and the conversion feature can be automatically initiated from in-world.",
         default = False,
         update = update_reactor_help
         )
@@ -72288,7 +75159,8 @@ class BentoBuddyReactorProperties(bpy.types.PropertyGroup):
     
     reactor_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "--stub",
+        description = ""
+            "--stub",
         default = False,
         update=reactor_menu_enabled
         )
@@ -72319,21 +75191,25 @@ class BentoBuddyRagdollProperties(bpy.types.PropertyGroup):
         bpy.ops.wm.url_open(url=reactor.props['help'])
     ragdoll_help : bpy.props.BoolProperty(
         name = "",
-        description =            "help",
+        description = ""
+            "help",
         default = False,
         update = update_ragdoll_help
         )
 
     ragdoll_location : bpy.props.FloatVectorProperty(
         name = "",
-        description =            "Set this before loading your rig.  Your loaded rig will have an origin set to this location",
+        description = ""
+            "Set this before loading your rig.  Your loaded rig will have an origin set to this location",
         subtype = 'XYZ',
         default = (0.0, 0.0, 0.0)
         )
 
     ragdoll_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "In this area you can enable properties on a rig that will cause it to (ragdoll).  This special setup "            "allows you to carry that same simulation, as an animation, into Second Life",
+        description = ""
+            "In this area you can enable properties on a rig that will cause it to (ragdoll).  This special setup "
+            "allows you to carry that same simulation, as an animation, into Second Life",
         default = False,
         )
 
@@ -72366,7 +75242,9 @@ class BentoBuddyRagdollProperties(bpy.types.PropertyGroup):
         print("Recorded", o.name, "as the ragdoll physics mesh")
     ragdoll_use_mesh : bpy.props.BoolProperty(
         name = "",
-        description =            "Select a mesh, possibly a primitive, for use with your ragdoll.  In object mode choose a suitable mesh "            "then click this button, it will be utilized when you run (Action).",
+        description = ""
+            "Select a mesh, possibly a primitive, for use with your ragdoll.  In object mode choose a suitable mesh "
+            "then click this button, it will be utilized when you run (Action).",
         default = False,
         update = update_ragdoll_use_mesh
         )
@@ -72404,7 +75282,10 @@ class BentoBuddyRagdollProperties(bpy.types.PropertyGroup):
         print("Recorded", str(len(pool)), "objects as the ragdoll physics mesh")
     ragdoll_use_pool : bpy.props.BoolProperty(
         name = "",
-        description =            "Select a set of meshes, possibly a number of primitives, for use with your ragdoll.  In object mode "            "choose a suitable mesh set as your pool then click this button, they will be randomly utilized when "            "you run (Action).  Note that your selection will be duplicated as needed to fill the rig offered.",
+        description = ""
+            "Select a set of meshes, possibly a number of primitives, for use with your ragdoll.  In object mode "
+            "choose a suitable mesh set as your pool then click this button, they will be randomly utilized when "
+            "you run (Action).  Note that your selection will be duplicated as needed to fill the rig offered.",
         default = False,
         update = update_ragdoll_use_pool
         )
@@ -72418,7 +75299,18 @@ class BentoBuddyRagdollProperties(bpy.types.PropertyGroup):
 
     ragdoll_use_existing : bpy.props.BoolProperty(
         name = "",
-        description =            "This setting overrides (Lock Mesh) and utilizes the mesh that's already associated with your rig.  "            "There are some concerns about what you can do with this.  The first thing to consider is the mesh "            "density, since the ragdoll utilizes physics simulation, please be careful or you will have a bad day.  "            "The other consideration is when any single mesh contains more than one joint definition (vertex group), "            "these mesh cannot be utilized and will be excluded from processing.  If you need to deform your dense "            "mesh as a result of the simulated objects then bake the animation first, this will pull it out of sim "            "mode, then you can use the resulting animated bones directly, without the director objects included.  "            "To do that simply simulate (Action) then (Bake Animation).  You can then (Reset) or (Join) to preserve your "            "animation and remove the simulation objects.  Reset will remove objects that were generated as (chosen) or "            "leave them in place if they were already part of your set.  The (Join) feature will destroy your existing "            "set, however, so be careful if you engaged the ragdoll with that option enabled",
+        description = ""
+            "This setting overrides (Lock Mesh) and utilizes the mesh that's already associated with your rig.  "
+            "There are some concerns about what you can do with this.  The first thing to consider is the mesh "
+            "density, since the ragdoll utilizes physics simulation, please be careful or you will have a bad day.  "
+            "The other consideration is when any single mesh contains more than one joint definition (vertex group), "
+            "these mesh cannot be utilized and will be excluded from processing.  If you need to deform your dense "
+            "mesh as a result of the simulated objects then bake the animation first, this will pull it out of sim "
+            "mode, then you can use the resulting animated bones directly, without the director objects included.  "
+            "To do that simply simulate (Action) then (Bake Animation).  You can then (Reset) or (Join) to preserve your "
+            "animation and remove the simulation objects.  Reset will remove objects that were generated as (chosen) or "
+            "leave them in place if they were already part of your set.  The (Join) feature will destroy your existing "
+            "set, however, so be careful if you engaged the ragdoll with that option enabled",
         default = False,
         update = update_ragdoll_use_existing
         )
@@ -73297,32 +76189,71 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
         )
     sim_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "This segment uses cloth dynamics and simulation to animate bones so that you have an additional "            "property to add to your appeal on your character or if you just like your drapes to wiggle.",
+        description = ""
+            "This segment uses cloth dynamics and simulation to animate bones so that you have an additional "
+            "property to add to your appeal on your character or if you just like your drapes to wiggle.",
         default = False
         )
+
+    
+    def sim_time_scale(self, context):
+        bpy.context.scene.rigidbody_world.time_scale = self.sim_time_scale
+
+    
+    
+    
+    
+
+    
+    sim_time_scale : bpy.props.FloatProperty(
+        name = "",
+        description = ""
+            "This is linked to the item in the tab (Scene Properties).  You'll find a roll-out with the title "
+            "(Rigid Body World) and a property named (Speed)",
+        min = 0.0,
+        max = 10.0,
+        default = 1.0, 
+        
+        update = sim_time_scale
+        )
+
     sim_anchor : bpy.props.BoolProperty(
         name = "",
-        description =            "This options, when in default mode (False/Off), give expected function to the (Stretch) features.  It allows "            "this last qualified parent in the selected chain to be manipulated for the desired visual effect.  When this "            "is enabled your last qualified parent in the chain will have the stretch feature added to it as well, effectively "            "freezing that bone, and the parent to that will have to be manipulated to see the changes.  This is a convenience "            "option and that last parent is selected for you to manipulate after the constraints (Stretch) is placed so that you "            "can begin manipulating immediately.",
+        description = ""
+            "This options, when in default mode (False/Off), give expected function to the (Stretch) features.  It allows "
+            "this last qualified parent in the selected chain to be manipulated for the desired visual effect.  When this "
+            "is enabled your last qualified parent in the chain will have the stretch feature added to it as well, effectively "
+            "freezing that bone, and the parent to that will have to be manipulated to see the changes.  This is a convenience "
+            "option and that last parent is selected for you to manipulate after the constraints (Stretch) is placed so that you "
+            "can begin manipulating immediately.",
         default = False
         )
     sim_deformable : bpy.props.BoolProperty(
         name = "",
-        description =            "This applies stretch to deformable bones only, it's not a bad idea to keep this enabled unless you have a "            "complex rig and controllers that will benifit from having non-deformable bones processed in the same manner.  "            "A non-deformable bone is one that is not expected to be exported with the rig or manipulate vertices via skin/weights",
+        description = ""
+            "This applies stretch to deformable bones only, it's not a bad idea to keep this enabled unless you have a "
+            "complex rig and controllers that will benifit from having non-deformable bones processed in the same manner.  "
+            "A non-deformable bone is one that is not expected to be exported with the rig or manipulate vertices via skin/weights",
         default = True
         )
     sim_key_location : bpy.props.BoolProperty(
         name = "",
-        description =            "When setting a key include location data",
+        description = ""
+            "When setting a key include location data",
         default = True
         )
     sim_key_rotation : bpy.props.BoolProperty(
         name = "",
-        description =            "When setting a key also include rotation data",
+        description = ""
+            "When setting a key also include rotation data",
         default = True
         )
     sim_key_scale : bpy.props.BoolProperty(
         name = "",
-        description =            "This type of animation (Scale) is not supported in SL but when it changes a child bone location this will be "            "observed and can be used in that way.  However, the view will not be the same as you see in SL, only the location "            "data will be preserved so your mesh will not change shape at all as you see in the viewport.",
+        description = ""
+            "This type of animation (Scale) is not supported in SL but when it changes a child bone location this will be "
+            "observed and can be used in that way.  However, the view will not be the same as you see in SL, only the location "
+            "data will be preserved so your mesh will not change shape at all as you see in the viewport.",
         default = False
         )
 
@@ -73342,7 +76273,11 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
     
     sim_controller : bpy.props.BoolProperty(
         name = "",
-        description =            "This enables and disable the preferred controller.  This remembers the name of the selected pose bone when enabled.  "            "This bone can be any one in the rig but it's most useful if it's one that you're manipulating often, like one with "            "an IK constraint.  This option is referenced when you set key using this tool and set the controller as active and "            "after every key set so that you can continue manipulating your bone chain without having to find the controller again.",
+        description = ""
+            "This enables and disable the preferred controller.  This remembers the name of the selected pose bone when enabled.  "
+            "This bone can be any one in the rig but it's most useful if it's one that you're manipulating often, like one with "
+            "an IK constraint.  This option is referenced when you set key using this tool and set the controller as active and "
+            "after every key set so that you can continue manipulating your bone chain without having to find the controller again.",
         default = False,
         update = update_sim_controller
         )
@@ -73361,7 +76296,8 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
                     C.chain_count = self.sim_controller_length
     sim_controller_length : bpy.props.IntProperty(
         name = "",
-        description =            "This is how many joints the IK controller affects, reduce the number if it moves too much of your avatar.",
+        description = ""
+            "This is how many joints the IK controller affects, reduce the number if it moves too much of your avatar.",
         min = 1,
         default = 3,
         update = update_sim_controller_length,
@@ -73374,7 +76310,8 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
         return False
     sim_controller_length_poll : bpy.props.IntProperty(
         name = "",
-        description =            "This is how many joints the IK controller affects, reduce the number if it moves too much of your avatar.",
+        description = ""
+            "This is how many joints the IK controller affects, reduce the number if it moves too much of your avatar.",
         min = 1,
         default = 3,
         get = get_sim_controller_length_poll
@@ -73382,8 +76319,22 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
 
     sim_inverse_motion_info : bpy.props.BoolProperty(
         name = "",
-        description =            "WARNING"            "\n\n"            "Transforms on your mesh will ruin your day.  Examine these before using this tool!"            "\n\n"            "Inverse Motion allows you to animate a rig using mesh instead of a rig animating, or deforming, mesh.  This is a "            "preparatory measure that is then reverted to do the expected, the animation then deforms the mesh.  In this way we "            "can translate a mesh simulation into an armature animation which can then be transfered into a system that does not "            "support this type of simulation, such as Second Life."
-            "\n\n"            "There are two types of automatic simulation to make quick work of rigid and cloth type simulations, which are "            "Dynamic for cloth and Object for multiple simulated rigid body objects.  Dynamic can also work with a soft body."            "\n\n"            "There are two tool sets which can be used together but are designed to be used independently, the Automatic and the "            "Manual tool-sets.  The Automatic tool-set allows you to build a rig along a path of a set of vertices and the Manual "            "section expects that you already have a rig.",
+        description = ""
+            "WARNING"
+            "\n\n"
+            "Transforms on your mesh will ruin your day.  Examine these before using this tool!"
+            "\n\n"
+            "Inverse Motion allows you to animate a rig using mesh instead of a rig animating, or deforming, mesh.  This is a "
+            "preparatory measure that is then reverted to do the expected, the animation then deforms the mesh.  In this way we "
+            "can translate a mesh simulation into an armature animation which can then be transfered into a system that does not "
+            "support this type of simulation, such as Second Life."
+            "\n\n"
+            "There are two types of automatic simulation to make quick work of rigid and cloth type simulations, which are "
+            "Dynamic for cloth and Object for multiple simulated rigid body objects.  Dynamic can also work with a soft body."
+            "\n\n"
+            "There are two tool sets which can be used together but are designed to be used independently, the Automatic and the "
+            "Manual tool-sets.  The Automatic tool-set allows you to build a rig along a path of a set of vertices and the Manual "
+            "section expects that you already have a rig.",
         update = update_sim_blank
         )
 
@@ -73400,14 +76351,27 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
             self["sim_motion_dynamic"] = True
     sim_motion_dynamic : bpy.props.BoolProperty(
         name = "",
-        description =            "This is the default because it's pretty neat.  You choose a mesh that's been simulated by cloth/wind, or some other "            "method, and you deposit markers in edit mode onto vertices.  These markers will move when the mesh does and translate "            "to an animated rig which you can then export for use with Second Life and your mesh.",
-        default = True,
+        description = ""
+            "Flexible Simulations"
+            "\n\n"
+            "You choose a mesh that's been simulated by cloth/wind, or some other method, even an animated avatar/character, then "
+            "you deposit the provided markers onto vertices of the item.  These markers will generate bones for you between them "
+            "which you can then export for use with Second Life and your mesh",
+        default = False,
         update = update_sim_motion_dynamic
         )
     sim_motion_object : bpy.props.BoolProperty(
         name = "",
-        description =            "Per Object Motion"            "\n\n"            "This type of inverse motion capture is for whole objects.  You can select multiple objects for use with motion "            "inheritance and they will drive a rig that this tool creates for you.  One bone per object will be assigned and "            "that bone will capture the location and rotation of the associated object.  Because of the single shot, multiple "            "object, complexity of this particular type of sim attachment, choosing your objects again, and hitting this button, "            "any stale data will be removed before attaching.  The Director contains a list of active simulation objects and "            "will attempt to clean those, each object contains a Director reference so one can find the other.",
-        default = False,
+        description = ""
+            "Per Object Motion"
+            "\n\n"
+            "This type of inverse motion capture is for whole objects.  You can select multiple objects for use with motion "
+            "inheritance and they will drive a rig that this tool creates for you.  One bone per object will be assigned and "
+            "that bone will capture the location and rotation of the associated object.  Because of the single shot, multiple "
+            "object, complexity of this particular type of sim attachment, choosing your objects again, and hitting this button, "
+            "any stale data will be removed before attaching.  The Director contains a list of active simulation objects and "
+            "will attempt to clean those, each object contains a Director reference so one can find the other.",
+        default = True,
         update = update_sim_motion_object
         )
     def update_sim_marker_size(self, context):
@@ -73436,49 +76400,81 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
 
     sim_marker_size : bpy.props.FloatProperty(
         name = "",
-        description =            "The tool places an object called a marker when you click on a vertex.  The size of this marker can be adjusted "            "using this property.",
+        description = ""
+            "The tool places an object called a marker when you click on a vertex.  The size of this marker can be adjusted "
+            "using this property.",
         default = 0.05,
         update = update_sim_marker_size
         )
 
     sim_path : bpy.props.BoolProperty(
         name = "",
-        description =            "Allows to build bones between a path of the selected vertices where the markers were placed.  Use this with the (count)"            "property to choose how many bones to generate long the path.",
+        description = ""
+            "Allows to build bones between a path of the selected vertices where the markers were placed.  Use this with the (count)"
+            "property to choose how many bones to generate long the path.",
         default = False,
         )
     sim_path_radius : bpy.props.FloatProperty(
         name = "",
-        description =            "The (Path) type of bone placement requires a skinning process that is temporary.  Vertices control the bones, which is "            "the opposite of what is usually done, and this allows your simulation to be turned into an animated bone/rig.  But for "            "that to happened with the (Path) type of placement there are no distinct vertices defined for controllers and is why a "            "radius is required to calculate a weight distance in order to find those vertices.  This is an internal weight and does not "            "contribute to your skinning data, it's specifically for inverse influences.  If the radius is set to 0 then only a "            "single vertex will be used, the first one found that's closest to the bone head.",
+        description = ""
+            "The (Path) type of bone placement requires a skinning process that is temporary.  Vertices control the bones, which is "
+            "the opposite of what is usually done, and this allows your simulation to be turned into an animated bone/rig.  But for "
+            "that to happened with the (Path) type of placement there are no distinct vertices defined for controllers and is why a "
+            "radius is required to calculate a weight distance in order to find those vertices.  This is an internal weight and does not "
+            "contribute to your skinning data, it's specifically for inverse influences.  If the radius is set to 0 then only a "
+            "single vertex will be used, the first one found that's closest to the bone head.",
         min = 0,
         default = 0,
         )
     sim_path_count : bpy.props.IntProperty(
         name = "",
-        description =            "Use this with the (Enable Path) option.  This allows for more than one bone per marker set across your object. "            "The adherence method is different so the result may be as well and could be completely unusable for simulation.  "            "This placement can be useful for quick skinning and this same feature may be found in another area, if I've gotten to "            "it by now, where you can generate bones across a surface or inside a mesh along a path between two vertices.",
+        description = ""
+            "Use this with the (Enable Path) option.  This allows for more than one bone per marker set across your object. "
+            "The adherence method is different so the result may be as well and could be completely unusable for simulation.  "
+            "This placement can be useful for quick skinning and this same feature may be found in another area, if I've gotten to "
+            "it by now, where you can generate bones across a surface or inside a mesh along a path between two vertices.",
         min=2,
         default = 2,
         )
     sim_path_limit : bpy.props.FloatProperty(
         name = "",
-        description =            "Are the bones touching?  To back off the tail from the next head put in a fractional percentage... 0.5 is 50 percent. "            "I can't allow 100 percent or the tail will meet up with the head and in Blender that's not a bone, it's a nothing.  "            "Blender will not allow that and the bone will vanish.  If your distance is very short then ever the fractional safety "            "maximum I'm putting on this may not be good enough.  This is not just a visual nicety, the end of a bone determines "            "weight influences so keep that in mind when performing neat tricks.",
+        description = ""
+            "Are the bones touching?  To back off the tail from the next head put in a fractional percentage... 0.5 is 50 percent. "
+            "I can't allow 100 percent or the tail will meet up with the head and in Blender that's not a bone, it's a nothing.  "
+            "Blender will not allow that and the bone will vanish.  If your distance is very short then ever the fractional safety "
+            "maximum I'm putting on this may not be good enough.  This is not just a visual nicety, the end of a bone determines "
+            "weight influences so keep that in mind when performing neat tricks.",
         max = 0.95,
         default = 0.0,
         )
 
     sim_path_extend : bpy.props.BoolProperty(
         name = "",
-        description =            "This extends your bone path by 1 segment, 1 bone length beyond your tail marker. The usefulness of this is apparent when "            "you are using the (limit) property, otherwise it's probably just a waste of bones.  When using the limit property your "            "bone tails will back off of the head a percentage indicated by the value, which can cause skin weight issues for the last "            "bone in the sequence depending on your goal.  This option helps prevent that by making sure there's an anchor for "            "weights where the last bone was indicated.",
+        description = ""
+            "This extends your bone path by 1 segment, 1 bone length beyond your tail marker. The usefulness of this is apparent when "
+            "you are using the (limit) property, otherwise it's probably just a waste of bones.  When using the limit property your "
+            "bone tails will back off of the head a percentage indicated by the value, which can cause skin weight issues for the last "
+            "bone in the sequence depending on your goal.  This option helps prevent that by making sure there's an anchor for "
+            "weights where the last bone was indicated.",
         default = False,
         )
     sim_path_parent : bpy.props.BoolProperty(
         name = "",
-        description =            "If you enabled (Path) then you're wanting mutliple bones to be generated.  This switch allows the chain to be parented, "            "which is usually not what you want for this tool since each bone is expected to translate freely while controled by the "            "associated vertices.  However, this can be very useful when genrating a quick rig using a meshs` topology or just a means "            "to create an IK system to manipulate the mesh in a more organic and controlled way",
+        description = ""
+            "If you enabled (Path) then you're wanting mutliple bones to be generated.  This switch allows the chain to be parented, "
+            "which is usually not what you want for this tool since each bone is expected to translate freely while controled by the "
+            "associated vertices.  However, this can be very useful when genrating a quick rig using a meshs` topology or just a means "
+            "to create an IK system to manipulate the mesh in a more organic and controlled way",
         default = False,
         )
 
     sim_skin_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "Dynamic type simulations require an additional step before exporting for use with Second Life.  This extra step is the "            "typical skinning process (weights).  This button allows you to skip that step if you are testing your simulation.  Once "            "you click (Done) with this enabled then your simulation will no longer work as expected.  Clicking (Action) again should "            "recover from this but it's unlikely that your simulation will be identical afterwards.",
+        description = ""
+            "Dynamic type simulations require an additional step before exporting for use with Second Life.  This extra step is the "
+            "typical skinning process (weights).  This button allows you to skip that step if you are testing your simulation.  Once "
+            "you click (Done) with this enabled then your simulation will no longer work as expected.  Clicking (Action) again should "
+            "recover from this but it's unlikely that your simulation will be identical afterwards.",
         default = False,
         )
 
@@ -73487,32 +76483,40 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
         print("This is a stub thrown for loc/rot/sca, replace with individual updaters later")
     sim_custom_location : bpy.props.BoolProperty(
         name = "",
-        description =            "Allow the bone to inherit the relative location of the associated vertex group",
+        description = ""
+            "Allow the bone to inherit the relative location of the associated vertex group",
         default = True,
         update = stub
         )
     sim_custom_rotation : bpy.props.BoolProperty(
         name = "",
-        description =            "Allow the bone to inherit the relative rotation of the associated vertex group",
+        description = ""
+            "Allow the bone to inherit the relative rotation of the associated vertex group",
         default = True,
         update = stub
         )
     sim_custom_scale : bpy.props.BoolProperty(
         name = "",
-        description =            "Allow the bone to inherit the relative scale of the associated vertex group",
+        description = ""
+            "Allow the bone to inherit the relative scale of the associated vertex group",
         default = True,
         update = stub
         )
     sim_custom_radius : bpy.props.FloatProperty(
         name = "",
-        description =            "This works similarly to the path radius but has nothing to do with the (Automatic) path feature of that tool.  This does "            "the same thing but with your existing material.  This is only used if (Preserve) is disabled, since this property is only "            "useful when creating vertex groups but not when preserving existing ones.",
+        description = ""
+            "This works similarly to the path radius but has nothing to do with the (Automatic) path feature of that tool.  This does "
+            "the same thing but with your existing material.  This is only used if (Preserve) is disabled, since this property is only "
+            "useful when creating vertex groups but not when preserving existing ones.",
         min = 0,
         default = 0,
         )
 
     sim_custom_influence : bpy.props.FloatProperty(
         name = "",
-        description =            "This is the constraint influence.  Usually we work with a value of 1 but you have the option to adjust it for some other "            "interesting effects",
+        description = ""
+            "This is the constraint influence.  Usually we work with a value of 1 but you have the option to adjust it for some other "
+            "interesting effects",
         min = 0,
         max = 1,
         default = 1,
@@ -73520,7 +76524,12 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
 
     sim_custom_preserve : bpy.props.BoolProperty(
         name = "",
-        description =            "The sim tools default behavior is to create vertex groups to accomplish the task but this manual tool allows you to switch "            "this off.  If this is enabled then your existing vertex groups will be used as pin groups for the associated bones and the "            "armature modifier, if there is one, will be temporarily disabled in order to absorb the motion from the mesh without "            "recursive interference.  If this is disabled any bones you chose to include in your simulation will have their respective "            "vertex group information, of the chosen mesh, replaced with the version provided by the tool",
+        description = ""
+            "The sim tools default behavior is to create vertex groups to accomplish the task but this manual tool allows you to switch "
+            "this off.  If this is enabled then your existing vertex groups will be used as pin groups for the associated bones and the "
+            "armature modifier, if there is one, will be temporarily disabled in order to absorb the motion from the mesh without "
+            "recursive interference.  If this is disabled any bones you chose to include in your simulation will have their respective "
+            "vertex group information, of the chosen mesh, replaced with the version provided by the tool",
         default = False,
         )
 
@@ -73556,11 +76565,65 @@ class BentoBuddySimProperties(bpy.types.PropertyGroup):
 
     sim_custom_disable_armatures : bpy.props.BoolProperty(
         name = "",
-        description =            "Disable Armature Modifiers"            "\n\n"            "This is enabled by default because it is the expected behavior.  When your sim is processed with (Action) and you have any "            "existing armature modifiers associated with the chosen mesh then these modifiers are disabled by default, in order to get "            "an expected result.  However, with some very careful planning you can utilize existing modifiers and their associated vertex "            "groups to achieve an enhanced simulation, more finely controled by you and, in that case, turn this off to see the results",
+        description = ""
+            "Disable Armature Modifiers"
+            "\n\n"
+            "This is enabled by default because it is the expected behavior.  When your sim is processed with (Action) and you have any "
+            "existing armature modifiers associated with the chosen mesh then these modifiers are disabled by default, in order to get "
+            "an expected result.  However, with some very careful planning you can utilize existing modifiers and their associated vertex "
+            "groups to achieve an enhanced simulation, more finely controled by you and, in that case, turn this off to see the results",
         default = True,
         update = sim_custom_disable_armatures
         )
 
+    def sim_bone_length_auto(self, context):
+        if self.sim_bone_length_auto == True:
+            self['sim_bone_length_manual'] = False
+    def sim_bone_length_manual(self, context):
+        if self.sim_bone_length_manual == True:
+            self['sim_bone_length_auto'] = False
+    sim_bone_length_auto : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "Automatic Bone Length"
+            "\n\n"
+            "Using this will give you the old behavior, which seems to make most bones too long for easy work-flow",
+        default = False,
+        update = sim_bone_length_auto
+        )
+    sim_bone_length_manual : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "Manual Bone Length"
+            "\n\n"
+            "Using this will enable the manual bone factor, allowing you to set the bone length relative to the object bounding box",
+        default = True,
+        update = sim_bone_length_manual
+        )
+    sim_bone_length_factor : bpy.props.FloatProperty(
+        name = "",
+        description = ""
+            "Bone Length Factor"
+            "\n\n"
+            "The bone length is based on a factor of the object bounding box but sometimes this can be too big.  "
+            "You can set the factor here.  For instance the default is 1.2, which is 1.2 times the size of half the "
+            "largest dimension.  The bone length will be normalized if the end result would cause the bone to be removed",
+        min=0.01,
+        max=10.0,
+        default = 1.2,
+        )
+
+    sim_auto_parent : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "Auto Parent on Bake"
+            "\n\n"
+            "When this is enabled the director objects will parent to the armature automatically.  This is the default "
+            "and is probably the best way to go.  The option is here in case you have a unique settup that you'd like to "
+            "control yourself.  Note that keeping the sim objects unparented will result in an offset from mPelvis in SL "
+            "that is probably undesirable.  Additionally only unparented objects will be affected, and reverted, in a reset",
+        default = True,
+        )
 
 
 
@@ -74330,20 +77393,52 @@ a mapped mesh to get a similar result in SL"""
         for o in selected:
             if o.type == 'MESH':
                 mesh.append(o)
+        if len(mesh) == 0:
+            print("No mesh selected, action is only performed on mesh")
+            popup("No mesh selected", "Info", "INFO")
+            return {'FINISHED'}
 
         
         actors = set()
         for o in selected:
             if o.type == 'MESH':
-                a = o.get('bb_sim_actor')
+                a = o.get('bb_sim_actor', None)
                 if a != None:
                     actors.add(a)
-                o.pop('bb_sim_actor', "")
+                
+
         
         directors = []
         for a in actors:
             ds = a.get('bb_sim_directors', [])
             directors.extend(ds)
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        if len(directors) > 0:
+            text = "At least one item in your set is already engaged\n"
+            for d in directors:
+                text += "\n -" + d.name
+            print(text)
+            utils.popup(text, "Error", "ERROR")
+            return {'FINISHED'}
+        
+        
+        
+
+        
+        
         
         for d in directors:
             if utils.is_valid(d):
@@ -74383,6 +77478,75 @@ a mapped mesh to get a similar result in SL"""
         
 
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        
+        
+        
+        rename_map = {}
+        for o in directors:
+            if 'bb_onemap_rename' in o:
+                if 'bb_sim_name' in o:
+                    if o['bb_sim_name'] == o.name:
+                        print("Found a rename map for new objects on", o.name)
+                        rename_map = o['bb_onemap_rename'].to_dict()
+                        break
+                    else:
+                        print("Skipping", o.name, "since the object has changed so the map is invalid")
+
+        
+        
+        
+        if len(rename_map) == 0:
+            print("This must be a new run or all objects are duplicates of some other sim.")
+            print("I'll clean up the properties just in case")
+            for o in directors:
+                o.pop('bb_onemap_rename', {})
+                for k in o.keys():
+                    if k.startswith("bb_sim_"):
+                        o.pop(k)
+        
+        
+        else:
+            new_directors = []
+            for o in directors:
+                if 'bb_sim_name' in o:
+                    bb_sim_name = o['bb_sim_name']
+                    if o.name != bb_sim_name:
+                        new_directors.append(o.name)
+                        o.pop('bb_sim_name')
+                        o.pop('bb_sim_bone', "")
+                        o['bb_onemap_rename'] = rename_map
+                else:
+                    o['bb_sim_name'] = o.name
+            if len(new_directors) > 0:
+                txt =  "The following object(s) is/was not in the original sim set.  It was probably duplicated or renamed.\n"
+                txt += "I will remove the sim name property and allow the rest of the routine to pick it up.  It will have\n"
+                txt += "to be re-mapped.\n"
+                print(txt)
+                print(new_directors)
+                txt = "You have newer objects in your sim, they will have to be  mapped\n"
+                txt += "before you can export them.  See the console for more info."
+                utils.popup(txt)
+        
+        
+        
+
+        
+        
+        
+        
+
         print("Remaining directors for simulation:")
         for o in directors:
             print(" - ", o.name)
@@ -74416,6 +77580,18 @@ a mapped mesh to get a similar result in SL"""
         
         
         
+        
+        
+        
+        director_groups = {}
+        
+
+        
+        
+        
+        
+        
+        
 
         
         distance = {}
@@ -74442,10 +77618,9 @@ a mapped mesh to get a similar result in SL"""
                 if next_length > longest:
                     tail = v
                     longest = next_length
+
             
-            bname = "BB_SIM_BONE_" + utils.get_temp_name()
-            if bname in aObj.data.bones:
-                print("Bone name collision", bname)
+            bname = "BB_SIM_BONE_" + utils.get_unique_name_short()
             boneObj = aObj.data.edit_bones.new(bname)
             
             bone = boneObj.name
@@ -74453,6 +77628,51 @@ a mapped mesh to get a similar result in SL"""
             boneObj.tail = tail
             G = dObj.vertex_groups.new( name = bone )
             G.add(vertices, 1, 'REPLACE')
+
+            
+            
+            
+            
+            
+            
+            
+            
+            director_groups[dObj.name] = G.name
+            
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            if bb_sim.sim_bone_length_manual == True:
+                
+                
+                blf = bb_sim.sim_bone_length_factor
+                x = dObj.dimensions.x
+                y = dObj.dimensions.y
+                z = dObj.dimensions.z
+                longest = max(x,y,z)
+
+                
+                half = longest / 2
+                new_length = half * blf
+
+                if new_length < 0.05:
+                    
+                    boneObj.length = longest / 2
+                else:
+                    boneObj.length = new_length
+
+            
+            
+            
 
             
             constraints = ['COPY_LOCATION', 'COPY_ROTATION']
@@ -74496,13 +77716,97 @@ a mapped mesh to get a similar result in SL"""
         bpy.ops.object.mode_set(mode='OBJECT')
         aObj.select_set(False)
 
-        for o in directors:
-            o.select_set(True)
         
         
         
-        if len(directors) > 0:
-            utils.activate(o)
+
+        
+        
+        
+        
+        
+        
+        
+
+        aObj.select_set(True)
+        utils.activate(aObj)
+        bpy.ops.object.mode_set(mode='EDIT')
+
+        
+        
+        
+        
+
+        for dObj in directors:
+            
+            
+            
+            bone = director_groups[dObj.name]
+            if 'bb_sim_bone' in dObj:
+                
+                bb_sim_bone = dObj['bb_sim_bone']
+                dObj.vertex_groups[bone].name = bb_sim_bone
+                aObj.data.bones[bone].name = bb_sim_bone
+            else:
+                dObj['bb_sim_bone'] = bone
+
+            
+            
+            
+            
+            rename_map = {}
+            if 'bb_onemap_rename' in dObj:
+                rename_map = dObj['bb_onemap_rename'].to_dict()
+        if len(rename_map) == 0:
+            print("There was no rename map on any of the directors, which is typical if this is a first pass")
+        else:
+            print("Found rename map on at least one of the directors, storing it now on", aObj.name)
+            aObj['bb_onemap_rename'] = rename_map
+
+        
+        bpy.ops.object.mode_set(mode='OBJECT')
+        aObj.select_set(False)
+        bpy.context.view_layer.update()
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        if 1 == 0:
+            for o in directors:
+                m = o.modifiers.new(name='Armature', type='ARMATURE')
+                m.object = aObj
+                m.use_vertex_groups = True
+                m.show_viewport = False
+                m.show_render = True
+                o['bb_sim_armature'] = m.name
+                
+                
+                
+                
+
+
+        
+        
+        
+
+        
+        
+        
+        for o in bpy.context.selected_objects:
+            o.select_set(False)
+        aObj.select_set(True)
+        utils.activate(aObj)
 
         return {'FINISHED'}
 
@@ -74624,13 +77928,16 @@ class BentoBuddyLatchProperties(bpy.types.PropertyGroup):
         self["latch_blank"] = False
     latch_blank : bpy.props.BoolProperty(
         name = "",
-        description =            "blank",
+        description = ""
+            "blank",
         default = False,
         update = update_latch_blank
         )
     latch_menu_enabled : bpy.props.BoolProperty(
         name = "",
-        description =            "These are rig controller and matching features for ease of use.  The process here is also useful for transferring "            "between chained rigs using multiple maps.  This is where you can snap one rig to another.",
+        description = ""
+            "These are rig controller and matching features for ease of use.  The process here is also useful for transferring "
+            "between chained rigs using multiple maps.  This is where you can snap one rig to another.",
         default = False,
         )
 
@@ -74647,13 +77954,15 @@ class BentoBuddyLatchProperties(bpy.types.PropertyGroup):
 
     latch_actor : bpy.props.BoolProperty(
         name = "",
-        description =            "This rig appears to be an actor for the latch, remove it or use another",
+        description = ""
+            "This rig appears to be an actor for the latch, remove it or use another",
         default = True,
         update = update_latch_actor
         )
     latch_director : bpy.props.BoolProperty(
         name = "",
-        description =            "This rig appears to be an director for the latch, remove it or use another",
+        description = ""
+            "This rig appears to be an director for the latch, remove it or use another",
         default = True,
         update = update_latch_director
         )
@@ -75192,6 +78501,11 @@ class BentoBuddySelectBones(bpy.types.Operator):
 
     def execute(self, context):
         armObj = bpy.context.selected_objects[0]
+
+        
+        state = utils.get_state()
+        utils.set_state(state)
+
         utils.activate(armObj)
 
         action = self.action
@@ -75220,7 +78534,10 @@ class BentoBuddySelectBones(bpy.types.Operator):
         
         for bone in skel.avatar_skeleton:
             if bone in bone_groups.bones[group]:
-                boneType[bone].select = state
+                if bone in armObj.data.bones:
+                    boneType[bone].select = state
+                else:
+                    print("Skipping", bone)
 
         return {'FINISHED'}
 
@@ -75232,8 +78549,8 @@ class BentoBuddySelectBones(bpy.types.Operator):
 
 class BentoBuddySimBake(bpy.types.Operator):
     """Bake the simulation into armature animation.  This will add the simulation to your rig
-as an animation and detach your set from the sim tools.  Make sure your timeline range is set
-appropriately for start and end"""
+as an animation and detach your set from the sim tools.  Make sure your time-line range
+is set appropriately for start and end"""
 
     bl_idname = "bentobuddy.sim_bake"
     bl_label = "Bake Animation"
@@ -75253,6 +78570,9 @@ appropriately for start and end"""
         return True
 
     def execute(self, context):
+        
+        
+        
         bb_sim = bpy.context.window_manager.bb_sim
         checkObj = bpy.context.selected_objects[0]
 
@@ -75273,7 +78593,31 @@ appropriately for start and end"""
 
         if utils.is_valid(aObj):
 
-            result = animutils.bake_motion(sarm=aObj, tarm=aObj)
+            
+            if 'bb_sim_baked' in aObj:
+                print("The object", aObj.name, "has the baked flag, indicating that this was performed already.  Reset the sim to start over")
+                text = "Sim has already been baked, reset to start over"
+                popup(text, "Error", "ERROR")
+                return {'FINISHED'}
+
+            
+            result = True
+            
+            if bpy.app.version > (2, 9, 99): 
+                print("Blender native bake in 3+ is faster than it used to be, using native instead.")
+                state_ = utils.get_state()
+                aObj.select_set(True)
+                utils.activate(aObj)
+                bpy.ops.object.mode_set(mode='POSE')
+                frame_start = bpy.context.scene.frame_start
+                frame_end = bpy.context.scene.frame_end
+                bpy.ops.nla.bake(frame_start=frame_start, frame_end=frame_end, only_selected=False, visual_keying=True, clear_constraints=True, bake_types={'POSE'})
+                utils.set_state(state_)
+            else:
+                print("Blender version is less than 3, suffering from slow animation bakes, using custom bake from fcurvs instead...")
+                result = animutils.bake_motion(sarm=aObj, tarm=aObj)
+
+            print("Bake finished!")
             if result == True:
                 print("Baking finished!")
                 
@@ -75295,12 +78639,96 @@ appropriately for start and end"""
                 
                 utils.activate(o)
 
-                print("-------------------------------------------")
-                print("selected:", bpy.context.selected_objects)
-                print("mode:", bpy.context.mode)
-                print("-------------------------------------------")
+                
+                
+                
+                for o in directors:
+                    o['bb_sim_parent'] = None
+                    if o.parent:
+                        o['bb_sim_parent'] = o.parent.name
+                    if bb_sim.sim_auto_parent == True:
+                        print("Auto parent is true, parenting...")
+                        o.parent = aObj
+                
+                
+                
+
+                
+                
+                
+                
+                
+                
+                for o in directors:
+                    if o.animation_data == None:
+                        continue
+                    if o.animation_data.action == None:
+                        continue
+                    
+                    
+                    o['bb_sim_action'] = o.animation_data.action.name
+                    o.animation_data.action = None
+                    print("Stored action", o['bb_sim_action'], "onto director", o.name, "and cleared it from the set")
+
+                
+                
+
+                
+                
+                
+
+                
+                
+                
+                
+                
+                for o in directors:
+                    print("Storing rigid properties for director", o.name)
+                    bb_sim_props = {}
+                    if o.rigid_body == None:
+                        continue
+                    for r in o.rigid_body.rna_type.properties.keys():
+                        if r == "collision_collections":
+                            
+                            continue
+                        bb_sim_props[r] = getattr(o.rigid_body, r)
+
+                    new_props = {}
+                    for r in bb_sim_props:
+                        new_props[r] = getattr(o.rigid_body, r)
+                    o['bb_sim_props'] = {}
+                    for p in new_props:
+                        
+                        if p == 'rna_type':
+                            continue
+                        try:
+                            o['bb_sim_props'][p] = new_props[p]
+                            
+                        except Exception as e:
+                            print("Could not store property onto object, see below")
+                            print(traceback.format_exc())
+                    
+                    
+                    
+
+                
+                bpy.context.view_layer.update()
+
+                
+                
+                
+                
+                
+                
+                utils.activate(bpy.context.selected_objects[0])                
+
+
                 try:
+                    
                     bpy.ops.rigidbody.objects_remove()
+
+                except Exception as e:
+                        print(traceback.format_exc())
                 except:
                     print("Not a rigid body, maybe cloth?")
 
@@ -75314,12 +78742,31 @@ appropriately for start and end"""
 
                 
                 
+                
+                
+                
+                
+                
                 for o in directors:
-                    m = o.modifiers.new(name='Armature', type='ARMATURE')
-                    m.object = aObj
-                    m.use_vertex_groups = True
-                    
-                    
+                    if 1 == 0:
+                        mname = o.get('bb_sim_armature', None)
+                        if mname == None:
+                            print("Director", o.name, "has no armature modifier property directive, this could be an error, skipping...")
+                            continue
+                        for m in o.modifiers:
+                            if m.name == mname:
+                                m.show_viewport = True
+
+                    else:
+                        m = o.modifiers.new(name='Armature', type='ARMATURE')
+                        m.object = aObj
+                        m.use_vertex_groups = True
+                        m.show_viewport = True
+                        m.show_render = True
+                        o['bb_sim_armature'] = m.name
+
+                
+                
                 
 
             else:
@@ -75345,7 +78792,7 @@ appropriately for start and end"""
         
         
         
-        print("Freezing sim, reset will no longer apply to this set")
+        
 
         
         
@@ -75431,6 +78878,16 @@ appropriately for start and end"""
         
         
 
+        
+        
+        
+        for o in bpy.context.selected_objects:
+            o.select_set(False)
+        aObj.select_set(True)
+        utils.activate(aObj)
+
+        
+        aObj['bb_sim_baked'] = True 
 
         return {'FINISHED'}
 
@@ -75538,6 +78995,9 @@ when associated with a rig, but not always necessary"""
     bl_idname = "bentobuddy.sim_parent"
     bl_label = "Parent the objects"
 
+    
+    action : bpy.props.StringProperty(default="make")
+
     @classmethod
     def poll(cls, context):
         if len(bpy.context.selected_objects) != 1:
@@ -75570,18 +79030,19 @@ when associated with a rig, but not always necessary"""
 
         
         aObj = directors[0]['bb_sim_actor']
-        if utils.is_valid(aObj):
-            
+
+        if utils.is_valid(aObj) == False:
+            print("The actor is invalid, this shouldn't happen")
+            popup("Bad Actor, this shouldn't happen", "Error", "ERROR")
+            return {'FINISHED'}
+
+        
+        if 1 == 0:
             for boneObj in aObj.pose.bones:
                 for C in boneObj.constraints:
                     if C.name.startswith('BB Sim'):
                         boneObj.constraints.remove(C)
                 
-        else:
-            print("The actor is invalid, this shouldn't happen")
-            popup("Bad Actor, this shouldn't happen", "Error", "ERROR")
-            return {'FINISHED'}
-
         for o in bpy.context.selected_objects:
             o.select_set(False)
 
@@ -75601,6 +79062,7 @@ when associated with a rig, but not always necessary"""
             for o in valid:
                 o.parent = aObj
                 o.select_set(True)
+                o['bb_sim_parent'] = True
             utils.activate(o)
 
         
@@ -75610,8 +79072,587 @@ when associated with a rig, but not always necessary"""
         
         
         
+        
+        
+        
+        
+        
+            
+        
+        
+        
+
 
         return {'FINISHED'}
+
+
+
+
+
+class BentoBuddySimQuickProperties(bpy.types.PropertyGroup):
+    def update_sim_blank(self, context):
+        self["sim_blank"] = False
+    sim_blank : bpy.props.BoolProperty(
+        default = False,
+        update = update_sim_blank
+        )
+    def update_sim_quick_title(self, context):
+        self["sim_quick_title"] = False
+    sim_quick_title : bpy.props.BoolProperty(
+        name = "",
+        description = ""
+            "Use the bone sets to add to your map, click additional ones to fill your map.  Only "
+            "end bones are used in a simulation, unless you're using (Long Shot).  Check the "
+            "console for important information if you need to understand what's happening.  "
+            "Each time you map a set of bones you'll see the number increase on this label.  "
+            "Keep mapping sets, in the order with which you wish to use them, until complete.  "
+            "You'll get a (Thumbs Up) when you are fully mapped, a question mark when there's "
+            "no obvious set map or set selected and numbers equaling what is mapped and what "
+            "remains.  The mesh and anim exporters will be useful after a full map is established",
+        default = False,
+        update = update_sim_quick_title
+        )
+    sim_quick_error_state : bpy.props.BoolProperty(
+        name = "",
+        description = "Internal - pass back protocol",
+        default = False,
+        )
+    sim_quick_error_text : bpy.props.StringProperty(
+        name = "",
+        description = "Internal - pass back protocol",
+        default = "DEFAULT",
+        )
+    sim_quick_snap_rig : bpy.props.StringProperty(
+        name = "",
+        description = "Internal - pass back protocol",
+        default = "",
+        )
+
+
+
+
+class BentoBuddySimQuickMapping(bpy.types.Operator):
+    """A quick mapper for your sim set.  This aught to be used for
+prototyping only  If you run into issues then work with
+the tools directly to find out what's wrong"""
+
+    bl_idname = "bentobuddy.sim_quick_mapping"
+    bl_label = "Quick Mapping"
+
+    
+    
+    action : bpy.props.StringProperty(default="")
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) == 0:
+            return False
+        return True
+
+    def execute(self, context):
+
+        
+        report = False
+
+        
+        
+        
+        result = sim.is_single(report=True)
+        if result == False:
+            return {'FINISHED'}
+
+        
+        bb_sim = bpy.context.window_manager.bb_sim
+        checkObj = bpy.context.selected_objects[0]
+        selected_objects = bpy.context.selected_objects
+
+        
+        
+        
+        
+        
+        
+        dObj = sim.get_director(checkObj)
+
+        if dObj == False:
+            print("No director available for object, did you delete the armature?", checkObj.name)
+            return {'FINISHED'}
+        else:
+            if isinstance(dObj, list):
+                print("... scan got multiple directors")
+                directors = dObj
+            else:
+                print("... scan got single director")
+                directors = [dObj] 
+
+        aObj = directors[0]['bb_sim_actor']
+        if utils.is_valid(aObj) == False:
+            txt =  "The armature/actor is not a valid object in the scene.\n"
+            txt += "There's nothing to process.  Make sure the sim is engaged."
+            utils.popup(txt, "Error", "ERROR")
+            return {'FINISHED'}
+        
+        
+        
+        
+
+        
+        
+        
+        rename_map = {}
+        
+        if 'bb_onemap_rename' in aObj:
+            print("Cleaning maps...")
+            rename_map = aObj['bb_onemap_rename'].to_dict()
+            bad_bones = []
+            for sbone in rename_map:
+                if sbone not in aObj.data.bones:
+                    bad_bones.append(sbone)
+            for bone in bad_bones:
+                rename_map.pop(bone)
+                print("removed", bone, "from map")
+        
+        
+        
+
+        map_actions = {'map_safe', 'map_attach', 'map_volume'}
+        if self.action in map_actions:
+
+            
+            
+            
+            tbones = set()
+            sbones = set()
+            for sbone in rename_map:
+                tbone = rename_map[sbone]
+                sbones.add(sbone)
+                tbones.add(tbone)
+
+            
+            qualified_bones = set()
+            for boneObj in aObj.data.bones:
+                if boneObj.name in sbones:
+                    continue
+                if boneObj.use_deform == False:
+                    print("Skipping non deform bone", boneObj.name)
+                    continue
+                qualified_bones.add(boneObj.name)
+
+            
+            if len(qualified_bones) == 0:
+                print("After examining the actor bones and the rename map I've determined that all bones have been mapped already")
+                if report == True:
+                    popup("Fully mapped!  To start over remove the maps")
+                return {'FINISHED'}
+
+            
+
+            bone_type = ""
+
+            if self.action == "map_safe":
+                bone_type = "mbones"
+            elif self.action == "map_attach":
+                bone_type = "attach"
+            elif self.action == "map_volume":
+                bone_type = "volume"
+            else:
+                print("Unknown map action")
+                popup("Unknown map action!", "Error", "ERROR")
+                return {'FINISHED'}
+
+            print("bone_type:", bone_type)
+
+            
+            end_bones = globals.end_bones[bone_type]
+
+            
+            usable = set()
+            for bone in end_bones:
+                if bone not in tbones:
+                    usable.add(bone)
+
+            
+            
+            if len(usable) == 0:
+                print("There are no remaining bones in the set that can be used, you have already mapped them all in", bone_type)
+                print("Try another set")
+                txt =  "Your model already contains all of the bones in the chosen set.\n"
+                txt += "Try another set to finish mapping your sim."
+                if report == True:
+                    utils.popup(txt, "Set is completely used", "INFO")
+                return {'FINISHED'}
+            print("Total usable target bones this round:", len(usable) )
+
+            
+            
+            used = set()
+            for sbone in qualified_bones:
+
+                tbone = usable.pop()
+                rename_map[sbone] = tbone
+                used.add(tbone)
+
+                if len(usable) == 0:
+                    print("I ran out of your bone set, choose an additional one to complete your map")
+                    if report == True:
+                        popup("I ran out of your bone set, add another to complete your map", "No more source bones", "INFO")
+                    break
+
+                if len(used) == len(qualified_bones):
+                    
+                    if len(usable) == len(qualified_bones):
+                        print("The usable bones ran out but just in time to map your set entirely")
+
+            aObj['bb_onemap_rename'] = rename_map.copy()
+            for dObj in directors:
+                dObj['bb_onemap_rename'] = rename_map.copy()
+
+        elif self.action == "remove":
+            aObj.pop('bb_onemap_rename', {})
+            for o in directors:
+                o.pop('bb_onemap_rename', {})
+
+        else:
+            print("Unknown argument:", self.action)
+
+        return {'FINISHED'}
+
+
+
+
+class BentoBuddySimQuickAnim(bpy.types.Operator, ExportHelper):
+    """Use this to hard retarget your rig.  This is very specific and uses the (Snap To Map)
+proxy rig.  The proxy is deleted after use"""
+
+    bl_idname = "bentobuddy.sim_quick_anim"
+    bl_label = "Export SL .anim"
+
+    filename_ext = ".anim"
+    filter_glob : bpy.props.StringProperty(
+        default='*.anim',
+        options={'HIDDEN'}
+        )
+
+    filename : bpy.props.StringProperty(default="")
+
+    @classmethod
+    def poll(cls, context):
+        obj = bpy.data.objects
+        if len(bpy.context.selected_objects) > 1:
+            return False
+        if len(bpy.context.selected_objects) == 0:
+            return False
+        o = bpy.context.selected_objects[0]
+        if o.type == 'ARMATURE':
+            return True
+        return False
+
+    def invoke(self, context, event):
+        save_path = bpy.path.abspath("//")
+        bpy.context.scene.bb_anim.anim_save_path = save_path
+        self.filepath = save_path + bpy.context.scene.bb_anim.anim_base_name
+        wm = context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+
+        
+        
+        
+        
+        
+        
+        
+        
+
+        
+        
+        
+        aObj = None
+        for o in bpy.context.selected_objects:
+            if o.type == 'ARMATURE':
+                aObj = o
+                break
+        if aObj == None:
+            print("No armature selected")
+            popup("No armature", "Error", "ERROR")
+            return {'FINISHED'}
+
+        bb_quick = bpy.context.window_manager.bb_quick
+
+        
+        
+        old_start = bpy.context.scene.bentobuddy.animation_start_frame
+        old_end = bpy.context.scene.bentobuddy.animation_end_frame
+
+        old_loop_in = bpy.context.scene.bb_anim.anim_loop_in_frame
+        old_loop_out = bpy.context.scene.bb_anim.anim_loop_out_frame
+
+        frame_start = bpy.context.scene.frame_start
+        frame_end = bpy.context.scene.frame_end
+
+        
+        if aObj.animation_data != None:
+            if aObj.animation_data.action != None:
+                frame_start, frame_end = aObj.animation_data.action.frame_range
+
+        bpy.context.scene.bentobuddy.animation_start_frame = frame_start
+        bpy.context.scene.bentobuddy.animation_end_frame = frame_end
+        bpy.context.scene.bb_anim.anim_loop_in_frame = frame_start
+        bpy.context.scene.bb_anim.anim_loop_out_frame = frame_end
+
+        state = utils.get_state()
+        aObj.select_set(True)
+        utils.activate(aObj)
+
+        
+
+        bpy.ops.bentobuddy.bb_snap_rig()
+        if bb_quick.sim_quick_error_state == True:
+            print("There was an error with the snap")
+            print(bb_quick.sim_quick_error_text)
+            return {'FINISHED'}
+
+        snap_rig = bb_quick.sim_quick_snap_rig
+        snapObj = bpy.data.objects[snap_rig]
+
+        
+        
+        
+
+        
+        
+        
+        
+        def cleanup():
+            bpy.ops.object.delete()
+
+            bpy.context.scene.bentobuddy.animation_start_frame = old_start
+            bpy.context.scene.bentobuddy.animation_end_frame = old_end
+            bpy.context.scene.bb_anim.anim_loop_in_frame = old_loop_in
+            bpy.context.scene.bb_anim.anim_loop_out_frame = old_loop_out
+
+            utils.set_state(state)
+
+        
+        
+        
+
+
+        
+        
+        
+
+        obj = bpy.data.objects
+        bb = bpy.context.scene.bentobuddy
+        bba = bpy.context.scene.bb_anim_props
+
+        bb_split = bpy.context.window_manager.bb_split
+
+        
+        anim = bpy.context.scene.bb_anim
+        jd = joint_data
+
+        
+        
+        armObj = bpy.context.selected_objects[0]
+        arm = armObj.name
+
+        bpy.app.timers.register(cleanup)
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        if bb_split.split_enabled == True:
+            print("Splitting animation...")
+
+            bb_anim = bpy.context.scene.bb_anim
+
+            frame_start = bb.animation_start_frame
+            frame_end = bb.animation_end_frame
+            frame_fps = bb.animation_fps
+            split_time = bb_split.split_time
+
+            actions = animutils.split_time(frame_start=frame_start, frame_end=frame_end, fill_fps=frame_fps, fill_time=split_time)
+            if actions == False:
+                print("Couldn't get action segments")
+                cleanup()
+                return {'FINISHED'}
+
+            count = len(actions)
+
+            path, file_name = os.path.split(self.properties.filepath)
+            ext = file_name.split(".")[-1]
+            file_prefix = file_name.split(".")[-2]
+            full_path = path + "/"
+
+            files = utils.make_filenames(prefix=file_prefix, count=count, ext=".anim")
+
+            print("actions:", actions)
+            print("files:", files)
+
+            
+            anim_start_frame = bb.animation_start_frame
+            anim_end_frame = bb.animation_end_frame
+            anim_fps = bb.animation_fps
+            anim_ease_in = bb_anim.anim_ease_in_duration
+            anim_ease_out = bb_anim.anim_ease_out_duration
+            anim_loop = bb_anim.anim_loop
+            anim_loop_advanced = anim.anim_loop_advanced
+            anim_loop_in_frame = anim.anim_loop_in_frame
+            anim_loop_out_frame = anim.anim_loop_out_frame
+            disable_location_offsets = bba.disable_location_offsets
+            mark_tol = anim.mark_tol
+            mark_tol_rot = anim.mark_tol_rot
+            mark_tol_loc = anim.mark_tol_loc
+            fill_missing_keys = bba.fill_missing_keys
+            high_fidelity = bb_anim.anim_high_fidelity
+            anim_resample = anim.anim_resample
+            anim_resample_rate_rotation = anim.anim_resample_rate_rotation
+            anim_resample_rate_location = anim.anim_resample_rate_location
+            anim_base_priority = bb_anim.anim_base_priority
+
+            
+            
+            
+            bb_anim.anim_loop = False
+
+            
+            state = utils.get_state()
+
+            
+            
+            for i in actions:
+                frame_start = actions[i]['frame_start']
+                frame_end = actions[i]['frame_end']
+                filename = files[i]
+                filepath = full_path + filename
+
+                bb.animation_start_frame = frame_start
+                bb.animation_end_frame = frame_end
+
+                result = animutils.export_sl_anim(armature=armObj.name, path=filepath)
+                if result == False:
+                    txt  = "The split feature is enabled and the export returned an error so in order to save you \n"
+                    txt += "some time the operation was canceled after the first write.  This file will not upload \n"
+                    txt += "to Second Life.  Reduce the frames per slice in order to continue.  The total file size \n"
+                    txt += "that can be uploaded per slice is 250,000 bytes."
+                    
+                    print(txt)
+
+                    
+                    
+                    
+                    utils.set_state(state)
+                    bb.animation_start_frame = anim_start_frame
+                    bb.animation_end_frame = anim_end_frame
+                    bb.animation_fps = anim_fps
+                    bb_anim.anim_ease_in_duration = anim_ease_in
+                    bb_anim.anim_ease_out_duration = anim_ease_out
+                    bb_anim.anim_loop = anim_loop
+                    anim.anim_loop_advanced = anim_loop_advanced
+                    anim.anim_loop_in_frame = anim_loop_in_frame
+                    anim.anim_loop_out_frame = anim_loop_out_frame
+                    bba.disable_location_offsets = disable_location_offsets
+                    anim.mark_tol = mark_tol
+                    anim.mark_tol_rot = mark_tol_rot
+                    anim.mark_tol_loc = mark_tol_loc
+                    bba.fill_missing_keys = fill_missing_keys
+                    bb_anim.anim_high_fidelity = high_fidelity
+                    anim.anim_resample = anim_resample
+                    anim.anim_resample_rate_rotation = anim_resample_rate_rotation
+                    anim.anim_resample_rate_location = anim_resample_rate_location
+                    bb_anim.anim_base_priority = anim_base_priority
+
+                    cleanup()
+
+                    return {'FINISHED'}
+
+            utils.set_state(state)
+
+            
+            suffix = "Animesh_Animation"
+            lsl_file = bb_settings["files"]["lsl_split_animmesh"]
+            source = script_dir + presets_path + lsl_file
+            target = full_path + suffix + "_lsl.txt"
+            result = animutils.write_lsl(source=source, target=target, actions=actions, prefix=file_prefix, fps=bb.animation_fps)
+            if result == False:
+                print("Result from writing scripts for Animesh was False")
+                popup("Script write failure", "Error", "ERROR")
+
+            suffix = "Avatar_Animation"
+            lsl_file = bb_settings["files"]["lsl_split_animation"]
+            source = script_dir + presets_path + lsl_file
+            target = full_path + suffix + "_lsl.txt"
+            result = animutils.write_lsl(source=source, target=target, actions=actions, prefix=file_prefix, fps=bb.animation_fps)
+            if result == False:
+                print("Result from writing scripts for Avatar was False")
+                popup("Script write failure", "Error", "ERROR")
+
+            
+            bb.animation_start_frame = anim_start_frame
+            bb.animation_end_frame = anim_end_frame
+            bb.animation_fps = anim_fps
+            bb_anim.anim_ease_in_duration = anim_ease_in
+            bb_anim.anim_ease_out_duration = anim_ease_out
+            bb_anim.anim_loop = anim_loop
+            anim.anim_loop_advanced = anim_loop_advanced
+            anim.anim_loop_in_frame = anim_loop_in_frame
+            anim.anim_loop_out_frame = anim_loop_out_frame
+            bba.disable_location_offsets = disable_location_offsets
+            anim.mark_tol = mark_tol
+            anim.mark_tol_rot = mark_tol_rot
+            anim.mark_tol_loc = mark_tol_loc
+            bba.fill_missing_keys = fill_missing_keys
+            bb_anim.anim_high_fidelity = high_fidelity
+            anim.anim_resample = anim_resample
+            anim.anim_resample_rate_rotation = anim_resample_rate_rotation
+            anim.anim_resample_rate_location = anim_resample_rate_location
+            bb_anim.anim_base_priority = anim_base_priority
+
+            cleanup()
+
+            return {'FINISHED'}
+
+        if 'bb_deformer' in armObj:
+            anim_high_fidelity = anim.anim_high_fidelity
+            anim_resample = anim.anim_resample
+            anim.anim_high_fidelity = True
+            anim.anim_resample = False
+
+        
+        
+        
+        
+
+        print("New default exporter chosen, deferring...")
+        animutils.export_sl_anim(armature=arm, path=self.properties.filepath)
+        anim.export_sl_anim_label_short = anim.export_sl_anim_label
+        anim.export_sl_anim_alert = True
+
+        if 'bb_deformer' in armObj:
+            anim.anim_high_fidelity = anim_high_fidelity
+            anim.anim_resample = anim_resample
+
+        cleanup()
+
+        return {'FINISHED'}
+
+        
+        
+        
+
 
 
 
@@ -76362,21 +80403,89 @@ all sim influences that Bento Buddy knows about"""
 
 
 
+class BentoBuddySimRemoveProps(bpy.types.Operator):
+    """Remove the stored sim properties.  This removes all recoverable items, including the maps,
+on all of the selected sim objects.  This is not a sim set specific function, it works on
+the object model only"""
+
+    bl_idname = "bentobuddy.sim_remove_props"
+    bl_label = "Remove Props"
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) == 0:
+            return False
+        for o in bpy.context.selected_objects:
+            
+            if 'bb_sim_props' in o:
+                return True
+            if 'bb_sim_bone' in o:
+                return True
+        return False
+
+    def execute(self, context):
+        bb_sim = bpy.context.window_manager.bb_sim
+
+        
+        
+        for o in bpy.context.selected_objects:
+
+            for k in o.keys():
+                if k.startswith("bb_sim_"):
+                    o.pop(k)
+                    print("Removed property", k, "from", o.name)
+
+            for g in o.vertex_groups:
+                print("Removing vertex group", g.name)
+                o.vertex_groups.remove(g)
+
+            
+            if 1 == 0:
+                print("Removed from", o.name)
+
+                bb_sim_props = o.pop('bb_sim_props', None)
+                if bb_sim_props == None:
+                    print(" - has no props")
+                else:
+                    print(" - has props")
+
+                bb_sim_bone = o.pop('bb_sim_bone', None)
+                if bb_sim_bone == None:
+                    print(" - bb_sim_bone:", bb_sim_bone)
+                else:
+                    print(" - bb_sim_bone:", bb_sim_bone)
+
+                bb_onemap_rename = o.pop('bb_onemap_rename', None)
+                if bb_onemap_rename == None:
+                    print(" - has no map")
+                else:
+                    print(" - bb_onemap_rename removed") 
+
+                print("-------------------------")
+
+
+
+        return {'FINISHED'}
+
+
+
+
 class BentoBuddySimReset(bpy.types.Operator):
     """Reset the stage"""
 
     bl_idname = "bentobuddy.sim_reset"
     bl_label = "Sim Reset"
 
-    @classmethod
-    def poll(cls, context):
-        if len(bpy.context.selected_objects) != 1:
-            return False
-        return True
+    
+    
+    
+    
+    
 
     def execute(self, context):
         bb_sim = bpy.context.window_manager.bb_sim
         checkObj = bpy.context.selected_objects[0]
+        selected_objects = bpy.context.selected_objects
 
         state = utils.get_state()
 
@@ -76403,6 +80512,186 @@ class BentoBuddySimReset(bpy.types.Operator):
 
         
         dObj = sim.get_director(checkObj)
+
+        
+        
+        
+        
+        
+        
+        
+        if dObj == False:
+            print("No director available for object, did you delete the armature?", checkObj.name)
+
+            
+            
+            
+            
+            print("...cleaning up properties and resetting sim...")
+            for o in selected_objects:
+                for k in o.keys():
+                    if k == 'bb_sim_bone':
+                        continue
+                    if k.startswith("bb_sim_"):
+                        print("Romoving prop", k, "from", o.name)
+                        o.pop(k)
+                    for m in o.modifiers:
+                        if m.type == 'ARMATURE':
+                            o.modifiers.remove(m)
+
+            txt =  "The actor seems to be missing but any residual properties in the selected\n"
+            txt += "objects were removed.  This is not the cleanest way to approach it but without\n"
+            txt += "the actor/armature there's no way to know which directors were supposed to be\n"
+            txt += "part of this set.  You'll want to check for errors."
+            print("txt")
+            utils.popup(txt, "Error", "ERROR")
+
+            
+            
+            
+            
+            
+            return {'FINISHED'}
+        else:
+            if isinstance(dObj, list):
+                print("... scan got multiple directors")
+                director_objects = dObj
+            else:
+                print("... scan got single director")
+                director_objects = [dObj] 
+
+            
+            for o in director_objects:
+                if 'bb_sim_action' not in o:
+                    continue
+                action = o.pop('bb_sim_action')
+                if o.animation_data == None:
+                    print("There's an action available for object", o.name, "but the animation data has been removed from it")
+                    continue
+                o.animation_data.action = bpy.data.actions[action]
+                print("Restored object animation", action, "onto director", o.name)
+
+            
+            
+            
+
+            
+            
+            
+            
+            
+
+            aObj = director_objects[0].get('bb_sim_actor', None)
+            if aObj != None:
+                if utils.is_valid(aObj) == False:
+                    print("No actor on the first director", director_objects[0].name)
+
+                else:
+                    print("Found actor", aObj.name)
+                    if 'bb_onemap_rename' in aObj:
+                        rename_map = aObj['bb_onemap_rename'].to_dict()
+                        print("Actor rig", aObj.name, "has a map")
+
+                        
+                        
+                        
+                            
+                                
+                                
+                            
+
+                        
+                        for o in director_objects:
+                            o['bb_onemap_rename'] = rename_map
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        for o in director_objects:
+            o['bb_sim_name'] = o.name
+        
+        
+        
+
+        
+        
+        
+        for o in director_objects:
+            parent = o.pop('bb_sim_parent', None)
+            try:
+                o.parent = bpy.data.objects[parent]
+            except:
+                print("Can't parent", o.name, "to", parent)
+        
+        
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        
+        
+
+        for o in director_objects:
+            sim_props = o.pop('bb_sim_props', None)
+            if sim_props == None:
+                continue
+            
+            o.select_set(True)
+            utils.activate(o)
+            bpy.ops.rigidbody.object_add()
+            print("Restoring sim properties on objects...")
+            for p in sim_props:
+                try:
+                    setattr(o.rigid_body, p, sim_props[p])
+                except Exception as e:
+                    print("Property set failed, see below")
+                    print(traceback.format_exc())
+
+            o.select_set(False)
+
+        
+        
+        
+
+        
+        
+        
+        for o in director_objects:
+            mname = o.pop('bb_sim_armature', None)
+            if mname == None:
+                continue
+            for m in o.modifiers:
+                if m.name == mname:
+                    
+                    print("Removing armature modifier", m.name, "from object", o.name)
+                    o.modifiers.remove(m)
+                    break
+        
+        
+        
+
         if dObj == False:
             print("No director link for", checkObj.name)
             
@@ -78142,6 +82431,108 @@ class BentoBuddyPanelAdvanced(bpy.types.Panel):
 
 
 
+class BentoBuddyWeightsMirror(bpy.types.Operator):
+    """Mirror weights from one side of your mesh to the other.  This is irreversable
+so be careful and try to understand the tool.  Safe your work in case it fails
+"""
+
+    bl_idname = "bentobuddy.weights_mirror"
+    bl_label = "Mirror Weights"
+
+    
+    axis : bpy.props.StringProperty(default="+x")
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) != 1:
+            return False
+        o = bpy.context.selected_objects[0]
+        if o.type != 'MESH':
+            return False
+        return True
+
+    def execute(self, context):
+
+        
+        
+        
+        
+        
+
+        obj = bpy.data.objects
+
+        print("axis:", self.axis)
+
+        meshObj = bpy.context.selected_objects[0]
+        state = utils.get_state()
+        meshObj.select_set(True)
+        utils.activate(meshObj)
+
+        bpy.ops.object.mode_set(mode='EDIT')
+
+        if self.axis == "-x":
+            meshutils.select_half(mesh=meshObj, distance=0.0)
+            bpy.ops.mesh.select_all(action='INVERT')
+
+        elif self.axis == "+x":
+            meshutils.select_half(mesh=meshObj, distance=0.1)
+
+        else:
+            print("axis has a wrong value:", axis)
+            popup("A wrong value was passed", "Error", "ERROR")
+            return {'FINISHED'}
+
+        
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode='EDIT')
+
+        bpy.ops.object.vertex_group_mirror(mirror_weights=True, flip_group_names=True, all_groups=True, use_topology=False)
+
+        bpy.ops.object.mode_set(mode='OBJECT')
+
+        utils.set_state(state)
+
+        return {'FINISHED'}
+
+
+
+
+class BentoBuddyMeshSelectHalf(bpy.types.Operator):
+    """Select half your mesh"""
+
+    bl_idname = "bentobuddy.mesh_select_half"
+    bl_label = "Select half the mesh"
+
+    @classmethod
+    def poll(cls, context):
+        if len(bpy.context.selected_objects) != 1:
+            return False
+        o = bpy.context.selected_objects[0]
+        if o.type != 'MESH':
+            return False
+        return True
+
+    def execute(self, context):
+        obj = bpy.data.objects
+
+        meshObj = bpy.context.selected_objects[0]
+        state = utils.get_state()
+        meshObj.select_set(True)
+        utils.activate(meshObj)
+
+        bpy.ops.object.mode_set(mode='EDIT')
+
+        meshutils.select_half(meshObj)
+
+        
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.mode_set(mode='EDIT')
+
+        
+        return {'FINISHED'}
+
+
+
 
 
 
@@ -78166,7 +82557,6 @@ files that are listed in my custom modules list"""
             print("Call to flag_reloader failed")
 
         return {'FINISHED'}
-
 
 
 
@@ -78247,6 +82637,20 @@ classes = (
     BentoBuddyDevKitResetAll,
     BentoBuddyDevKitResetCollada,
     BentoBuddyColladaExporter,
+
+    
+    
+    
+
+
+
+    BentoBuddyLongshotProperties,
+    BentoBuddyLongshotGetChainsOperator,
+    BentoBuddyLongshotSetChainsOperator,
+    
+    
+    
+
 
 
     BentoBuddyPanelMeshExport,
@@ -78404,15 +82808,8 @@ classes = (
 
     
     
-    BentoBuddyHeadOperator,
     BentoBuddyHeadProperties,
-
-
-
-
-
-    BentoBuddyHeadPanel,
-
+    BentoBuddyHeadOperator,
     
     
     
@@ -78697,6 +83094,7 @@ classes = (
 
 
 
+    BentoBuddySimulatorPanel,
     BentoBuddyShapeShifterPanel,
 
 
@@ -78717,11 +83115,9 @@ classes = (
     
     
     
-
     BentoBuddySnapRigProperties,
     BentoBuddySnapRig,
     BentoBuddySnapConstraints,
-
     
     
     
@@ -78898,6 +83294,7 @@ classes = (
     BentoBuddySnapAction,
     BentoBuddySnapNuke,
     BentoBuddySnapDestroy,
+    BentoBuddySnapRemove,
     BentoBuddySnapClean,
     BentoBuddySnapReset,
     BentoBuddySnapMapAcquire,
@@ -78945,11 +83342,15 @@ classes = (
     BentoBuddySimBake,
     BentoBuddySimJoin,
     BentoBuddySimParent,
+    BentoBuddySimQuickProperties,
+    BentoBuddySimQuickMapping,
+    BentoBuddySimQuickAnim,
     BentoBuddySimAddBone,
     BentoBuddySimEditBones,
     BentoBuddySimDone,
     BentoBuddySimRigidCopy,
     BentoBuddySimRemoveAll,
+    BentoBuddySimRemoveProps,
     BentoBuddySimReset,
     BentoBuddySimStretchAdd,
     BentoBuddySimStretchRemove,
@@ -79054,6 +83455,15 @@ classes = (
     BentoBuddyBoneControlExportSet,
     BentoBuddyBoneControlExportClear,
     BentoBuddyBoneControlExportRemove,
+    
+    
+    
+    BentoBuddyMeshSelectHalf,
+    
+    
+    
+    BentoBuddyWeightsMirror,
+    
     
     
 )
@@ -79304,19 +83714,30 @@ def register():
 
     
     
-    bpy.types.Scene.bone_source = bpy.props.StringProperty    (
+    bpy.types.Scene.bone_source = bpy.props.StringProperty(
         name = "",
-        description = "Choose a rig for the bone source.  You can create one from the Rig Creation rollout or you can "            "even use an Avastar rig",
+        description = "Choose a rig for the bone source.  You can create one from the Rig Creation rollout or you can "
+            "even use an Avastar rig",
         default = "BentoBuddy"
     )
-    bpy.types.Scene.bentobuddy_template = bpy.props.StringProperty    (
+    bpy.types.Scene.bentobuddy_template = bpy.props.StringProperty(
         name = "Custom Map",
-        description =            "Enable the blue target then click the (Load Template) button to open a text file with your custom bone mapping.  "            "It should include 3 names per line. The SL bone, your skeleton and the target bone in your rig."            "There can be no spaces in the names that you use in the bones or the rigs.",
+        description = ""
+            "Enable the blue target then click the (Load Template) button to open a text file with your custom bone mapping.  "
+            "It should include 3 names per line. The SL bone, your skeleton and the target bone in your rig."
+            "There can be no spaces in the names that you use in the bones or the rigs.",
         default = ""
     )
-    bpy.types.Scene.bentobuddy_custom_bone_list = bpy.props.StringProperty    (
+    bpy.types.Scene.bentobuddy_custom_bone_list = bpy.props.StringProperty(
         name = "Custom Bone Lists",
-        description =            "This replaces the internal automatic bone mapping.  Often times the automatic mapping is enough to get you "            "started.  This options is provided in order to change the order of use from source bones to target bones.  "            "Internally there is an order of bone mapping that you are not exposed to but this allows you to control it.  "            "It also allows you to name problem bones in case you are having difficulty with 1 or more.  The bone name mPelvis "            "is already in this list, not because it is a problem bone but because you will want to key that bone yourself if "            "needed.  There is already a bones list text file in the presets folder that you can use as a base.  It is prepared "            "in the same way that the internal mapping is.  Bento Buddy will only use your Bone List file if you load it.",
+        description = ""
+            "This replaces the internal automatic bone mapping.  Often times the automatic mapping is enough to get you "
+            "started.  This options is provided in order to change the order of use from source bones to target bones.  "
+            "Internally there is an order of bone mapping that you are not exposed to but this allows you to control it.  "
+            "It also allows you to name problem bones in case you are having difficulty with 1 or more.  The bone name mPelvis "
+            "is already in this list, not because it is a problem bone but because you will want to key that bone yourself if "
+            "needed.  There is already a bones list text file in the presets folder that you can use as a base.  It is prepared "
+            "in the same way that the internal mapping is.  Bento Buddy will only use your Bone List file if you load it.",
         default = ""
     )
 
@@ -79443,6 +83864,12 @@ def register():
     
     bpy.types.WindowManager.bb_joints = bpy.props.PointerProperty(type=BentoBuddyJointControlProperties)
     
+    bpy.types.WindowManager.bb_longshot = bpy.props.PointerProperty(type=BentoBuddyLongshotProperties)
+    
+    bpy.types.WindowManager.bb_quick = bpy.props.PointerProperty(type=BentoBuddySimQuickProperties)
+    
+
+    
     
     
     ico.load_icons()
@@ -79473,6 +83900,7 @@ def unregister():
     
     
     my_property_list = [
+        bpy.types.WindowManager.bb_longshot,
         bpy.types.WindowManager.bb_snap_rig,
         bpy.types.WindowManager.bb_joints,
         bpy.types.WindowManager.bb_split,
@@ -79482,6 +83910,7 @@ def unregister():
         bpy.types.WindowManager.bb_inherit,
         bpy.types.WindowManager.bb_motion,
         bpy.types.WindowManager.bb_sim,
+        bpy.types.WindowManager.bb_quick,
         bpy.types.Scene.bb_autokey,
         bpy.types.WindowManager.bb_snap,
         bpy.types.WindowManager.bb_controller,

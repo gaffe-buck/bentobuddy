@@ -1,21 +1,4 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
-
 import os
 import bpy
 import sys
@@ -288,6 +271,44 @@ def move_marker(testing=False):
 
 
 
+def is_single(selected=[], report=False):
+    if len(selected) == 0:
+        selected = bpy.context.selected_objects
+        if (selected) == 0:
+            if report == True:
+                print("No objects to process")
+            return False
+
+    actors = set()
+    for o in selected:
+        directors = get_director(o)
+        if directors == False:
+            continue
+        if isinstance(directors, list) == False:
+            directors = [directors]
+        dObj = directors[0]
+        aObj = dObj.get('bb_sim_actor', None)
+        if aObj != None:
+            actors.add(aObj)
+    if len(actors) == 0:
+        if report == True:
+            print("This is not a sim set")
+            utils.popup("Not a sim set", "Error", "ERROR")
+        return False
+    if len(actors) > 1:
+        if report == True:
+            print("Multiple sim sets detected")
+            utils.popup("Multiple sim sets detected, I can only process one", "Error", "ERROR")
+        return False
+
+    return True
+
+
+
+
+
+
+
 
 
 
@@ -300,46 +321,33 @@ def get_director(object):
     aObj = OBJ.get('bb_sim_actor')
     
     if aObj == None:
-        print("Entry object may be an actor")
         dObj = OBJ.get('bb_sim_director')
         dObjs = OBJ.get('bb_sim_directors')
         
         if dObj == None and dObjs == None:
-            print("A: No directors found on the given object")
             return False
         if dObj != None:
-            print("A: Found single director, checking.")
             if utils.is_valid(dObj):
                 return dObj
-            print("A: This is a fall through for a single director, it failed")
         if dObjs != None:
-            print("A: Found multiple directors, checking")
             good = []
             for o in dObjs:
                 if utils.is_valid(o):
                     good.append(o)
             if len(good) > 0:
                 return good
-            print("A: This is a fall through for multiple directors, they all failed")
         return False
 
     
-    print("Entry object may be a director")
     if utils.is_valid(aObj):
-        print("D: actor is valid")
         dObj = aObj.get('bb_sim_director')
         dObjs = aObj.get('bb_sim_directors')
         
         if dObj == None and dObjs == None:
-            print("D: actor has no directors, this could be a bug")
             return False
         if dObj != None:
-            print("D: found single director")
             if utils.is_valid(dObj):
-                print("returning object:", dObj.name)
                 return dObj
-            else:
-                print("single director is invalid, falling through to check multiple")
         if dObjs != None:
             good = []
             for o in dObjs:
@@ -347,17 +355,10 @@ def get_director(object):
                     good.append(o)
             if len(good) > 0:
                 return good
-        else:
-            print("Logic issue when examining director regions, this is an API bug")
-
         return False
 
     else:
-        print("Entry actor does not appear to be in the scene, the caller probably caused this error")
         return False
-
-    
-    print("sim::get_director reports: fall through, check your logic")
 
     return False
 
@@ -370,11 +371,14 @@ def get_director(object):
 
 def get_actor(object):
     OBJ = object
-    if isinstance(object, str):
-        OBJ = bpy.data.objects[object]
+
     if utils.is_valid(OBJ) == False:
         print("sim::get_actor : object is not viable")
         return False
+
+    if isinstance(object, str):
+        OBJ = bpy.data.objects[object]
+
     
     if OBJ.get('bb_sim_actor') != None:
         return OBJ['bb_sim_actor']
@@ -575,14 +579,6 @@ def get_sim_armature(objects):
     mesh_names = [m.name for m in mesh]
 
     return (arm, mesh_names)
-
-            
-            
-            
-            
-            
-                
-                    
 
 
 

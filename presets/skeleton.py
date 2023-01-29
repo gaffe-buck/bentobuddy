@@ -1958,7 +1958,8 @@ avatar_skeleton = {
         "pivot": (0.0, 0.0, 0.0),
         "pos": (0.15, 0.0, -0.1),
         "end": (0.0, 0.0, 0.03),
-        "rot": (0.0, 90.0, 90.0),
+        "rot": (0.0, 90.0, 90.0), # This suffers gimbal lock
+        #"rot": (0.0, 90.002, 90.001),
         "scale": (1.0, 1.0, 1.0),
         "type": "attachment",
         "parent": "mChest",
@@ -2373,7 +2374,9 @@ avatar_skeleton = {
         "pivot": (0.0, 0.0, 0.0),
         "pos": (0.0, 0.0, 0.15),
         "end": (0.0, 0.0, 0.03),
-        "rot": (0.0, 0.0, 90.0),
+        "rot": (0.0, 0.0, 90.0), # This suffers an inverted orientation
+        #"rot": (0.001, 0.001, 90.001),
+        #"rot": (0.0, 0.0, 0.0),
         "scale": (1.0, 1.0, 1.0),
         "type": "attachment",
         "parent": "mHead",
@@ -2384,7 +2387,9 @@ avatar_skeleton = {
         "pivot": (0.0, 0.0, 0.0),
         "pos": (-0.15, 0.0, -0.1),
         "end": (0.0, 0.0, 0.03),
-        "rot": (0.0, -90.0, 90.0),
+        "rot": (0.0, -90.0, 90.0), # This suffers from immediate gimbal lock if transformed into a matrix
+        #"rot": (0.0, -90.001, 90.001),
+
         "scale": (1.0, 1.0, 1.0),
         "type": "attachment",
         "parent": "mChest",

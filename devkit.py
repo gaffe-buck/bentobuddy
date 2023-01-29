@@ -1,21 +1,4 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
-
 
 
 
@@ -201,9 +184,14 @@ def export_dae(matrices=None, joint='bone_data', file=None, real=None):
     
     
 
-
     testing = False
     
+
+    print()
+    print("---------------------------------")
+    print("devkit::export_dae: start")
+    print("---------------------------------")
+    print()
 
     print("Export matrix joint type is:", joint)
 
@@ -340,6 +328,9 @@ def export_dae(matrices=None, joint='bone_data', file=None, real=None):
             
             if bone_type == 'skin_data' or bone_type == 'bind_shape':
                 continue
+
+
+
 
             for bone in matrices[bone_type]:
 
@@ -612,8 +603,12 @@ def export_dae(matrices=None, joint='bone_data', file=None, real=None):
                     
                     
                     if data.text == None:
+                        txt = "There were no joints available for processing, see console for details.\n"
+                        txt += "Did you forget to map all of the bones?  Try the (Visual Snap Mapper),\n"
+                        txt += "it's fun.  The unmapped bones will be yellow.\n"
                         print("devkit::dae_export : the recycled dae file contained no joints, nothing to do")
-                        utils.popup("There were no joints available for processing, see console for details", "Error", "ERROR")
+                        print(txt)
+                        utils.popup(txt, "Error", "ERROR")
                         return False
 
                     
@@ -1243,7 +1238,7 @@ def export_dae(matrices=None, joint='bone_data', file=None, real=None):
                 if skeleton_node == None:
                     print("No skeleton found under instance_controller, this could be a bug in", node_name)
                 else:
-                    print("Altering skeleton referencd from", skeleton_node.text, "to", "#mPelvis")
+                    print("Altering skeleton referenced from", skeleton_node.text, "to", "#mPelvis")
                     skeleton_node.text = '#mPelvis'
                 vs.append(node)
         print("====================================")
@@ -1311,6 +1306,12 @@ def export_dae(matrices=None, joint='bone_data', file=None, real=None):
     pretty_dae(file_in=file_out, file_out=file_out)
 
     utils.set_state(state)
+
+    print()
+    print("---------------------------------")
+    print("devkit::export_dae: end")
+    print("---------------------------------")
+    print()
 
     return True
 
@@ -1733,6 +1734,17 @@ if True:
 
 def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, report=False):
 
+    print()
+    print("---------------------------")
+    print("devkit::get_matrices: start")
+    print("---------------------------")
+    print("- use_bind_pose:", use_bind_pose)
+    print("- rotate       :", rotate)
+    print("- base         :", base)
+    print("- retport      :", report)
+    print("---------------------------")
+    print()
+
     
     
     
@@ -1741,7 +1753,6 @@ def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, rep
     
     
     
-    print("rotate =", rotate)
     R90 = mathutils.Matrix.Rotation(math.radians(0.0), 4, 'Z')
     if rotate == True:
         R90 = mathutils.Matrix.Rotation(math.radians(90.0), 4, 'Z')
@@ -1864,7 +1875,6 @@ def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, rep
         bone_rev[tbone] = sbone
 
     
-    print("devkit::get_matrices : base =", base)
     if base == None:
         base_rig = getattr(base_data, "female_neutral")
     else:
@@ -2017,6 +2027,15 @@ def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, rep
         
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
         r = skel.avatar_skeleton[bone]['rot']
         rot = [math.radians(a) for a in r] 
         R_mat = mathutils.Euler(rot,'XYZ').to_matrix().to_4x4()
@@ -2033,6 +2052,11 @@ def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, rep
             
             
                 
+
+
+
+
+
 
         
         
@@ -2088,6 +2112,12 @@ def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, rep
 
 
 
+    print()
+    print("---------------------------")
+    print("devkit::get_matrices:   end")
+    print("---------------------------")
+    print()
+
     return dae
 
     
@@ -2125,6 +2155,7 @@ def get_matrices(armature=None, use_bind_pose=False, rotate=True, base=None, rep
 
 
 def get_bind_info(arm):
+
     armObj = arm
     if isinstance(arm, str):
         armObj = bpy.data.objects[arm]
@@ -2241,6 +2272,7 @@ def get_bind_info(arm):
 
 
 def reshape(armObj, matrices=None, bone_type="bind_data", rotate=False, copy=False, delete=False, report=True):
+
     if isinstance(armObj, str):
         armObj = bpy.data.objects[armObj]
 
@@ -2424,6 +2456,8 @@ def reshape(armObj, matrices=None, bone_type="bind_data", rotate=False, copy=Fal
                         S = mathutils.Matrix()
                         for i in range(3):
                             S[i][i] = s[i]
+
+
 
             l = mat.to_translation()
             

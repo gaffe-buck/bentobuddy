@@ -1,21 +1,4 @@
 
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
-
 import os
 import bpy
 import sys
@@ -41,6 +24,12 @@ rd = rig_data
 
 from .presets import skeleton as skel
 
+
+
+
+
+settings = {}
+settings['testing'] = False
 
 
 
@@ -79,6 +68,43 @@ vbones_to_mbones = {
     "L_LOWER_LEG": "mKneeLeft",
     "L_FOOT": "mAnkleLeft",
     }
+
+
+
+def get_sl_bone_matrix(armature=None, bone=None):
+
+    def compose_matrix(armature, bone):
+        r = skel.avatar_skeleton[bone]['rot']
+        l = skel.avatar_skeleton[bone]['pos']
+        s = skel.avatar_skeleton[bone]['scale']
+        L = mathutils.Matrix.Translation(l)
+        rot = [math.radians(a) for a in r] 
+        R = mathutils.Euler(rot,'XYZ').to_matrix().to_4x4() 
+
+
+        if armature:
+            armObj = armature
+            boneObj = armObj.data.bones[bone]
+            MC = boneObj.matrix_local.copy()
+            if boneObj.parent:
+                MP = boneObj.parent.matrix_local.copy()
+            else:
+                MP = mathutils.Matrix()
+            M = MP.inverted() @ MC
+            rad = M.to_euler()
+            R = rad.to_matrix().to_4x4()
+
+
+        S = mathutils.Matrix()
+        for i in range (3):
+            S[i][i] = s[i]
+        M =  L @ R @ S
+        return M
+
+    MF = compose_matrix(armature, bone)
+
+    return MF
+
 
 
 
@@ -1666,6 +1692,23 @@ def rebind(arm, keep_animation=False, report=False):
 
 
 def get_bind_data(armature=None, bone=None, rig_data=None):
+
+    if settings['testing'] == True:
+        print()
+        print()
+        print()
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("rigutils::get_bind_data - runs")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print()
+        print()
+        print()
+
+
     if armature == None:
         print("get_bind_data reports: no armature")
         return False
@@ -1981,6 +2024,23 @@ def get_bind_data(armature=None, bone=None, rig_data=None):
 
 
 def get_joint_data(armature=None, bone=None, rig_data=None):
+
+    if settings['testing'] == True:
+        print()
+        print()
+        print()
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("rigutils::get_joint_data - runs")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print()
+        print()
+        print()
+
+
     if armature == None:
         print("get_joint_data reports: no armature")
         return False
@@ -2209,6 +2269,22 @@ def get_bone_transforms(armature=None, rig_data=None):
         return False
     if rig_data == None:
         return False
+
+    if settings['testing'] == True:
+        print()
+        print()
+        print()
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("rigutils::get_bone_transforms - runs")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print()
+        print()
+        print()
+
 
     
     
@@ -4264,6 +4340,22 @@ def add_empty_constraints(source=None, target=None, transform='COPY_TRANSFORMS',
 
 def get_bone_data(armature=None, deform_only=False, store=True, location=False, rotation=False, scale=True, pose=False):
 
+
+    if settings['testing'] == True:
+        print()
+        print()
+        print()
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("rigutils::get_bone_data - runs")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print("---------------------------------------------")
+        print()
+        print()
+        print()
+
     
     
     
@@ -5820,6 +5912,7 @@ def get_bone_path(armature=None, bone=None, check=False):
         if boneObj.name != 'mPelvis':
             print("rigutils:get_bone_path reports - bone path ends with wrong name, not mPelvis:", boneObj.name)
     return bone_set
+
 
 
 

@@ -1,20 +1,3 @@
-
-# Bento Buddy
-#
-# Copyright (C) 2012 - 2022 - Critters LLC
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see http://www.gnu.org/licenses/ .
 import bpy
 import os
 from . import mod_settings
@@ -74,7 +57,12 @@ def load_icons():
     custom_icons.load("bone_black_red", os.path.join(icons_dir, "bone_black_red.png"), 'IMAGE')
     custom_icons.load("bone_yellow_blue", os.path.join(icons_dir, "bone_yellow_blue.png"), 'IMAGE')
     custom_icons.load("joint", os.path.join(icons_dir, "joint.png"), 'IMAGE')
- 
+
+    custom_icons.load("infinity", os.path.join(icons_dir, "infinity.png"), 'IMAGE')
+
+    custom_icons.load("minus_to_plus", os.path.join(icons_dir, "minus_to_plus.png"), 'IMAGE')
+    custom_icons.load("plus_to_minus", os.path.join(icons_dir, "plus_to_minus.png"), 'IMAGE')
+
     custom_icons.load("view_anchor_bones", os.path.join(icons_dir, "view_anchor_bones.png"), 'IMAGE')
     custom_icons.load("view_reskin_bones", os.path.join(icons_dir, "view_reskin_bones.png"), 'IMAGE')
     custom_icons.load("view_output_bones", os.path.join(icons_dir, "view_output_bones.png"), 'IMAGE')
@@ -313,11 +301,15 @@ def load_icons():
     custom_icons.load("tolerance", os.path.join(icons_dir, "tolerance.png"), 'IMAGE')
     custom_icons.load("sample", os.path.join(icons_dir, "sample.png"), 'IMAGE')
     custom_icons.load("hand_love", os.path.join(icons_dir, "hand_love.png"), 'IMAGE')
+    custom_icons.load("hand_left", os.path.join(icons_dir, "hand_left.png"), 'IMAGE')
+    custom_icons.load("hand_right", os.path.join(icons_dir, "hand_right.png"), 'IMAGE')
+
     custom_icons.load("full", os.path.join(icons_dir, "full.png"), 'IMAGE')
     custom_icons.load("time", os.path.join(icons_dir, "time.png"), 'IMAGE')
     custom_icons.load("hourglass", os.path.join(icons_dir, "hourglass.png"), 'IMAGE')
 
     custom_icons.load("symmetric", os.path.join(icons_dir, "symmetric.png"), 'IMAGE')
+    custom_icons.load("half", os.path.join(icons_dir, "half.png"), 'IMAGE')
 
     custom_icons.load("paint", os.path.join(icons_dir, "paint.png"), 'IMAGE')
     custom_icons.load("paint_enabled", os.path.join(icons_dir, "paint_enabled.png"), 'IMAGE')
